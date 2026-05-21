@@ -2,12 +2,12 @@
 
 ## Current Version
 
-- Package version: `0.3.0`
+- Package version: `0.4.0`
 - Architecture level: EGG-v0 base plus Shadow/Fitness evaluation, read-only
-  Inspection Cockpit, and Habitat Contract v1.
+  Inspection Cockpit, Habitat Contract v1, and SandboxPatch Boundary.
 - Current boundary: draft needs, proposals, shadow plans, fitness scores,
-  cockpit projections, and readiness reports only; no patch, Git, GitHub, file
-  modification, worker, or activation.
+  cockpit projections, readiness reports, and patch draft records only; no patch
+  application, Git, GitHub, file modification, worker, or activation.
 
 ## Completed Phases
 
@@ -109,4 +109,12 @@
 
 - Add PatchApproval, SandboxPatch, PatchFileChange, and PatchRiskAssessment.
 - Keep patch creation blocked without explicit approval.
+- Status: completed in current v0.4 work.
+
+## Next Phase
+
+## GENUS EGG v0.5 - TestRunner and EvidenceChain
+
+- Add TestRun, TestResult, EvidenceRecord, and EvidenceChain.
+- Link Evidence to FitnessEvaluation.
 - Status: next.

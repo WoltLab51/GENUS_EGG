@@ -1,16 +1,18 @@
-# GENUS EGG v0/v0.3 Spec
+# GENUS EGG v0/v0.4 Spec
 
 ## Goal
 
-GENUS EGG `0.3.0` extends the consolidated EGG-v0 base, v0.1 evaluation layer,
-and read-only Inspection Cockpit with Habitat Contract v1.
+GENUS EGG `0.4.0` extends the consolidated EGG-v0 base, v0.1 evaluation layer,
+read-only Inspection Cockpit, and Habitat Contract v1 with a SandboxPatch
+Boundary.
 
 The system may remember deterministic user input, persist its local habitat,
 record maturation observations, draft capability needs, draft development
 proposals, explain a growth proposal, create shadow test plans, score draft
-proposals, render local inspection snapshots, and assess habitat readiness. It
-must not modify files, generate patches, run Git/GitHub actions, execute
-proposal code, register new runtime reactions, or activate new capabilities.
+proposals, render local inspection snapshots, assess habitat readiness, and
+draft sandbox patch records after approval. It must not modify files, apply
+patches, run Git/GitHub actions, execute proposal code, register new runtime
+reactions, or activate new capabilities.
 
 ```text
 RawInput -> MeaningCandidate -> ValidationResult -> ReactionProduct -> MemoryObject
@@ -46,6 +48,11 @@ CapabilityNeed -> CapabilityProposal -> CodeChangeProposal
 - `genus-egg fitness evaluate --code-proposal CODE_PROPOSAL_ID` stores a
   draft-only `FitnessEvaluation`.
 - `genus-egg fitness list` lists stored fitness evaluations.
+- `genus-egg patch approve --code-proposal CODE_PROPOSAL_ID` stores explicit
+  approval for a sandbox patch draft.
+- `genus-egg patch draft --code-proposal CODE_PROPOSAL_ID` stores draft-only
+  sandbox patch records.
+- `genus-egg patch list` lists stored sandbox patches.
 - `--db PATH` selects the SQLite database; default is `data/genus_egg.sqlite`.
 
 ## Reaction Core v0.0-0.2
@@ -206,9 +213,25 @@ available.
 Readiness is deterministic and informational. It can mark a Habitat as ready,
 limited, or blocked, but it grants no permissions and activates nothing.
 
+## SandboxPatch Boundary v0.4
+
+`SandboxPatchBoundary` can create `PatchApproval` records for existing
+`CodeChangeProposal` records. A `SandboxPatch` can only be drafted when an
+approved `PatchApproval` exists.
+
+The patch draft stores:
+
+- `SandboxPatch`
+- `PatchRiskAssessment`
+- `PatchFileChange`
+
+Patch targets must be inside the proposal allowed paths and outside forbidden
+paths. The boundary stores proposed file changes only; it does not write files,
+apply patches, run Git, call GitHub, or activate anything.
+
 ## Persistence
 
-The `0.3.0` schema contains:
+The `0.4.0` schema contains:
 
 - `raw_inputs`
 - `meaning_candidates`
@@ -227,6 +250,10 @@ The `0.3.0` schema contains:
 - `code_change_proposals`
 - `shadow_test_plans`
 - `fitness_evaluations`
+- `patch_approvals`
+- `patch_risk_assessments`
+- `sandbox_patches`
+- `patch_file_changes`
 
 SQLite is the only source of truth. JSON payloads are stored as text.
 
@@ -240,3 +267,5 @@ SQLite is the only source of truth. JSON payloads are stored as text.
 - Package `0.2.0`: Read-only Inspection Cockpit over SQLite truth.
 - Package `0.3.0`: Habitat Contract v1 with ResourceSnapshot and
   HabitatReadinessReport.
+- Package `0.4.0`: SandboxPatch Boundary with explicit approval and draft patch
+  records only.

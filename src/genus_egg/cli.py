@@ -20,6 +20,11 @@ from genus_egg.kernel.reaction_kernel import ReactionKernel
 from genus_egg.maturation.maturation_seed import MaturationSeed
 from genus_egg.maturation.pattern_detector import PatternDetector
 from genus_egg.memory.memory_store import MemoryStore
+from genus_egg.patching.sandbox_patch_boundary import (
+    PatchApprovalRequiredError,
+    PatchPathBlockedError,
+    SandboxPatchBoundary,
+)
 from genus_egg.truth.ledger import Ledger
 from genus_egg.truth.sqlite_store import SQLiteStore
 
@@ -92,6 +97,10 @@ def build_parser() -> argparse.ArgumentParser:
     )
     fitness.add_argument("action", choices=["evaluate", "list"])
     fitness.add_argument("--code-proposal")
+
+    patch = subparsers.add_parser("patch", help="Approve or draft sandbox patches")
+    patch.add_argument("action", choices=["approve", "draft", "list"])
+    patch.add_argument("--code-proposal")
 
     return parser
 
@@ -294,6 +303,53 @@ def main(argv: list[str] | None = None) -> int:
                 print(
                     f"{evaluation.evaluation_id}\t{evaluation.code_proposal_id}\t"
                     f"{evaluation.score}\t{evaluation.activation}"
+                )
+            return 0
+
+        if args.command == "patch":
+            boundary = SandboxPatchBoundary(store)
+            if args.action == "approve":
+                if not args.code_proposal:
+                    print("Missing required --code-proposal CODE_PROPOSAL_ID")
+                    return 2
+                try:
+                    approval = boundary.approve(args.code_proposal)
+                except CodeChangeProposalNotFoundError as error:
+                    print(str(error))
+                    return 1
+                print(f"PatchApproval created: {approval.approval_id}")
+                print(f"CodeProposal: {approval.code_proposal_id}")
+                print(f"Status: {approval.status}")
+                print("Activation: blocked")
+                return 0
+
+            if args.action == "draft":
+                if not args.code_proposal:
+                    print("Missing required --code-proposal CODE_PROPOSAL_ID")
+                    return 2
+                try:
+                    patch, risk, changes = boundary.draft(args.code_proposal)
+                except (
+                    CodeChangeProposalNotFoundError,
+                    PatchApprovalRequiredError,
+                    PatchPathBlockedError,
+                ) as error:
+                    print(str(error))
+                    return 1
+                print(f"SandboxPatch drafted: {patch.patch_id}")
+                print(f"CodeProposal: {patch.code_proposal_id}")
+                print(f"Risk: {risk.risk_level}")
+                print(f"FileChanges: {len(changes)}")
+                print(f"Status: {patch.status}")
+                print("Git: none")
+                print("GitHub: none")
+                print(f"Activation: {patch.activation}")
+                return 0
+
+            for patch in store.list_sandbox_patches():
+                print(
+                    f"{patch.patch_id}\t{patch.code_proposal_id}\t"
+                    f"{patch.status}\t{patch.activation}"
                 )
             return 0
 

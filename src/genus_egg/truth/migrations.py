@@ -194,6 +194,47 @@ CREATE TABLE IF NOT EXISTS fitness_evaluations (
     payload_json TEXT,
     created_at TEXT NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS patch_approvals (
+    approval_id TEXT PRIMARY KEY,
+    code_proposal_id TEXT NOT NULL,
+    approved_by TEXT NOT NULL,
+    approval_scope TEXT NOT NULL,
+    status TEXT NOT NULL,
+    payload_json TEXT,
+    created_at TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS patch_risk_assessments (
+    risk_assessment_id TEXT PRIMARY KEY,
+    code_proposal_id TEXT NOT NULL,
+    risk_level TEXT NOT NULL,
+    rationale TEXT NOT NULL,
+    blocked INTEGER NOT NULL,
+    payload_json TEXT,
+    created_at TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS sandbox_patches (
+    patch_id TEXT PRIMARY KEY,
+    code_proposal_id TEXT NOT NULL,
+    approval_id TEXT NOT NULL,
+    risk_assessment_id TEXT NOT NULL,
+    status TEXT NOT NULL,
+    activation TEXT NOT NULL,
+    payload_json TEXT,
+    created_at TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS patch_file_changes (
+    file_change_id TEXT PRIMARY KEY,
+    patch_id TEXT NOT NULL,
+    target_path TEXT NOT NULL,
+    change_type TEXT NOT NULL,
+    content_preview TEXT NOT NULL,
+    payload_json TEXT,
+    created_at TEXT NOT NULL
+);
 """
 
 

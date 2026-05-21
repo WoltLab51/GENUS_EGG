@@ -2,9 +2,9 @@
 
 ## Current Version
 
-- Package version: `0.3.0`
+- Package version: `0.4.0`
 - Architecture scope: EGG-v0 base plus Shadow/Fitness evaluation and read-only
-  Inspection Cockpit and Habitat Contract v1
+  Inspection Cockpit, Habitat Contract v1, and SandboxPatch Boundary
 - Persistence: SQLite is the only source of truth
 - Ledger: append-only
 
@@ -20,6 +20,7 @@
 - Inspection Cockpit: read-only local projection over SQLite truth
 - Habitat Contract v1: persisted `ResourceSnapshot` and
   `HabitatReadinessReport`
+- SandboxPatch Boundary: explicit approval plus draft patch records only
 
 ## Draft-Safe Boundaries
 
@@ -44,6 +45,9 @@ and does not write records, trigger routes, run workers, or call Git/GitHub.
 
 Habitat Contract v1 is observational. It records local physiology and readiness
 status, but it does not open network, GitHub, patch, or activation authority.
+
+SandboxPatch Boundary is draft-safe only. It creates patch records after
+approval, but it does not write files, run Git, run GitHub, or activate code.
 
 ## Explicitly Not Present
 

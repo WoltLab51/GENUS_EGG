@@ -16,6 +16,10 @@ from genus_egg.maturation.capability_need import CapabilityNeed
 from genus_egg.maturation.observation_record import ObservationRecord
 from genus_egg.maturation.reaction_outcome import ReactionOutcome
 from genus_egg.memory.memory_object import MemoryObject
+from genus_egg.patching.patch_approval import PatchApproval
+from genus_egg.patching.patch_file_change import PatchFileChange
+from genus_egg.patching.patch_risk_assessment import PatchRiskAssessment
+from genus_egg.patching.sandbox_patch import SandboxPatch
 from genus_egg.semantics.meaning_candidate import MeaningCandidate
 from genus_egg.semantics.raw_input import RawInput
 from genus_egg.truth.migrations import apply_migrations
@@ -749,6 +753,200 @@ class SQLiteStore:
                 criteria_scores_json=row["criteria_scores_json"],
                 rationale=row["rationale"],
                 activation=row["activation"],
+                payload_json=row["payload_json"],
+                created_at=row["created_at"],
+            )
+            for row in rows
+        ]
+
+    def save_patch_approval(self, approval: PatchApproval) -> None:
+        self.connection.execute(
+            """
+            INSERT INTO patch_approvals
+            (approval_id, code_proposal_id, approved_by, approval_scope, status,
+             payload_json, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                approval.approval_id,
+                approval.code_proposal_id,
+                approval.approved_by,
+                approval.approval_scope,
+                approval.status,
+                approval.payload_json,
+                approval.created_at,
+            ),
+        )
+        self.connection.commit()
+
+    def list_patch_approvals(self) -> list[PatchApproval]:
+        rows = self.connection.execute(
+            """
+            SELECT approval_id, code_proposal_id, approved_by, approval_scope,
+                   status, payload_json, created_at
+            FROM patch_approvals
+            ORDER BY created_at, rowid
+            """
+        ).fetchall()
+        return [
+            PatchApproval(
+                approval_id=row["approval_id"],
+                code_proposal_id=row["code_proposal_id"],
+                approved_by=row["approved_by"],
+                approval_scope=row["approval_scope"],
+                status=row["status"],
+                payload_json=row["payload_json"],
+                created_at=row["created_at"],
+            )
+            for row in rows
+        ]
+
+    def get_latest_patch_approval(self, code_proposal_id: str) -> PatchApproval | None:
+        row = self.connection.execute(
+            """
+            SELECT approval_id, code_proposal_id, approved_by, approval_scope,
+                   status, payload_json, created_at
+            FROM patch_approvals
+            WHERE code_proposal_id = ? AND status = 'approved'
+            ORDER BY created_at DESC, rowid DESC
+            LIMIT 1
+            """,
+            (code_proposal_id,),
+        ).fetchone()
+        if row is None:
+            return None
+        return PatchApproval(
+            approval_id=row["approval_id"],
+            code_proposal_id=row["code_proposal_id"],
+            approved_by=row["approved_by"],
+            approval_scope=row["approval_scope"],
+            status=row["status"],
+            payload_json=row["payload_json"],
+            created_at=row["created_at"],
+        )
+
+    def save_patch_risk_assessment(self, risk: PatchRiskAssessment) -> None:
+        self.connection.execute(
+            """
+            INSERT INTO patch_risk_assessments
+            (risk_assessment_id, code_proposal_id, risk_level, rationale, blocked,
+             payload_json, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                risk.risk_assessment_id,
+                risk.code_proposal_id,
+                risk.risk_level,
+                risk.rationale,
+                int(risk.blocked),
+                risk.payload_json,
+                risk.created_at,
+            ),
+        )
+        self.connection.commit()
+
+    def list_patch_risk_assessments(self) -> list[PatchRiskAssessment]:
+        rows = self.connection.execute(
+            """
+            SELECT risk_assessment_id, code_proposal_id, risk_level, rationale,
+                   blocked, payload_json, created_at
+            FROM patch_risk_assessments
+            ORDER BY created_at, rowid
+            """
+        ).fetchall()
+        return [
+            PatchRiskAssessment(
+                risk_assessment_id=row["risk_assessment_id"],
+                code_proposal_id=row["code_proposal_id"],
+                risk_level=row["risk_level"],
+                rationale=row["rationale"],
+                blocked=bool(row["blocked"]),
+                payload_json=row["payload_json"],
+                created_at=row["created_at"],
+            )
+            for row in rows
+        ]
+
+    def save_sandbox_patch(self, patch: SandboxPatch) -> None:
+        self.connection.execute(
+            """
+            INSERT INTO sandbox_patches
+            (patch_id, code_proposal_id, approval_id, risk_assessment_id, status,
+             activation, payload_json, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                patch.patch_id,
+                patch.code_proposal_id,
+                patch.approval_id,
+                patch.risk_assessment_id,
+                patch.status,
+                patch.activation,
+                patch.payload_json,
+                patch.created_at,
+            ),
+        )
+        self.connection.commit()
+
+    def list_sandbox_patches(self) -> list[SandboxPatch]:
+        rows = self.connection.execute(
+            """
+            SELECT patch_id, code_proposal_id, approval_id, risk_assessment_id,
+                   status, activation, payload_json, created_at
+            FROM sandbox_patches
+            ORDER BY created_at, rowid
+            """
+        ).fetchall()
+        return [
+            SandboxPatch(
+                patch_id=row["patch_id"],
+                code_proposal_id=row["code_proposal_id"],
+                approval_id=row["approval_id"],
+                risk_assessment_id=row["risk_assessment_id"],
+                status=row["status"],
+                activation=row["activation"],
+                payload_json=row["payload_json"],
+                created_at=row["created_at"],
+            )
+            for row in rows
+        ]
+
+    def save_patch_file_change(self, change: PatchFileChange) -> None:
+        self.connection.execute(
+            """
+            INSERT INTO patch_file_changes
+            (file_change_id, patch_id, target_path, change_type, content_preview,
+             payload_json, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                change.file_change_id,
+                change.patch_id,
+                change.target_path,
+                change.change_type,
+                change.content_preview,
+                change.payload_json,
+                change.created_at,
+            ),
+        )
+        self.connection.commit()
+
+    def list_patch_file_changes(self) -> list[PatchFileChange]:
+        rows = self.connection.execute(
+            """
+            SELECT file_change_id, patch_id, target_path, change_type,
+                   content_preview, payload_json, created_at
+            FROM patch_file_changes
+            ORDER BY created_at, rowid
+            """
+        ).fetchall()
+        return [
+            PatchFileChange(
+                file_change_id=row["file_change_id"],
+                patch_id=row["patch_id"],
+                target_path=row["target_path"],
+                change_type=row["change_type"],
+                content_preview=row["content_preview"],
                 payload_json=row["payload_json"],
                 created_at=row["created_at"],
             )

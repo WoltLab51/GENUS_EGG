@@ -17,6 +17,8 @@ class CockpitSnapshot:
     code_change_proposal_count: int
     shadow_plan_count: int
     fitness_evaluation_count: int
+    sandbox_patch_count: int
+    patch_approval_count: int
     latest_habitat_id: str | None
     latest_fitness_score: int | None
     activation_state: str

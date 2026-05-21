@@ -1,14 +1,16 @@
 # GENUS EGG
 
-GENUS EGG `v0.3.0` is a minimal, governed reaction organism backed by SQLite.
+GENUS EGG `v0.4.0` is a minimal, governed reaction organism backed by SQLite.
 It contains the consolidated EGG-v0 base, the v0.1 evaluation layer, the
-read-only Inspection Cockpit, and Habitat Contract v1.
+read-only Inspection Cockpit, Habitat Contract v1, and the SandboxPatch
+Boundary.
 
 SQLite is the source of truth. The ledger is append-only. GENUS may remember,
 observe, draft, simulate, shadow-test, evaluate proposals, render local
-inspection snapshots, and assess its habitat readiness. It still may not modify
-files, generate patches, run Git/GitHub actions, start workers, call an LLM, or
-activate new runtime behavior.
+inspection snapshots, assess its habitat readiness, and draft sandbox patch
+objects after explicit approval. It still may not modify files, apply patches,
+run Git/GitHub actions, start workers, call an LLM, or activate new runtime
+behavior.
 
 ```text
 RawInput -> MeaningCandidate -> ValidationResult -> ReactionProduct -> MemoryObject
@@ -108,6 +110,16 @@ HTML renderer for local inspection.
 The cockpit does not expose writes, routes, workers, auth, cloud sync, Git,
 GitHub, patch creation, or activation.
 
+## SandboxPatch Boundary
+
+`genus-egg patch approve --code-proposal <code_proposal_id>` stores explicit
+approval for a draft sandbox patch. `genus-egg patch draft --code-proposal
+<code_proposal_id>` creates `SandboxPatch`, `PatchFileChange`, and
+`PatchRiskAssessment` records only after approval.
+
+No patch is applied to the working tree. No Git or GitHub action is run.
+Activation remains blocked.
+
 ## CLI
 
 All commands accept `--db PATH`; the default database is
@@ -130,6 +142,9 @@ genus-egg --db data/genus_egg.sqlite growth simulate-memory-indexing --need <nee
 genus-egg --db data/genus_egg.sqlite shadow plan --code-proposal <code_proposal_id>
 genus-egg --db data/genus_egg.sqlite fitness evaluate --code-proposal <code_proposal_id>
 genus-egg --db data/genus_egg.sqlite fitness list
+genus-egg --db data/genus_egg.sqlite patch approve --code-proposal <code_proposal_id>
+genus-egg --db data/genus_egg.sqlite patch draft --code-proposal <code_proposal_id>
+genus-egg --db data/genus_egg.sqlite patch list
 ```
 
 The same commands can also be run as a module during local development:

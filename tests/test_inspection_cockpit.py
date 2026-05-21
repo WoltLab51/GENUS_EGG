@@ -9,6 +9,7 @@ from genus_egg.habitat.environment_probe import EnvironmentProbe
 from genus_egg.habitat.habitat_contract import HabitatContract
 from genus_egg.kernel.reaction_kernel import ReactionKernel
 from genus_egg.maturation.maturation_seed import MaturationSeed
+from genus_egg.patching.sandbox_patch_boundary import SandboxPatchBoundary
 from genus_egg.truth.ledger import Ledger
 from genus_egg.truth.sqlite_store import SQLiteStore
 
@@ -29,6 +30,9 @@ def _populate_cockpit_fixture(store: SQLiteStore) -> None:
     )
     ShadowTester(store).plan(code_proposal.code_proposal_id)
     FitnessEvaluator(store).evaluate(code_proposal.code_proposal_id)
+    patch_boundary = SandboxPatchBoundary(store)
+    patch_boundary.approve(code_proposal.code_proposal_id)
+    patch_boundary.draft(code_proposal.code_proposal_id)
     assert result.ledger_entries == 7
 
 
@@ -50,6 +54,8 @@ def test_cockpit_data_adapter_reads_all_relevant_object_counts(tmp_path):
     assert snapshot.code_change_proposal_count == 1
     assert snapshot.shadow_plan_count == 1
     assert snapshot.fitness_evaluation_count == 1
+    assert snapshot.patch_approval_count == 1
+    assert snapshot.sandbox_patch_count == 1
     assert snapshot.latest_habitat_id is not None
     assert snapshot.latest_fitness_score is not None
     assert snapshot.activation_state == "blocked"
@@ -74,6 +80,10 @@ def test_cockpit_adapter_is_read_only(tmp_path):
             "code_change_proposals",
             "shadow_test_plans",
             "fitness_evaluations",
+            "patch_approvals",
+            "sandbox_patches",
+            "patch_file_changes",
+            "patch_risk_assessments",
         ]
     }
 

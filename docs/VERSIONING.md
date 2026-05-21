@@ -5,13 +5,14 @@ labels for architecture milestones from the concept document.
 
 ## Current State
 
-- Package version: `0.3.0`
+- Package version: `0.4.0`
 - Architecture level: EGG-v0 base plus Shadow/Fitness evaluation, read-only
-  Inspection Cockpit, and Habitat Contract v1
+  Inspection Cockpit, Habitat Contract v1, and SandboxPatch Boundary
 - Current boundary: draft needs, proposals, shadow plans, fitness scores,
-  cockpit projections, and readiness reports only; no patch, Git, GitHub, file
-  modification, autonomous activation, or runtime self-modification
-- Next architecture target: SandboxPatch after explicit approval
+  cockpit projections, readiness reports, and patch draft records only; no
+  patch application, Git, GitHub, file modification, autonomous activation, or
+  runtime self-modification
+- Next architecture target: TestRunner and EvidenceChain
 
 ## History
 
@@ -23,12 +24,15 @@ labels for architecture milestones from the concept document.
 - `0.2.0`: Read-only Inspection Cockpit for Memory, Ledger, Habitat,
   Observations, Needs, Proposals, Shadow Plans, and Fitness Scores.
 - `0.3.0`: Habitat Contract v1 with ResourceSnapshot and readiness reporting.
+- `0.4.0`: SandboxPatch Boundary with PatchApproval, SandboxPatch,
+  PatchFileChange, and PatchRiskAssessment records.
 
 ## Boundary
 
-Version `0.3.0` may create memories through the deterministic Reaction Core,
+Version `0.4.0` may create memories through the deterministic Reaction Core,
 may create draft needs, draft proposals, shadow test plans, and fitness
 evaluations, may render read-only cockpit snapshots, and may store resource and
-readiness records. It must not create patches, run Git/GitHub actions, activate
-runtime reactions, modify files through GENUS itself, start agents/workers, call
-an LLM, or introduce vector/graph storage.
+readiness records. It may create draft patch records after approval. It must not
+apply patches, run Git/GitHub actions, activate runtime reactions, modify files
+through GENUS itself, start agents/workers, call an LLM, or introduce
+vector/graph storage.

@@ -29,6 +29,8 @@ class CockpitDataAdapter:
             code_change_proposal_count=len(self.store.list_code_change_proposals()),
             shadow_plan_count=len(self.store.list_shadow_test_plans()),
             fitness_evaluation_count=len(fitness_evaluations),
+            sandbox_patch_count=len(self.store.list_sandbox_patches()),
+            patch_approval_count=len(self.store.list_patch_approvals()),
             latest_habitat_id=latest_habitat.habitat_id if latest_habitat else None,
             latest_fitness_score=latest_fitness.score if latest_fitness else None,
             activation_state="blocked",

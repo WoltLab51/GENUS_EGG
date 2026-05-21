@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.4.0 - 2026-05-21
+
+- Added SandboxPatch Boundary with explicit `PatchApproval`.
+- Added `SandboxPatch`, `PatchFileChange`, and `PatchRiskAssessment` records.
+- Added SQLite tables for patch approvals, draft patches, file changes, and
+  risk assessments.
+- Added `genus-egg patch approve`, `genus-egg patch draft`, and
+  `genus-egg patch list`.
+- Kept patches as records only: no file writes, no Git, no GitHub, and no
+  activation.
+
 ## 0.3.0 - 2026-05-21
 
 - Added Habitat Contract v1 with `ResourceSnapshot` and
