@@ -3,6 +3,10 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
+from genus_egg.development.development_boundary import (
+    CapabilityNeedNotFoundError,
+    DevelopmentBoundary,
+)
 from genus_egg.habitat.environment_probe import EnvironmentProbe
 from genus_egg.kernel.reaction_kernel import ReactionKernel
 from genus_egg.maturation.maturation_seed import MaturationSeed
@@ -40,6 +44,17 @@ def build_parser() -> argparse.ArgumentParser:
         choices=["list", "draft-memory-indexing"],
         default="list",
     )
+
+    proposals = subparsers.add_parser(
+        "proposals", help="List or draft development proposals"
+    )
+    proposals.add_argument(
+        "action",
+        nargs="?",
+        choices=["list", "draft-memory-indexing"],
+        default="list",
+    )
+    proposals.add_argument("--need")
 
     return parser
 
@@ -116,6 +131,32 @@ def main(argv: list[str] | None = None) -> int:
 
             for need in store.list_capability_needs():
                 print(f"{need.need_id}\t{need.status}\t{need.description}")
+            return 0
+
+        if args.command == "proposals":
+            if args.action == "draft-memory-indexing":
+                if not args.need:
+                    print("Missing required --need NEED_ID")
+                    return 2
+                try:
+                    proposal, code_proposal = (
+                        DevelopmentBoundary(store).draft_memory_indexing_proposal(
+                            args.need
+                        )
+                    )
+                except CapabilityNeedNotFoundError as error:
+                    print(str(error))
+                    return 1
+
+                print(f"CapabilityProposal drafted: {proposal.description}")
+                print(f"Proposal: {proposal.proposal_id}")
+                print(f"CodeProposal: {code_proposal.code_proposal_id}")
+                print(f"Status: {proposal.status}")
+                print("Activation: blocked")
+                return 0
+
+            for proposal in store.list_capability_proposals():
+                print(f"{proposal.proposal_id}\t{proposal.status}\t{proposal.description}")
             return 0
 
         return 2

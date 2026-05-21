@@ -17,6 +17,8 @@ RawInput -> MeaningCandidate -> ValidationResult -> ReactionProduct -> MemoryObj
 - `genus-egg observations` lists maturation observations.
 - `genus-egg needs draft-memory-indexing` creates a deterministic draft
   capability need without activation.
+- `genus-egg proposals draft-memory-indexing --need NEED_ID` creates draft-only
+  development proposal objects without activation.
 - `--db PATH` selects the SQLite database; default is `data/genus_egg.sqlite`.
 
 ## Reaction Rules
@@ -46,6 +48,8 @@ The following tables are part of v0.0-0.2:
 - `reaction_outcomes`
 - `observation_records`
 - `capability_needs`
+- `capability_proposals`
+- `code_change_proposals`
 
 SQLite is the only source of truth. JSON payloads are stored as text.
 
@@ -61,3 +65,10 @@ After a successful reaction chain, GENUS records a `ReactionOutcome` and an
 `ObservationRecord`. A deterministic `CapabilityNeed` can be created as
 `draft`, but no activation, patch generation, Git operation, or runtime mutation
 is allowed.
+
+## Development Boundary v0.5
+
+GENUS may turn an existing `CapabilityNeed` into draft-only
+`CapabilityProposal` and `CodeChangeProposal` records. The `ApprovalGate` blocks
+file modification and activation. No code patch, Git operation, runtime mutation,
+or automatic activation is allowed.

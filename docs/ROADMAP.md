@@ -27,5 +27,6 @@
   `EnvironmentProbe`, and `PermissionProfile`.
 - Phase 0.4: Maturation Seed with `ReactionOutcome`, `ObservationRecord`, and
   draft-only `CapabilityNeed`.
-- Phase 0.5: Development Boundary.
+- Phase 0.5: Development Boundary with draft `CapabilityProposal`,
+  `CodeChangeProposal`, and blocking `ApprovalGate`.
 - Phase 0.6: First Growth Simulation.

@@ -4,6 +4,8 @@ import sqlite3
 from pathlib import Path
 from typing import Any
 
+from genus_egg.development.capability_proposal import CapabilityProposal
+from genus_egg.development.code_change_proposal import CodeChangeProposal
 from genus_egg.habitat.habitat_manifest import HabitatManifest
 from genus_egg.kernel.artifacts import ReactionProduct, ReactionRecord, ValidationResult
 from genus_egg.maturation.capability_need import CapabilityNeed
@@ -351,6 +353,117 @@ class SQLiteStore:
                 source_observation_id=row["source_observation_id"],
                 need_type=row["need_type"],
                 description=row["description"],
+                status=row["status"],
+                payload_json=row["payload_json"],
+                created_at=row["created_at"],
+            )
+            for row in rows
+        ]
+
+    def get_capability_need(self, need_id: str) -> CapabilityNeed | None:
+        row = self.connection.execute(
+            """
+            SELECT need_id, source_observation_id, need_type, description, status,
+                   payload_json, created_at
+            FROM capability_needs
+            WHERE need_id = ?
+            """,
+            (need_id,),
+        ).fetchone()
+        if row is None:
+            return None
+        return CapabilityNeed(
+            need_id=row["need_id"],
+            source_observation_id=row["source_observation_id"],
+            need_type=row["need_type"],
+            description=row["description"],
+            status=row["status"],
+            payload_json=row["payload_json"],
+            created_at=row["created_at"],
+        )
+
+    def save_capability_proposal(self, proposal: CapabilityProposal) -> None:
+        self.connection.execute(
+            """
+            INSERT INTO capability_proposals
+            (proposal_id, need_id, proposal_type, description, status,
+             payload_json, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                proposal.proposal_id,
+                proposal.need_id,
+                proposal.proposal_type,
+                proposal.description,
+                proposal.status,
+                proposal.payload_json,
+                proposal.created_at,
+            ),
+        )
+        self.connection.commit()
+
+    def list_capability_proposals(self) -> list[CapabilityProposal]:
+        rows = self.connection.execute(
+            """
+            SELECT proposal_id, need_id, proposal_type, description, status,
+                   payload_json, created_at
+            FROM capability_proposals
+            ORDER BY created_at, rowid
+            """
+        ).fetchall()
+        return [
+            CapabilityProposal(
+                proposal_id=row["proposal_id"],
+                need_id=row["need_id"],
+                proposal_type=row["proposal_type"],
+                description=row["description"],
+                status=row["status"],
+                payload_json=row["payload_json"],
+                created_at=row["created_at"],
+            )
+            for row in rows
+        ]
+
+    def save_code_change_proposal(self, proposal: CodeChangeProposal) -> None:
+        self.connection.execute(
+            """
+            INSERT INTO code_change_proposals
+            (code_proposal_id, proposal_id, title, rationale, allowed_paths_json,
+             forbidden_paths_json, status, payload_json, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                proposal.code_proposal_id,
+                proposal.proposal_id,
+                proposal.title,
+                proposal.rationale,
+                proposal.allowed_paths_json,
+                proposal.forbidden_paths_json,
+                proposal.status,
+                proposal.payload_json,
+                proposal.created_at,
+            ),
+        )
+        self.connection.commit()
+
+    def list_code_change_proposals(self) -> list[CodeChangeProposal]:
+        rows = self.connection.execute(
+            """
+            SELECT code_proposal_id, proposal_id, title, rationale,
+                   allowed_paths_json, forbidden_paths_json, status, payload_json,
+                   created_at
+            FROM code_change_proposals
+            ORDER BY created_at, rowid
+            """
+        ).fetchall()
+        return [
+            CodeChangeProposal(
+                code_proposal_id=row["code_proposal_id"],
+                proposal_id=row["proposal_id"],
+                title=row["title"],
+                rationale=row["rationale"],
+                allowed_paths_json=row["allowed_paths_json"],
+                forbidden_paths_json=row["forbidden_paths_json"],
                 status=row["status"],
                 payload_json=row["payload_json"],
                 created_at=row["created_at"],

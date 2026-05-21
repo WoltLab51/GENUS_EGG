@@ -124,6 +124,28 @@ CREATE TABLE IF NOT EXISTS capability_needs (
     payload_json TEXT,
     created_at TEXT NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS capability_proposals (
+    proposal_id TEXT PRIMARY KEY,
+    need_id TEXT NOT NULL,
+    proposal_type TEXT NOT NULL,
+    description TEXT NOT NULL,
+    status TEXT NOT NULL,
+    payload_json TEXT,
+    created_at TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS code_change_proposals (
+    code_proposal_id TEXT PRIMARY KEY,
+    proposal_id TEXT NOT NULL,
+    title TEXT NOT NULL,
+    rationale TEXT NOT NULL,
+    allowed_paths_json TEXT NOT NULL,
+    forbidden_paths_json TEXT NOT NULL,
+    status TEXT NOT NULL,
+    payload_json TEXT,
+    created_at TEXT NOT NULL
+);
 """
 
 
