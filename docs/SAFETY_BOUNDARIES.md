@@ -1,7 +1,6 @@
 # Safety Boundaries
 
-These rules are hard boundaries for GENUS EGG package version `0.1.0`, through
-the current EGG v0.1 PatternDetector phase:
+These rules are hard boundaries for GENUS EGG package version `0.0.6`.
 
 - No model writes directly.
 - No memory exists without a `MeaningCandidate`.
@@ -12,9 +11,13 @@ the current EGG v0.1 PatternDetector phase:
 - The ledger is append-only.
 - SQLite is the source of truth.
 - The graph is projection, not truth.
+- Habitat Core is read-only and stores manifests only.
+- Maturation Seed is draft-safe only.
+- Pattern detection may create draft capability needs only.
 - The Development Boundary may create draft proposal objects only.
-- PatternDetector may create draft capability needs only.
 - `ApprovalGate` blocks file modification and activation.
 - Growth Simulation creates no patch and runs no Git.
 - There is no Development Core activation in this version.
-- There is no GitHub action, patch generation, auto-merge, or self-modifying runtime.
+- There is no file modification by GENUS runtime.
+- There is no GitHub action, patch generation, auto-merge, agent, worker,
+  vector store, GraphDB, or self-modifying runtime.

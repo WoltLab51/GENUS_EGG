@@ -2,8 +2,8 @@
 
 ## Current Version
 
-- Package version: `0.1.0`
-- Architecture level: completed EGG-v0 slice plus EGG v0.1 PatternDetector.
+- Package version: `0.0.6`
+- Architecture level: consolidated EGG-v0 slice through phase `0.6`.
 - Current boundary: draft needs and proposals only; no patch, Git, GitHub, or
   activation.
 
@@ -66,17 +66,17 @@
   `ReactionSpec index_memory` because memory retrieval would benefit from it.
 - Status: completed in `5b8b294`.
 
-## EGG v0.1 - PatternDetector
+## Draft-Safe Pattern Detection
 
-- Add PatternDetector.
-- Add first real CapabilityNeed detection from stored observations.
+- Add PatternDetector as a draft-safe observation reader.
+- Add CapabilityNeed detection from stored observations.
 - Definition of done: `genus-egg needs detect` can derive a draft memory
-  indexing need from successful memory-chain observations.
+  indexing need from successful memory-chain observations without activation.
 - Status: completed in `8b6b808`.
 
 ## Next Phase
 
-## EGG v0.2 - ShadowTester and FitnessEvaluator
+## Future Work - ShadowTester and FitnessEvaluator
 
 - Add ShadowTester.
 - Add FitnessEvaluator.

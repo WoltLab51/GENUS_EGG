@@ -5,19 +5,22 @@ labels for architecture milestones from the concept document.
 
 ## Current State
 
-- Package version: `0.1.0`
-- Architecture level: EGG-v0 completed through phase `0.6`, plus EGG v0.1
-  PatternDetector.
-- Next architecture target: EGG v0.2, ShadowTester and FitnessEvaluator.
+- Package version: `0.0.6`
+- Architecture level: consolidated EGG-v0 through phase `0.6`
+- Current boundary: draft needs and proposals only; no patch, Git, GitHub,
+  file modification, autonomous activation, or runtime self-modification
+- Next architecture target: Shadow testing and fitness evaluation remain
+  separate future work
 
 ## History
 
 - `0.0.2`: Initial EGG-v0 foundation through Reaction Core v0.2.
-- `0.1.0`: Habitat Core, Maturation Seed, Development Boundary, First Growth
-  Simulation, and PatternDetector need detection.
+- `0.0.6`: Habitat Core, Maturation Seed, Development Boundary, and First
+  Growth Simulation consolidated as draft-safe EGG-v0.
 
 ## Boundary
 
-Version `0.1.0` may create draft needs and draft proposals. It must not create
-patches, run Git/GitHub actions, activate runtime reactions, or modify code
-through GENUS itself.
+Version `0.0.6` may create memories through the deterministic Reaction Core and
+may create draft needs and draft proposals. It must not create patches, run
+Git/GitHub actions, activate runtime reactions, modify files through GENUS
+itself, start agents/workers, or introduce vector/graph storage.
