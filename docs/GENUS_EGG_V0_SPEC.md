@@ -1,10 +1,11 @@
-# GENUS EGG v0/v0.7 Spec
+# GENUS EGG v0/v0.8 Spec
 
 ## Goal
 
-GENUS EGG `0.7.0` extends the consolidated EGG-v0 base, v0.1 evaluation layer,
+GENUS EGG `0.8.0` extends the consolidated EGG-v0 base, v0.1 evaluation layer,
 read-only Inspection Cockpit, and Habitat Contract v1 with a SandboxPatch
-Boundary, EvidenceChain, Local GitConnector, and draft-only GitHubConnector.
+Boundary, EvidenceChain, Local GitConnector, draft-only GitHubConnector, and
+Activation Boundary.
 
 The system may remember deterministic user input, persist its local habitat,
 record maturation observations, draft capability needs, draft development
@@ -14,7 +15,8 @@ draft sandbox patch records after approval. It may read local Git status and
 store deterministic branch-preparation records. It must not push, merge,
 rebase, force-push, run GitHub actions, execute arbitrary commands, register
 new runtime reactions, or activate new capabilities. GitHub remains blocked by
-default and draft-only when explicitly allowed.
+default and draft-only when explicitly allowed. Activation remains modeled and
+blocked unless a later phase adds rollback-backed decision paths.
 
 ```text
 RawInput -> MeaningCandidate -> ValidationResult -> ReactionProduct -> MemoryObject
@@ -63,6 +65,12 @@ CapabilityNeed -> CapabilityProposal -> CodeChangeProposal
   branch-preparation record for an existing `SandboxPatch`.
 - `genus-egg github draft-pr --patch PATCH_ID` stores a draft-only GitHub PR
   boundary record when all prerequisites pass.
+- `genus-egg activation request --code-proposal CODE_PROPOSAL_ID` stores a
+  blocked activation request when proposal, approval, evidence, and fitness
+  records exist.
+- `genus-egg activation reject --request REQUEST_ID` stores a blocked rejection
+  decision.
+- `genus-egg activation list` lists stored activation requests.
 - `--db PATH` selects the SQLite database; default is `data/genus_egg.sqlite`.
 - `genus-egg git ... --repo PATH` selects the local repository path for Git
   inspection; default is `.`.
@@ -298,9 +306,38 @@ explicitly keeps `push=none`, `merge=none`, `auto_merge=none`,
 The connector offers no non-draft PR path, no merge path, no issue mutation, no
 labels/reviewers, no secret or permission changes, and no activation.
 
+## Activation Boundary v0.8
+
+`ActivationBoundary` models activation as its own explicit, blocked lifecycle.
+
+It can store:
+
+- `ActivationRequest`
+- `ActivationDecision`
+- `ReactionSpecCandidate`
+- `RuntimeCompatibilityCheck`
+
+An activation request requires an existing `CodeChangeProposal`, a
+`PatchApproval`, an `EvidenceChain`, and a `FitnessEvaluation`. Missing
+prerequisites stop the request and store nothing.
+
+Even with prerequisites present, the request is stored with:
+
+- `status=blocked`
+- `reason_code=rollback_data_missing`
+- `activation=blocked`
+
+The runtime compatibility check also remains blocked until rollback data exists.
+Scores, PR records, merges, approvals, and evidence do not activate anything by
+themselves.
+
+Rejection stores an `ActivationDecision` with `decision=rejected` and
+`activation=blocked`; this can mark the request as fossilized in payload data
+without deleting history.
+
 ## Persistence
 
-The `0.7.0` schema contains:
+The `0.8.0` schema contains:
 
 - `raw_inputs`
 - `meaning_candidates`
@@ -330,6 +367,10 @@ The `0.7.0` schema contains:
 - `git_status_reports`
 - `git_branch_preparations`
 - `github_draft_prs`
+- `activation_requests`
+- `activation_decisions`
+- `reaction_spec_candidates`
+- `runtime_compatibility_checks`
 
 SQLite is the only source of truth. JSON payloads are stored as text.
 
@@ -349,3 +390,5 @@ SQLite is the only source of truth. JSON payloads are stored as text.
 - Package `0.6.0`: Local GitConnector status and branch-preparation records.
 - Package `0.7.0`: Draft-only GitHubConnector records gated by Habitat,
   approval, local Git preparation, and passing evidence.
+- Package `0.8.0`: Activation Boundary with blocked requests, decisions,
+  candidates, and compatibility checks.

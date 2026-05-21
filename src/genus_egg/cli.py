@@ -4,6 +4,11 @@ import argparse
 from pathlib import Path
 
 from genus_egg import __version__
+from genus_egg.activation.activation_boundary import (
+    ActivationBoundary,
+    ActivationPrerequisiteError,
+    ActivationRequestNotFoundError,
+)
 from genus_egg.development.development_boundary import (
     CapabilityNeedNotFoundError,
     DevelopmentBoundary,
@@ -128,6 +133,12 @@ def build_parser() -> argparse.ArgumentParser:
     github.add_argument("action", choices=["draft-pr"])
     github.add_argument("--patch")
     github.add_argument("--repository", default="origin")
+
+    activation = subparsers.add_parser("activation", help="Model activation requests")
+    activation.add_argument("action", choices=["request", "reject", "list"])
+    activation.add_argument("--code-proposal")
+    activation.add_argument("--request")
+    activation.add_argument("--rationale", default="Rejected by explicit boundary.")
 
     return parser
 
@@ -461,6 +472,49 @@ def main(argv: list[str] | None = None) -> int:
             print("Push: none")
             print("Merge: none")
             print(f"Activation: {draft_pr.activation}")
+            return 0
+
+        if args.command == "activation":
+            boundary = ActivationBoundary(store)
+            if args.action == "request":
+                if not args.code_proposal:
+                    print("Missing required --code-proposal CODE_PROPOSAL_ID")
+                    return 2
+                try:
+                    request, candidate, check = boundary.request(args.code_proposal)
+                except (CodeChangeProposalNotFoundError, ActivationPrerequisiteError) as error:
+                    print(str(error))
+                    return 1
+                print(f"ActivationRequest: {request.activation_request_id}")
+                print(f"CodeProposal: {request.code_proposal_id}")
+                print(f"ReactionSpecCandidate: {candidate.candidate_id}")
+                print(f"RuntimeCompatibilityCheck: {check.compatibility_check_id}")
+                print(f"Status: {request.status}")
+                print(f"Reason: {request.reason_code}")
+                print(f"Activation: {request.activation}")
+                return 0
+
+            if args.action == "reject":
+                if not args.request:
+                    print("Missing required --request REQUEST_ID")
+                    return 2
+                try:
+                    decision = boundary.reject(args.request, args.rationale)
+                except ActivationRequestNotFoundError as error:
+                    print(str(error))
+                    return 1
+                print(f"ActivationDecision: {decision.activation_decision_id}")
+                print(f"Request: {decision.activation_request_id}")
+                print(f"Decision: {decision.decision}")
+                print(f"Status: {decision.status}")
+                print(f"Activation: {decision.activation}")
+                return 0
+
+            for request in store.list_activation_requests():
+                print(
+                    f"{request.activation_request_id}\t{request.code_proposal_id}\t"
+                    f"{request.status}\t{request.activation}"
+                )
             return 0
 
         return 2

@@ -307,6 +307,45 @@ CREATE TABLE IF NOT EXISTS github_draft_prs (
     payload_json TEXT,
     created_at TEXT NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS activation_requests (
+    activation_request_id TEXT PRIMARY KEY,
+    code_proposal_id TEXT NOT NULL,
+    status TEXT NOT NULL,
+    reason_code TEXT NOT NULL,
+    activation TEXT NOT NULL,
+    payload_json TEXT,
+    created_at TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS activation_decisions (
+    activation_decision_id TEXT PRIMARY KEY,
+    activation_request_id TEXT NOT NULL,
+    decision TEXT NOT NULL,
+    status TEXT NOT NULL,
+    activation TEXT NOT NULL,
+    rationale TEXT NOT NULL,
+    payload_json TEXT,
+    created_at TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS reaction_spec_candidates (
+    candidate_id TEXT PRIMARY KEY,
+    activation_request_id TEXT NOT NULL,
+    name TEXT NOT NULL,
+    status TEXT NOT NULL,
+    payload_json TEXT,
+    created_at TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS runtime_compatibility_checks (
+    compatibility_check_id TEXT PRIMARY KEY,
+    activation_request_id TEXT NOT NULL,
+    status TEXT NOT NULL,
+    reason_code TEXT NOT NULL,
+    payload_json TEXT,
+    created_at TEXT NOT NULL
+);
 """
 
 

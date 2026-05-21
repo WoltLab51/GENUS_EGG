@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "genus-egg"
-version = "0.7.0"
-description = "SQLite-backed governed reaction organism for GENUS EGG v0.7."
+version = "0.8.0"
+description = "SQLite-backed governed reaction organism for GENUS EGG v0.8."
 readme = "README.md"
 requires-python = ">=3.12"
 authors = [{ name = "GENUS EGG" }]

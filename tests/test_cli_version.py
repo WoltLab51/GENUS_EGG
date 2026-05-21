@@ -12,4 +12,4 @@ def test_cli_version_reports_package_version(capsys):
         parser.parse_args(["--version"])
 
     assert exit_info.value.code == 0
-    assert "genus-egg 0.7.0" in capsys.readouterr().out
+    assert "genus-egg 0.8.0" in capsys.readouterr().out

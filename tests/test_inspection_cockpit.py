@@ -3,6 +3,7 @@ from __future__ import annotations
 import subprocess
 import json
 
+from genus_egg.activation.activation_boundary import ActivationBoundary
 from genus_egg.cockpit.data_adapter import CockpitDataAdapter
 from genus_egg.cockpit.html_renderer import CockpitHtmlRenderer
 from genus_egg.development.development_boundary import DevelopmentBoundary
@@ -66,6 +67,12 @@ def _populate_cockpit_fixture(store: SQLiteStore) -> None:
         )
     )
     GitHubConnector(store).draft_pr(patch.patch_id)
+    activation_request, _, _ = ActivationBoundary(store).request(
+        code_proposal.code_proposal_id
+    )
+    ActivationBoundary(store).reject(
+        activation_request.activation_request_id, "No rollback plan."
+    )
     assert result.ledger_entries == 7
 
 
@@ -95,6 +102,8 @@ def test_cockpit_data_adapter_reads_all_relevant_object_counts(tmp_path):
     assert snapshot.git_status_count == 1
     assert snapshot.git_preparation_count == 1
     assert snapshot.github_draft_pr_count == 1
+    assert snapshot.activation_request_count == 1
+    assert snapshot.activation_decision_count == 1
     assert snapshot.latest_habitat_id is not None
     assert snapshot.latest_fitness_score is not None
     assert snapshot.activation_state == "blocked"
@@ -130,6 +139,10 @@ def test_cockpit_adapter_is_read_only(tmp_path):
             "git_status_reports",
             "git_branch_preparations",
             "github_draft_prs",
+            "activation_requests",
+            "activation_decisions",
+            "reaction_spec_candidates",
+            "runtime_compatibility_checks",
         ]
     }
 

@@ -1,19 +1,21 @@
 # GENUS EGG
 
-GENUS EGG `v0.7.0` is a minimal, governed reaction organism backed by SQLite.
+GENUS EGG `v0.8.0` is a minimal, governed reaction organism backed by SQLite.
 It contains the consolidated EGG-v0 base, the v0.1 evaluation layer, the
 read-only Inspection Cockpit, Habitat Contract v1, and the SandboxPatch
-Boundary, EvidenceChain, Local GitConnector, and draft-only GitHubConnector.
+Boundary, EvidenceChain, Local GitConnector, draft-only GitHubConnector, and
+Activation Boundary.
 
 SQLite is the source of truth. The ledger is append-only. GENUS may remember,
 observe, draft, simulate, shadow-test, evaluate proposals, render local
 inspection snapshots, assess its habitat readiness, draft sandbox patch objects
 after explicit approval, read local Git status, and store deterministic local
 branch-preparation records. It can prepare a draft-only GitHub PR record when
-the Habitat explicitly allows GitHub and evidence is present. It still may not
-merge, auto-merge, create non-draft PRs, mutate issues, change labels or
-reviewers, touch secrets/permissions, start workers, call an LLM, or activate
-new runtime behavior.
+the Habitat explicitly allows GitHub and evidence is present. It can model
+activation requests and rejection decisions. It still may not merge, auto-merge,
+create non-draft PRs, mutate issues, change labels or reviewers, touch
+secrets/permissions, start workers, call an LLM, or activate new runtime
+behavior.
 
 ```text
 RawInput -> MeaningCandidate -> ValidationResult -> ReactionProduct -> MemoryObject
@@ -155,6 +157,17 @@ The v0.7 connector records the draft-PR boundary in SQLite. It does not create
 non-draft PRs, merge, auto-merge, mutate issues, change labels or reviewers,
 touch secrets/permissions, or activate anything.
 
+## Activation Boundary
+
+`genus-egg activation request --code-proposal <code_proposal_id>` models an
+activation request only after proposal, approval, evidence, and fitness records
+exist. The request remains `Status: blocked` with
+`Reason: rollback_data_missing`.
+
+`genus-egg activation reject --request <request_id>` stores a blocked
+`ActivationDecision`. Scores, PR records, merges, and approvals never activate
+runtime behavior by themselves.
+
 ## CLI
 
 All commands accept `--db PATH`; the default database is
@@ -186,6 +199,9 @@ genus-egg --db data/genus_egg.sqlite evidence list
 genus-egg --db data/genus_egg.sqlite git status
 genus-egg --db data/genus_egg.sqlite git prepare-branch --patch <patch_id>
 genus-egg --db data/genus_egg.sqlite github draft-pr --patch <patch_id>
+genus-egg --db data/genus_egg.sqlite activation request --code-proposal <code_proposal_id>
+genus-egg --db data/genus_egg.sqlite activation reject --request <request_id>
+genus-egg --db data/genus_egg.sqlite activation list
 ```
 
 The same commands can also be run as a module during local development:

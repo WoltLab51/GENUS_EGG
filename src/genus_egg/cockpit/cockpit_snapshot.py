@@ -25,6 +25,8 @@ class CockpitSnapshot:
     git_status_count: int
     git_preparation_count: int
     github_draft_pr_count: int
+    activation_request_count: int
+    activation_decision_count: int
     latest_habitat_id: str | None
     latest_fitness_score: int | None
     activation_state: str

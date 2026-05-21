@@ -4,6 +4,10 @@ import sqlite3
 from pathlib import Path
 from typing import Any
 
+from genus_egg.activation.activation_decision import ActivationDecision
+from genus_egg.activation.activation_request import ActivationRequest
+from genus_egg.activation.reaction_spec_candidate import ReactionSpecCandidate
+from genus_egg.activation.runtime_compatibility_check import RuntimeCompatibilityCheck
 from genus_egg.development.capability_proposal import CapabilityProposal
 from genus_egg.development.code_change_proposal import CodeChangeProposal
 from genus_egg.evaluation.fitness_evaluation import FitnessEvaluation
@@ -1282,6 +1286,174 @@ class SQLiteStore:
                 status=row["status"],
                 is_draft=bool(row["is_draft"]),
                 activation=row["activation"],
+                payload_json=row["payload_json"],
+                created_at=row["created_at"],
+            )
+            for row in rows
+        ]
+
+    def save_activation_request(self, request: ActivationRequest) -> None:
+        self.connection.execute(
+            """
+            INSERT INTO activation_requests
+            (activation_request_id, code_proposal_id, status, reason_code,
+             activation, payload_json, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                request.activation_request_id,
+                request.code_proposal_id,
+                request.status,
+                request.reason_code,
+                request.activation,
+                request.payload_json,
+                request.created_at,
+            ),
+        )
+        self.connection.commit()
+
+    def list_activation_requests(self) -> list[ActivationRequest]:
+        rows = self.connection.execute(
+            """
+            SELECT activation_request_id, code_proposal_id, status, reason_code,
+                   activation, payload_json, created_at
+            FROM activation_requests
+            ORDER BY created_at, rowid
+            """
+        ).fetchall()
+        return [
+            ActivationRequest(
+                activation_request_id=row["activation_request_id"],
+                code_proposal_id=row["code_proposal_id"],
+                status=row["status"],
+                reason_code=row["reason_code"],
+                activation=row["activation"],
+                payload_json=row["payload_json"],
+                created_at=row["created_at"],
+            )
+            for row in rows
+        ]
+
+    def save_activation_decision(self, decision: ActivationDecision) -> None:
+        self.connection.execute(
+            """
+            INSERT INTO activation_decisions
+            (activation_decision_id, activation_request_id, decision, status,
+             activation, rationale, payload_json, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                decision.activation_decision_id,
+                decision.activation_request_id,
+                decision.decision,
+                decision.status,
+                decision.activation,
+                decision.rationale,
+                decision.payload_json,
+                decision.created_at,
+            ),
+        )
+        self.connection.commit()
+
+    def list_activation_decisions(self) -> list[ActivationDecision]:
+        rows = self.connection.execute(
+            """
+            SELECT activation_decision_id, activation_request_id, decision, status,
+                   activation, rationale, payload_json, created_at
+            FROM activation_decisions
+            ORDER BY created_at, rowid
+            """
+        ).fetchall()
+        return [
+            ActivationDecision(
+                activation_decision_id=row["activation_decision_id"],
+                activation_request_id=row["activation_request_id"],
+                decision=row["decision"],
+                status=row["status"],
+                activation=row["activation"],
+                rationale=row["rationale"],
+                payload_json=row["payload_json"],
+                created_at=row["created_at"],
+            )
+            for row in rows
+        ]
+
+    def save_reaction_spec_candidate(self, candidate: ReactionSpecCandidate) -> None:
+        self.connection.execute(
+            """
+            INSERT INTO reaction_spec_candidates
+            (candidate_id, activation_request_id, name, status, payload_json,
+             created_at)
+            VALUES (?, ?, ?, ?, ?, ?)
+            """,
+            (
+                candidate.candidate_id,
+                candidate.activation_request_id,
+                candidate.name,
+                candidate.status,
+                candidate.payload_json,
+                candidate.created_at,
+            ),
+        )
+        self.connection.commit()
+
+    def list_reaction_spec_candidates(self) -> list[ReactionSpecCandidate]:
+        rows = self.connection.execute(
+            """
+            SELECT candidate_id, activation_request_id, name, status, payload_json,
+                   created_at
+            FROM reaction_spec_candidates
+            ORDER BY created_at, rowid
+            """
+        ).fetchall()
+        return [
+            ReactionSpecCandidate(
+                candidate_id=row["candidate_id"],
+                activation_request_id=row["activation_request_id"],
+                name=row["name"],
+                status=row["status"],
+                payload_json=row["payload_json"],
+                created_at=row["created_at"],
+            )
+            for row in rows
+        ]
+
+    def save_runtime_compatibility_check(
+        self, check: RuntimeCompatibilityCheck
+    ) -> None:
+        self.connection.execute(
+            """
+            INSERT INTO runtime_compatibility_checks
+            (compatibility_check_id, activation_request_id, status, reason_code,
+             payload_json, created_at)
+            VALUES (?, ?, ?, ?, ?, ?)
+            """,
+            (
+                check.compatibility_check_id,
+                check.activation_request_id,
+                check.status,
+                check.reason_code,
+                check.payload_json,
+                check.created_at,
+            ),
+        )
+        self.connection.commit()
+
+    def list_runtime_compatibility_checks(self) -> list[RuntimeCompatibilityCheck]:
+        rows = self.connection.execute(
+            """
+            SELECT compatibility_check_id, activation_request_id, status,
+                   reason_code, payload_json, created_at
+            FROM runtime_compatibility_checks
+            ORDER BY created_at, rowid
+            """
+        ).fetchall()
+        return [
+            RuntimeCompatibilityCheck(
+                compatibility_check_id=row["compatibility_check_id"],
+                activation_request_id=row["activation_request_id"],
+                status=row["status"],
+                reason_code=row["reason_code"],
                 payload_json=row["payload_json"],
                 created_at=row["created_at"],
             )

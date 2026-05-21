@@ -2,11 +2,11 @@
 
 ## Current Version
 
-- Package version: `0.7.0`
+- Package version: `0.8.0`
 - Architecture scope: EGG-v0 base plus Shadow/Fitness evaluation and read-only
   Inspection Cockpit, Habitat Contract v1, SandboxPatch Boundary, and
   EvidenceChain, Local GitConnector preparation records, and draft-only
-  GitHubConnector records
+  GitHubConnector records, plus Activation Boundary records
 - Persistence: SQLite is the only source of truth
 - Ledger: append-only
 
@@ -28,6 +28,8 @@
   records for approved sandbox patches
 - GitHubConnector: draft-PR-only records gated by Habitat, approval, local Git
   preparation, and passing evidence
+- Activation Boundary: blocked activation requests, reaction spec candidates,
+  compatibility checks, and explicit rejection decisions
 
 ## Draft-Safe Boundaries
 
@@ -68,6 +70,11 @@ GitHubConnector is draft-only. It is blocked by default through
 never merges, auto-merges, mutates issues, changes labels/reviewers, touches
 secrets/permissions, or activates code.
 
+Activation Boundary is modeling-only. Activation requests require proposal,
+approval, evidence, and fitness records, but remain blocked without rollback
+data. Activation decisions can reject a request; no decision path activates code
+in this version.
+
 ## Explicitly Not Present
 
 - no file modification by GENUS runtime
@@ -79,6 +86,7 @@ secrets/permissions, or activates code.
 - no non-draft pull request
 - no issue/label/reviewer automation
 - no autonomous activation
+- no activation without rollback data
 - no runtime self-modification
 - no write-capable dashboard
 - no LLM call

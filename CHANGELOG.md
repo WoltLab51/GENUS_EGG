@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.8.0 - 2026-05-21
+
+- Added Activation Boundary models: `ActivationRequest`,
+  `ActivationDecision`, `ReactionSpecCandidate`, and
+  `RuntimeCompatibilityCheck`.
+- Added SQLite tables for activation requests, decisions, candidates, and
+  compatibility checks.
+- Added `genus-egg activation request`, `genus-egg activation reject`, and
+  `genus-egg activation list`.
+- Required proposal, approval, evidence, and fitness records before activation
+  requests can be modeled.
+- Kept activation blocked without rollback data; scores, PR records, and
+  approvals activate nothing.
+
 ## 0.7.0 - 2026-05-21
 
 - Added draft-only GitHubConnector boundary.
