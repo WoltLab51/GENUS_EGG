@@ -382,6 +382,32 @@ class SQLiteStore:
             created_at=row["created_at"],
         )
 
+    def find_capability_need(
+        self, need_type: str, description: str
+    ) -> CapabilityNeed | None:
+        row = self.connection.execute(
+            """
+            SELECT need_id, source_observation_id, need_type, description, status,
+                   payload_json, created_at
+            FROM capability_needs
+            WHERE need_type = ? AND description = ?
+            ORDER BY created_at, rowid
+            LIMIT 1
+            """,
+            (need_type, description),
+        ).fetchone()
+        if row is None:
+            return None
+        return CapabilityNeed(
+            need_id=row["need_id"],
+            source_observation_id=row["source_observation_id"],
+            need_type=row["need_type"],
+            description=row["description"],
+            status=row["status"],
+            payload_json=row["payload_json"],
+            created_at=row["created_at"],
+        )
+
     def save_capability_proposal(self, proposal: CapabilityProposal) -> None:
         self.connection.execute(
             """

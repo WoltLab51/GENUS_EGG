@@ -1,7 +1,7 @@
 # Safety Boundaries
 
-These rules are hard boundaries for GENUS EGG v0 through the current phase
-`0.6`:
+These rules are hard boundaries for GENUS EGG through the current EGG v0.1
+PatternDetector phase:
 
 - No model writes directly.
 - No memory exists without a `MeaningCandidate`.
@@ -13,6 +13,7 @@ These rules are hard boundaries for GENUS EGG v0 through the current phase
 - SQLite is the source of truth.
 - The graph is projection, not truth.
 - The Development Boundary may create draft proposal objects only.
+- PatternDetector may create draft capability needs only.
 - `ApprovalGate` blocks file modification and activation.
 - Growth Simulation creates no patch and runs no Git.
 - There is no Development Core activation in this version.

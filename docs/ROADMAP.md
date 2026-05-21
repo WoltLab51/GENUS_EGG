@@ -59,6 +59,19 @@
   `ReactionSpec index_memory` because memory retrieval would benefit from it.
 - Status: completed in the phase 0.6 implementation.
 
+## EGG v0.1 - PatternDetector
+
+- Add PatternDetector.
+- Add first real CapabilityNeed detection from stored observations.
+- Definition of done: `genus-egg needs detect` can derive a draft memory
+  indexing need from successful memory-chain observations.
+- Status: completed in the EGG v0.1 PatternDetector implementation.
+
 ## Next Phase
 
-- Later phases are outside the current EGG-v0 document slice.
+## EGG v0.2 - ShadowTester and FitnessEvaluator
+
+- Add ShadowTester.
+- Add FitnessEvaluator.
+- Keep generated proposals inactive until explicit approval.
+- Status: next.

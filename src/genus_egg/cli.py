@@ -11,6 +11,7 @@ from genus_egg.development.development_boundary import (
 from genus_egg.habitat.environment_probe import EnvironmentProbe
 from genus_egg.kernel.reaction_kernel import ReactionKernel
 from genus_egg.maturation.maturation_seed import MaturationSeed
+from genus_egg.maturation.pattern_detector import PatternDetector
 from genus_egg.memory.memory_store import MemoryStore
 from genus_egg.truth.ledger import Ledger
 from genus_egg.truth.sqlite_store import SQLiteStore
@@ -42,7 +43,7 @@ def build_parser() -> argparse.ArgumentParser:
     needs.add_argument(
         "action",
         nargs="?",
-        choices=["list", "draft-memory-indexing"],
+        choices=["list", "draft-memory-indexing", "detect"],
         default="list",
     )
 
@@ -135,6 +136,18 @@ def main(argv: list[str] | None = None) -> int:
                 print(f"Need: {need.need_id}")
                 print(f"Status: {need.status}")
                 print(f"Activation: none")
+                return 0
+
+            if args.action == "detect":
+                need = PatternDetector(store).detect_memory_indexing_need()
+                if need is None:
+                    print("PatternDetector: no capability need detected")
+                    return 0
+
+                print(f"PatternDetector detected: {need.description}")
+                print(f"Need: {need.need_id}")
+                print(f"Status: {need.status}")
+                print("Activation: none")
                 return 0
 
             for need in store.list_capability_needs():

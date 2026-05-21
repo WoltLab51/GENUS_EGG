@@ -9,8 +9,8 @@ RawInput -> MeaningCandidate -> ValidationResult -> ReactionProduct -> MemoryObj
 ```
 
 The current system also records Habitat, Maturation Seed, Development Boundary,
-and Growth Simulation artifacts, but it does not activate new capabilities or
-modify code.
+Growth Simulation, and first PatternDetector artifacts, but it does not activate
+new capabilities or modify code.
 
 ## CLI
 
@@ -21,6 +21,8 @@ modify code.
 - `genus-egg observations` lists maturation observations.
 - `genus-egg needs draft-memory-indexing` creates a deterministic draft
   capability need without activation.
+- `genus-egg needs detect` uses the PatternDetector to derive a draft
+  `CapabilityNeed` from stored observations.
 - `genus-egg proposals draft-memory-indexing --need NEED_ID` creates draft-only
   development proposal objects without activation.
 - `genus-egg growth simulate-memory-indexing --need NEED_ID` explains a
@@ -85,3 +87,9 @@ or automatic activation is allowed.
 GENUS can explain: `Ich schlage eine neue ReactionSpec index_memory vor, weil Memory-Retrieval später davon profitieren könnte.`
 The simulation stores only draft proposal objects and a test plan. It creates no
 patch, runs no Git command, and does not register or activate a runtime reaction.
+
+## PatternDetector EGG v0.1
+
+The PatternDetector scans existing `ObservationRecord` data and can derive the
+draft memory indexing `CapabilityNeed` from observed successful memory chains.
+It does not activate the need, write code, create patches, or run Git.

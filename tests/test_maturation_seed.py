@@ -4,6 +4,7 @@ import json
 
 from genus_egg.kernel.reaction_kernel import ReactionKernel
 from genus_egg.maturation.maturation_seed import MaturationSeed
+from genus_egg.maturation.pattern_detector import PatternDetector
 from genus_egg.truth.ledger import Ledger
 from genus_egg.truth.sqlite_store import SQLiteStore
 
@@ -54,4 +55,42 @@ def test_capability_need_can_be_created_as_draft_without_activation(tmp_path):
     assert need.description == "Memory retrieval could improve through indexing."
     assert need.status == "draft"
     assert "activation" not in json.loads(need.payload_json or "{}")
+    store.close()
+
+
+def test_pattern_detector_detects_memory_indexing_need_from_observation(tmp_path):
+    store = SQLiteStore(tmp_path / "genus.sqlite")
+    ledger = Ledger(store)
+    ReactionKernel(store, ledger).remember("larumipsum")
+
+    need = PatternDetector(store).detect_memory_indexing_need()
+    needs = store.list_capability_needs()
+
+    assert need is not None
+    assert len(needs) == 1
+    assert needs[0] == need
+    assert need.source_observation_id == store.list_observation_records()[-1].observation_id
+    assert need.status == "draft"
+    assert need.description == "Memory retrieval could improve through indexing."
+    store.close()
+
+
+def test_pattern_detector_returns_none_without_observations(tmp_path):
+    store = SQLiteStore(tmp_path / "genus.sqlite")
+
+    assert PatternDetector(store).detect_memory_indexing_need() is None
+    assert store.list_capability_needs() == []
+    store.close()
+
+
+def test_pattern_detector_reuses_existing_need(tmp_path):
+    store = SQLiteStore(tmp_path / "genus.sqlite")
+    ledger = Ledger(store)
+    ReactionKernel(store, ledger).remember("larumipsum")
+
+    first = PatternDetector(store).detect_memory_indexing_need()
+    second = PatternDetector(store).detect_memory_indexing_need()
+
+    assert first == second
+    assert len(store.list_capability_needs()) == 1
     store.close()
