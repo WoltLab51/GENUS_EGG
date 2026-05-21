@@ -1,12 +1,13 @@
-# GENUS EGG 1.0 Spec
+# GENUS EGG 2.0 Spec
 
 ## Goal
 
-GENUS EGG `1.0.0` consolidates the complete first EGG slice for Desktop/Server
-Habitats. It includes the EGG-v0 Reaction Core, v0.1 Shadow/Fitness evaluation,
-read-only Inspection Cockpit, Habitat Contract v1, SandboxPatch Boundary,
-EvidenceChain, Local GitConnector, draft-only GitHubConnector, Activation
-Boundary, and Monitoring/Fossilization/Rollback.
+GENUS EGG `2.0.0` builds on the complete first EGG slice and adds the first
+controlled capability activation: `index_memory`. It includes the EGG-v0
+Reaction Core, v0.1 Shadow/Fitness evaluation, read-only Inspection Cockpit,
+Habitat Contract v1, SandboxPatch Boundary, EvidenceChain, Local GitConnector,
+draft-only GitHubConnector, Activation Boundary,
+Monitoring/Fossilization/Rollback, and deterministic SQLite memory indexing.
 
 The system may remember deterministic user input, persist its local habitat,
 record maturation observations, draft capability needs, draft development
@@ -17,8 +18,9 @@ store deterministic branch-preparation records. It must not push, merge,
 rebase, force-push, run GitHub actions, execute arbitrary commands, register
 new runtime reactions, or activate new capabilities. GitHub remains blocked by
 default and draft-only when explicitly allowed. Activation remains modeled and
-blocked. Rollback, monitoring, and fossilization add evidence and history
-without live runtime mutation.
+blocked except for the explicitly approved `index_memory` capability. Rollback,
+monitoring, and fossilization add evidence and history without live core
+rewrites.
 
 ```text
 RawInput -> MeaningCandidate -> ValidationResult -> ReactionProduct -> MemoryObject
@@ -72,7 +74,13 @@ CapabilityNeed -> CapabilityProposal -> CodeChangeProposal
   records exist.
 - `genus-egg activation reject --request REQUEST_ID` stores a blocked rejection
   decision.
+- `genus-egg activation approve --request REQUEST_ID` approves only the
+  `index_memory` candidate, creates an active capability record, and backfills
+  the SQLite memory index.
 - `genus-egg activation list` lists stored activation requests.
+- `genus-egg memory index-status` shows index activation and indexed counts.
+- `genus-egg memory search QUERY` searches deterministic SQLite memory index
+  entries.
 - `genus-egg rollback plan --code-proposal CODE_PROPOSAL_ID` stores a rollback
   plan.
 - `genus-egg monitor capability --code-proposal CODE_PROPOSAL_ID` stores a
@@ -395,9 +403,35 @@ GENUS EGG 1.0 cannot:
 - use GitHub without explicit Habitat permission and prerequisites
 - let scores, PRs, merges, approvals, or evidence activate code by themselves
 
+## First Controlled Capability Activation 2.0
+
+GENUS EGG 2.0 activates only `index_memory`.
+
+Approval requires:
+
+- `ActivationRequest.status=review_required`
+- a `ReactionSpecCandidate` named `index_memory`
+- a `RollbackPlan`
+- explicit CLI command `activation approve --request REQUEST_ID`
+
+Approval stores:
+
+- `ActivationDecision(decision=approved, activation=active)`
+- `CapabilityActivation(status=active, activation=active)`
+- `MemoryIndexEntry` records for all existing memories through synchronous
+  backfill
+
+After activation, successful `remember` calls save the `MemoryObject` and then
+add a SQLite `MemoryIndexEntry`. This does not add ledger entries; a successful
+`remember` chain remains fixed at seven ledger entries.
+
+Memory search is deterministic and SQLite-only. There are no embeddings, vector
+stores, GraphDBs, LLM calls, background workers, GitHub actions, or arbitrary
+capability activation.
+
 ## Persistence
 
-The `1.0.0` schema contains:
+The `2.0.0` schema contains:
 
 - `raw_inputs`
 - `meaning_candidates`
@@ -405,6 +439,7 @@ The `1.0.0` schema contains:
 - `reactions`
 - `reaction_products`
 - `memory_objects`
+- `memory_index_entries`
 - `ledger_entries`
 - `habitat_manifest`
 - `resource_snapshots`
@@ -460,3 +495,5 @@ SQLite is the only source of truth. JSON payloads are stored as text.
   monitors, and fossil records.
 - Package `1.0.0`: Complete first EGG consolidation with end-to-end demo,
   capability matrix, and post-1.0 roadmap.
+- Package `2.0.0`: First controlled `index_memory` activation with SQLite
+  memory index and deterministic CLI search.

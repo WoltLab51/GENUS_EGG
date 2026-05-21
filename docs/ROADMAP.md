@@ -2,14 +2,15 @@
 
 ## Current Version
 
-- Package version: `1.0.0`
-- Architecture level: Complete first EGG for Desktop/Server Habitats.
+- Package version: `2.0.0`
+- Architecture level: Complete first EGG plus first controlled capability
+  activation.
 - Current boundary: draft needs, proposals, shadow plans, fitness scores,
   cockpit projections, readiness reports, patch draft records, and evidence
   records only; local Git status, preparation records, and draft-only GitHub PR
   records are allowed when gated, but no merge, auto-merge, non-draft PR,
-  issue mutation, worker, autonomous activation, live core rewrite, or truth
-  deletion.
+  issue mutation, worker, autonomous activation, live core rewrite, arbitrary
+  capability activation, or truth deletion.
 
 ## Completed Phases
 
@@ -155,7 +156,16 @@
 - Mark post-1.0 topics separately.
 - Status: completed in current v1.0 work.
 
-## Post-1.0 Topics
+## GENUS EGG v2.0 - First Controlled Capability Activation
+
+- Activate only `index_memory` through explicit CLI approval.
+- Backfill existing memories into SQLite `memory_index_entries`.
+- Index new memories after activation without changing the seven-entry
+  `remember` ledger chain.
+- Add deterministic CLI memory search.
+- Status: completed in current v2.0 work.
+
+## Post-2.0 Topics
 
 - richer physiology and resource economy
 - stronger local inspection Cockpit
@@ -163,3 +173,4 @@
 - multi-Habitat sync
 - more formal approval language
 - social/coordination dynamics between Habitats
+- semantic search and embeddings only after a separate safety plan

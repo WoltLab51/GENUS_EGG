@@ -66,6 +66,15 @@ CREATE TABLE IF NOT EXISTS memory_objects (
     created_at TEXT NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS memory_index_entries (
+    index_entry_id TEXT PRIMARY KEY,
+    memory_id TEXT NOT NULL UNIQUE,
+    normalized_content TEXT NOT NULL,
+    tokens_json TEXT NOT NULL,
+    source TEXT NOT NULL,
+    created_at TEXT NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS ledger_entries (
     ledger_id TEXT PRIMARY KEY,
     chain_id TEXT NOT NULL,

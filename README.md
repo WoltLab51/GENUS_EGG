@@ -1,6 +1,9 @@
 # GENUS EGG
 
-GENUS EGG `1.0.0` is a complete first EGG: a minimal, governed reaction
+GENUS EGG `2.0.0` is a governed reaction organism backed by SQLite. Version
+2.0 adds the first controlled capability activation: `index_memory`.
+
+GENUS EGG 1.0 established the complete first EGG: a minimal, governed reaction
 organism backed by SQLite. It can react, remember, observe, inspect its Habitat,
 form draft needs and proposals, plan shadow tests, evaluate fitness, prepare
 SandboxPatch records after approval, store evidence, prepare local Git and
@@ -13,12 +16,13 @@ inspection snapshots, assess its habitat readiness, draft sandbox patch objects
 after explicit approval, read local Git status, and store deterministic local
 branch-preparation records. It can prepare a draft-only GitHub PR record when
 the Habitat explicitly allows GitHub and evidence is present. It can model
-activation requests and rejection decisions. It still may not merge, auto-merge,
-create non-draft PRs, mutate issues, change labels or reviewers, touch
-secrets/permissions, start workers, call an LLM, or activate new runtime
-behavior.
+activation requests and rejection decisions. In 2.0, GENUS may activate only
+`index_memory`, only through explicit CLI approval, and only after rollback data
+exists. It still may not merge, auto-merge, create non-draft PRs, mutate issues,
+change labels or reviewers, touch secrets/permissions, start workers, call an
+LLM, activate arbitrary capabilities, or rewrite its active core live.
 
-The 1.0 rule remains:
+The core rule remains:
 
 ```text
 GENUS merged nicht eigenmaechtig,
@@ -162,7 +166,7 @@ Habitat record allows GitHub, the connector still requires a `SandboxPatch`,
 local branch preparation, and passing Evidence before it stores a
 `GitHubDraftPr`.
 
-The v0.7 connector records the draft-PR boundary in SQLite. It does not create
+The GitHub connector records the draft-PR boundary in SQLite. It does not create
 non-draft PRs, merge, auto-merge, mutate issues, change labels or reviewers,
 touch secrets/permissions, or activate anything.
 
@@ -176,6 +180,23 @@ exist. The request remains `Status: blocked` with
 `genus-egg activation reject --request <request_id>` stores a blocked
 `ActivationDecision`. Scores, PR records, merges, and approvals never activate
 runtime behavior by themselves.
+
+`genus-egg activation approve --request <request_id>` is the first active
+capability gate. It allows only the `index_memory` candidate, requires a
+`review_required` activation request and a `RollbackPlan`, stores an approved
+decision, creates an active `CapabilityActivation`, and backfills the memory
+index.
+
+## Memory Indexing
+
+After `index_memory` is approved, existing memories are indexed once and new
+`remember` calls are indexed automatically after `MemoryObject` storage. This
+index is SQLite-only and deterministic: no embeddings, no vector store, no
+network, and no LLM.
+
+`genus-egg memory search "query"` searches indexed memories. `genus-egg memory
+index-status` shows whether indexing is active and how many memories are
+indexed.
 
 ## Monitoring, Fossilization, And Rollback
 
@@ -224,7 +245,10 @@ genus-egg --db data/genus_egg.sqlite git prepare-branch --patch <patch_id>
 genus-egg --db data/genus_egg.sqlite github draft-pr --patch <patch_id>
 genus-egg --db data/genus_egg.sqlite activation request --code-proposal <code_proposal_id>
 genus-egg --db data/genus_egg.sqlite activation reject --request <request_id>
+genus-egg --db data/genus_egg.sqlite activation approve --request <request_id>
 genus-egg --db data/genus_egg.sqlite activation list
+genus-egg --db data/genus_egg.sqlite memory index-status
+genus-egg --db data/genus_egg.sqlite memory search "larum"
 genus-egg --db data/genus_egg.sqlite rollback plan --code-proposal <code_proposal_id>
 genus-egg --db data/genus_egg.sqlite rollback list
 genus-egg --db data/genus_egg.sqlite monitor capability --code-proposal <code_proposal_id>

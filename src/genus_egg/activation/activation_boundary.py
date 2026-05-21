@@ -8,6 +8,8 @@ from genus_egg.activation.reaction_spec_candidate import ReactionSpecCandidate
 from genus_egg.activation.runtime_compatibility_check import RuntimeCompatibilityCheck
 from genus_egg.evaluation.shadow_tester import CodeChangeProposalNotFoundError
 from genus_egg.ids import new_id
+from genus_egg.lifecycle.capability_activation import CapabilityActivation
+from genus_egg.memory.memory_indexer import MemoryIndexer
 from genus_egg.time import utc_now
 from genus_egg.truth.sqlite_store import SQLiteStore
 
@@ -17,6 +19,10 @@ class ActivationPrerequisiteError(RuntimeError):
 
 
 class ActivationRequestNotFoundError(RuntimeError):
+    pass
+
+
+class ActivationApprovalError(RuntimeError):
     pass
 
 
@@ -126,6 +132,64 @@ class ActivationBoundary:
         self.store.save_activation_decision(decision)
         return decision
 
+    def approve(
+        self, activation_request_id: str
+    ) -> tuple[ActivationDecision, CapabilityActivation, int]:
+        request = self._find_request(activation_request_id)
+        if request.status != "review_required":
+            raise ActivationApprovalError("ActivationRequest must be review_required")
+
+        candidate = self._find_candidate(activation_request_id)
+        if candidate.name != "index_memory":
+            raise ActivationApprovalError("Only index_memory can be activated")
+
+        rollback_plan = self._latest_rollback_plan(request.code_proposal_id)
+        if rollback_plan is None:
+            raise ActivationApprovalError("RollbackPlan required")
+
+        decision = ActivationDecision(
+            activation_decision_id=new_id("activationdecision"),
+            activation_request_id=activation_request_id,
+            decision="approved",
+            status="final",
+            activation="active",
+            rationale="Explicit CLI approval activated index_memory.",
+            payload_json=json.dumps(
+                {
+                    "capability": "index_memory",
+                    "runtime_change": "controlled_capability_activation",
+                    "live_core_rewrite": False,
+                    "backfill": "required",
+                },
+                sort_keys=True,
+            ),
+            created_at=utc_now(),
+        )
+        self.store.save_activation_decision(decision)
+
+        activation = CapabilityActivation(
+            capability_activation_id=new_id("capactivation"),
+            activation_request_id=activation_request_id,
+            code_proposal_id=request.code_proposal_id,
+            rollback_plan_id=rollback_plan.rollback_plan_id,
+            status="active",
+            activation="active",
+            payload_json=json.dumps(
+                {
+                    "capability": "index_memory",
+                    "approved_decision_id": decision.activation_decision_id,
+                    "autonomous": False,
+                    "merge": "none",
+                    "github": "none",
+                },
+                sort_keys=True,
+            ),
+            created_at=utc_now(),
+        )
+        self.store.save_capability_activation(activation)
+        indexed_count = MemoryIndexer(self.store).backfill()
+        return decision, activation, indexed_count
+
     def _has_fitness(self, code_proposal_id: str) -> bool:
         return any(
             evaluation.code_proposal_id == code_proposal_id
@@ -145,3 +209,31 @@ class ActivationBoundary:
             if plan.code_proposal_id == code_proposal_id
         ]
         return plans[-1] if plans else None
+
+    def _find_request(self, activation_request_id: str) -> ActivationRequest:
+        request = next(
+            (
+                item
+                for item in self.store.list_activation_requests()
+                if item.activation_request_id == activation_request_id
+            ),
+            None,
+        )
+        if request is None:
+            raise ActivationRequestNotFoundError(
+                f"ActivationRequest not found: {activation_request_id}"
+            )
+        return request
+
+    def _find_candidate(self, activation_request_id: str) -> ReactionSpecCandidate:
+        candidate = next(
+            (
+                item
+                for item in self.store.list_reaction_spec_candidates()
+                if item.activation_request_id == activation_request_id
+            ),
+            None,
+        )
+        if candidate is None:
+            raise ActivationApprovalError("ReactionSpecCandidate required")
+        return candidate

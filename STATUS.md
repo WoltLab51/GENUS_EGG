@@ -2,8 +2,9 @@
 
 ## Current Version
 
-- Package version: `1.0.0`
-- Architecture scope: Complete first EGG for Desktop/Server Habitats
+- Package version: `2.0.0`
+- Architecture scope: Complete first EGG plus controlled `index_memory`
+  capability activation
 - Persistence: SQLite is the only source of truth
 - Ledger: append-only
 
@@ -29,10 +30,11 @@
   compatibility checks, and explicit rejection decisions
 - Monitoring/Fossilization/Rollback: rollback plans, blocked capability
   activation records, capability monitors, and fossil records
+- Memory Indexing: first controlled active capability, explicit approval only
 
 ## Capability Matrix
 
-| Capability | 1.0 status | Boundary |
+| Capability | 2.0 status | Boundary |
 | --- | --- | --- |
 | Memory reaction | active | deterministic `remember`, seven ledger entries |
 | Ledger | active | append-only |
@@ -53,6 +55,7 @@
 | RollbackPlan | record | no automatic rollback execution |
 | Monitoring | record | observes only |
 | Fossilization | record | deletes no truth |
+| Memory indexing | active after approval | only `index_memory`, SQLite-only |
 
 ## Draft-Safe Boundaries
 
@@ -99,9 +102,14 @@ data. Activation decisions can reject a request; no decision path activates code
 in this version.
 
 Rollback plans are required before an activation request can move from
-`blocked` to `review_required`. CapabilityActivation records remain blocked.
-Monitoring records outcomes and boundary violations. Fossilization marks
-history without deleting SQLite truth.
+`blocked` to `review_required`. CapabilityActivation records remain blocked
+except the explicitly approved `index_memory` capability. Monitoring records
+outcomes and boundary violations. Fossilization marks history without deleting
+SQLite truth.
+
+Memory indexing is the only active 2.0 capability. It requires
+`activation approve`, a `review_required` request, a `RollbackPlan`, and the
+`index_memory` candidate. Backfill is synchronous and stored in SQLite.
 
 ## Explicitly Not Present
 
@@ -114,11 +122,12 @@ history without deleting SQLite truth.
 - no non-draft pull request
 - no issue/label/reviewer automation
 - no autonomous activation
-- no activation without rollback data
+- no activation without rollback data and explicit CLI approval
 - no deletion of truth during fossilization
 - no runtime self-modification
 - no write-capable dashboard
 - no LLM call
+- no vector store
 
 ## Verification
 

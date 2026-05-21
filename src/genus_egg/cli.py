@@ -5,6 +5,7 @@ from pathlib import Path
 
 from genus_egg import __version__
 from genus_egg.activation.activation_boundary import (
+    ActivationApprovalError,
     ActivationBoundary,
     ActivationPrerequisiteError,
     ActivationRequestNotFoundError,
@@ -39,6 +40,8 @@ from genus_egg.lifecycle.lifecycle_boundary import (
 from genus_egg.maturation.maturation_seed import MaturationSeed
 from genus_egg.maturation.pattern_detector import PatternDetector
 from genus_egg.memory.memory_store import MemoryStore
+from genus_egg.memory.memory_indexer import MemoryIndexer
+from genus_egg.memory.memory_search import MemorySearch
 from genus_egg.patching.sandbox_patch_boundary import (
     PatchApprovalRequiredError,
     PatchPathBlockedError,
@@ -139,10 +142,14 @@ def build_parser() -> argparse.ArgumentParser:
     github.add_argument("--repository", default="origin")
 
     activation = subparsers.add_parser("activation", help="Model activation requests")
-    activation.add_argument("action", choices=["request", "reject", "list"])
+    activation.add_argument("action", choices=["request", "reject", "approve", "list"])
     activation.add_argument("--code-proposal")
     activation.add_argument("--request")
     activation.add_argument("--rationale", default="Rejected by explicit boundary.")
+
+    memory = subparsers.add_parser("memory", help="Search or inspect memory index")
+    memory.add_argument("action", choices=["search", "index-status"])
+    memory.add_argument("query", nargs="?")
 
     rollback = subparsers.add_parser("rollback", help="Create or list rollback plans")
     rollback.add_argument("action", choices=["plan", "list"])
@@ -529,6 +536,24 @@ def main(argv: list[str] | None = None) -> int:
                 print(f"Activation: {decision.activation}")
                 return 0
 
+            if args.action == "approve":
+                if not args.request:
+                    print("Missing required --request REQUEST_ID")
+                    return 2
+                try:
+                    decision, activation, indexed_count = boundary.approve(args.request)
+                except (ActivationRequestNotFoundError, ActivationApprovalError) as error:
+                    print(str(error))
+                    return 1
+                print(f"ActivationDecision: {decision.activation_decision_id}")
+                print(f"CapabilityActivation: {activation.capability_activation_id}")
+                print(f"Request: {decision.activation_request_id}")
+                print("Capability: index_memory")
+                print(f"Status: {activation.status}")
+                print(f"Activation: {activation.activation}")
+                print(f"Backfilled: {indexed_count}")
+                return 0
+
             for request in store.list_activation_requests():
                 print(
                     f"{request.activation_request_id}\t{request.code_proposal_id}\t"
@@ -619,6 +644,28 @@ def main(argv: list[str] | None = None) -> int:
                 print(
                     f"{fossil.fossil_record_id}\t{fossil.source_kind}:"
                     f"{fossil.source_id}\t{fossil.status}"
+                )
+            return 0
+
+        if args.command == "memory":
+            if args.action == "index-status":
+                indexer = MemoryIndexer(store)
+                print(f"Active: {str(indexer.is_active()).lower()}")
+                print(f"Memories: {len(store.list_memory_objects())}")
+                print(f"Indexed: {len(store.list_memory_index_entries())}")
+                return 0
+
+            if not args.query:
+                print("Missing required query")
+                return 2
+            results = MemorySearch(store).search(args.query)
+            if not results:
+                print("No memories found")
+                return 0
+            for result in results:
+                print(
+                    f"{result.memory.memory_id}\t{result.memory.content}\t"
+                    f"match={result.match}"
                 )
             return 0
 

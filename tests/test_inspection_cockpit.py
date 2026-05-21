@@ -73,7 +73,7 @@ def _populate_cockpit_fixture(store: SQLiteStore) -> None:
     activation_request, _, _ = ActivationBoundary(store).request(
         code_proposal.code_proposal_id
     )
-    capability_activation = lifecycle.record_activation_candidate(
+    _, capability_activation, _ = ActivationBoundary(store).approve(
         activation_request.activation_request_id
     )
     lifecycle.monitor(code_proposal.code_proposal_id)
@@ -81,9 +81,6 @@ def _populate_cockpit_fixture(store: SQLiteStore) -> None:
         "capability_activation",
         capability_activation.capability_activation_id,
         "Inspection fixture fossil.",
-    )
-    ActivationBoundary(store).reject(
-        activation_request.activation_request_id, "Not ready for activation."
     )
     assert result.ledger_entries == 7
 
@@ -95,6 +92,7 @@ def test_cockpit_data_adapter_reads_all_relevant_object_counts(tmp_path):
     snapshot = CockpitDataAdapter(store).snapshot()
 
     assert snapshot.memory_count == 1
+    assert snapshot.memory_index_entry_count == 1
     assert snapshot.ledger_entry_count == 7
     assert snapshot.habitat_manifest_count == 2
     assert snapshot.resource_snapshot_count == 1
@@ -122,7 +120,7 @@ def test_cockpit_data_adapter_reads_all_relevant_object_counts(tmp_path):
     assert snapshot.fossil_record_count == 1
     assert snapshot.latest_habitat_id is not None
     assert snapshot.latest_fitness_score is not None
-    assert snapshot.activation_state == "blocked"
+    assert snapshot.activation_state == "active"
     store.close()
 
 
@@ -133,6 +131,7 @@ def test_cockpit_adapter_is_read_only(tmp_path):
         table: store.count_rows(table)
         for table in [
             "memory_objects",
+            "memory_index_entries",
             "ledger_entries",
             "habitat_manifest",
             "resource_snapshots",
@@ -184,7 +183,7 @@ def test_cockpit_html_renderer_is_read_only_and_shows_boundaries(tmp_path):
     assert "GENUS EGG Inspection Cockpit" in html
     assert "Memories" in html
     assert "Ledger Entries" in html
-    assert "Activation: blocked" in html
+    assert "Activation: active" in html
     assert "Mode: read-only" in html
     assert store.count_rows("fitness_evaluations") == before
     store.close()

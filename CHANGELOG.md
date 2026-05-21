@@ -1,5 +1,17 @@
 # Changelog
 
+## 2.0.0 - 2026-05-21
+
+- Added first controlled capability activation for `index_memory`.
+- Added `memory_index_entries` SQLite table and deterministic memory indexing.
+- Added `MemoryIndexEntry`, `MemoryIndexer`, and `MemorySearch`.
+- Added `genus-egg activation approve --request REQUEST_ID`.
+- Added `genus-egg memory index-status` and `genus-egg memory search "query"`.
+- Backfilled existing memories on approval and indexed new memories after
+  activation while preserving `remember` at seven ledger entries.
+- Kept activation narrow: only `index_memory`, explicit CLI approval, no LLM,
+  no vector store, no Git/GitHub action, and no live core rewrite.
+
 ## 1.0.0 - 2026-05-21
 
 - Released the complete GENUS EGG 1.0 slice for Desktop/Server Habitats.

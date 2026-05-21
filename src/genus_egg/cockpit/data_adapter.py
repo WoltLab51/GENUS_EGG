@@ -16,6 +16,7 @@ class CockpitDataAdapter:
         latest_fitness = fitness_evaluations[-1] if fitness_evaluations else None
         return CockpitSnapshot(
             memory_count=len(self.store.list_memory_objects()),
+            memory_index_entry_count=len(self.store.list_memory_index_entries()),
             ledger_entry_count=len(self.store.list_ledger_entries()),
             habitat_manifest_count=self.store.count_rows("habitat_manifest"),
             resource_snapshot_count=len(self.store.list_resource_snapshots()),
@@ -45,5 +46,15 @@ class CockpitDataAdapter:
             fossil_record_count=len(self.store.list_fossil_records()),
             latest_habitat_id=latest_habitat.habitat_id if latest_habitat else None,
             latest_fitness_score=latest_fitness.score if latest_fitness else None,
-            activation_state="blocked",
+            activation_state=self._activation_state(),
+        )
+
+    def _activation_state(self) -> str:
+        return (
+            "active"
+            if any(
+                activation.activation == "active"
+                for activation in self.store.list_capability_activations()
+            )
+            else "blocked"
         )

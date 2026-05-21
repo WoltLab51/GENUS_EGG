@@ -9,6 +9,7 @@ class CockpitHtmlRenderer:
     def render(self, snapshot: CockpitSnapshot) -> str:
         rows = [
             ("Memories", snapshot.memory_count),
+            ("Memory Index Entries", snapshot.memory_index_entry_count),
             ("Ledger Entries", snapshot.ledger_entry_count),
             ("Habitat Manifests", snapshot.habitat_manifest_count),
             ("Resource Snapshots", snapshot.resource_snapshot_count),

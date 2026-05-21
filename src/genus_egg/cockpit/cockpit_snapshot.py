@@ -6,6 +6,7 @@ from dataclasses import dataclass
 @dataclass(frozen=True)
 class CockpitSnapshot:
     memory_count: int
+    memory_index_entry_count: int
     ledger_entry_count: int
     habitat_manifest_count: int
     resource_snapshot_count: int

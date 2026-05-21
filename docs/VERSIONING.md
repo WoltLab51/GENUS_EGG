@@ -5,15 +5,16 @@ labels for architecture milestones from the concept document.
 
 ## Current State
 
-- Package version: `1.0.0`
-- Architecture level: Complete first EGG for Desktop/Server Habitats
+- Package version: `2.0.0`
+- Architecture level: Complete first EGG plus first controlled capability
+  activation
 - Current boundary: draft needs, proposals, shadow plans, fitness scores,
   cockpit projections, readiness reports, patch draft records, and evidence
   records only; local Git status and preparation records are allowed, but no
   push, merge, rebase, non-draft GitHub action, autonomous activation, or
   runtime self-modification
-- Next architecture target: post-1.0 physiology, resource economy,
-  distributed Habitats, and stronger inspection surfaces
+- Next architecture target: post-2.0 physiology, resource economy,
+  distributed Habitats, stronger inspection surfaces, and richer memory search
 
 ## History
 
@@ -37,10 +38,12 @@ labels for architecture milestones from the concept document.
 - `0.9.0`: Rollback plans, blocked capability activations, capability monitors,
   and fossil records.
 - `1.0.0`: Complete first EGG consolidation for Desktop/Server Habitats.
+- `2.0.0`: First controlled capability activation for SQLite-backed
+  `index_memory`.
 
 ## Boundary
 
-Version `1.0.0` may create memories through the deterministic Reaction Core,
+Version `2.0.0` may create memories through the deterministic Reaction Core,
 may create draft needs, draft proposals, shadow test plans, and fitness
 evaluations, may render read-only cockpit snapshots, and may store resource and
 readiness records. It may create draft patch records after approval, read local
@@ -51,4 +54,6 @@ capability activation records, monitoring records, and fossil records. It must
 not create non-draft PRs, merge, auto-merge, mutate issues, change labels or
 reviewers, touch secrets/permissions, activate runtime reactions, start
 agents/workers, call an LLM, run arbitrary shell commands, introduce
-vector/graph storage, or delete truth during fossilization.
+vector/graph storage, or delete truth during fossilization. It may activate only
+`index_memory` through explicit CLI approval after rollback data exists; memory
+indexing is deterministic and SQLite-only.

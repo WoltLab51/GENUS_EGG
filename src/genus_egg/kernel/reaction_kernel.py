@@ -17,6 +17,7 @@ from genus_egg.kernel.reaction_registry import ReactionRegistry
 from genus_egg.kernel.reaction_spec import ReactionSpec
 from genus_egg.kernel.working_set import WorkingSet
 from genus_egg.maturation.maturation_seed import MaturationSeed
+from genus_egg.memory.memory_indexer import MemoryIndexer
 from genus_egg.memory.memory_object import MemoryObject
 from genus_egg.semantics.raw_input import RawInput
 from genus_egg.semantics.semantic_parse_adapter import SemanticParseAdapter
@@ -238,6 +239,7 @@ class ReactionKernel:
 
         if reaction_name == "create_memory":
             self.store.save_memory_object(product)
+            MemoryIndexer(self.store).index_memory(product)
             self.ledger.record(
                 chain_id=product.chain_id,
                 event_type="memory_object_created",

@@ -1,6 +1,6 @@
 # Safety Boundaries
 
-These rules are hard boundaries for GENUS EGG package version `1.0.0`.
+These rules are hard boundaries for GENUS EGG package version `2.0.0`.
 
 - No model writes directly.
 - No memory exists without a `MeaningCandidate`.
@@ -37,9 +37,13 @@ These rules are hard boundaries for GENUS EGG package version `1.0.0`.
 - Scores, PR records, merges, approvals, and evidence never activate code by
   themselves.
 - Rollback plans are records and do not execute rollback by themselves.
-- CapabilityActivation records remain blocked in this version.
+- CapabilityActivation records remain blocked except the explicitly approved
+  `index_memory` activation.
 - Monitoring observes outcomes and boundary violations only.
 - Fossilization records history and must not delete truth.
+- `index_memory` is the only activatable capability in this version.
+- `index_memory` requires explicit CLI approval and rollback data.
+- Memory indexing is SQLite-only: no LLM, no vector store, no GraphDB.
 - `ApprovalGate` blocks file modification and activation.
 - Growth Simulation creates no patch and runs no Git.
 - Shadow Testing executes no code and writes no files.

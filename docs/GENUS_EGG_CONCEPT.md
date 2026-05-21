@@ -9,8 +9,8 @@ Signal -> Meaning -> Validation -> Reaction -> Product -> Memory -> Ledger
 ```
 
 The model may interpret in later versions. GENUS decides through governed,
-deterministic reaction rules. The current `v0.1.0` EGG contains a stable core
-and its first evaluation layer:
+deterministic reaction rules. The current `2.0.0` EGG contains a stable core,
+its evaluation layer, and the first controlled active capability:
 
 - a Reaction Core that turns approved inputs into artifacts,
 - a Habitat Core that observes local boundaries without acting,
@@ -18,10 +18,14 @@ and its first evaluation layer:
 - a Development Boundary that creates draft proposals but blocks activation,
 - a ShadowTester that plans static checks without executing code,
 - a FitnessEvaluator that scores proposals without activating them,
+- an Activation Boundary that can approve only `index_memory` after explicit
+  CLI approval and rollback data,
+- a deterministic SQLite Memory Index for activated memory lookup,
 - SQLite as the source of truth,
 - an append-only ledger for chain history,
 - strict safety boundaries before any future active development behavior.
 
-The first usable behavior is memory creation through `remember`. Habitat,
-Maturation, Development, Growth, Shadow Testing, and Fitness Evaluation remain
-draft-safe only.
+The first usable behavior is memory creation through `remember`. The first
+controlled active capability is `index_memory`; all other Habitat, Maturation,
+Development, Growth, Shadow Testing, Fitness, Git, GitHub, and Activation
+surfaces remain bounded by explicit records and safety gates.

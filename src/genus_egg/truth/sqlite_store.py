@@ -31,6 +31,7 @@ from genus_egg.maturation.capability_need import CapabilityNeed
 from genus_egg.maturation.observation_record import ObservationRecord
 from genus_egg.maturation.reaction_outcome import ReactionOutcome
 from genus_egg.memory.memory_object import MemoryObject
+from genus_egg.memory.memory_index_entry import MemoryIndexEntry
 from genus_egg.patching.patch_approval import PatchApproval
 from genus_egg.patching.patch_file_change import PatchFileChange
 from genus_egg.patching.patch_risk_assessment import PatchRiskAssessment
@@ -197,6 +198,46 @@ class SQLiteStore:
                 content=row["content"],
                 memory_state=row["memory_state"],
                 source_product_id=row["source_product_id"],
+                created_at=row["created_at"],
+            )
+            for row in rows
+        ]
+
+    def save_memory_index_entry(self, entry: MemoryIndexEntry) -> None:
+        self.connection.execute(
+            """
+            INSERT OR IGNORE INTO memory_index_entries
+            (index_entry_id, memory_id, normalized_content, tokens_json, source,
+             created_at)
+            VALUES (?, ?, ?, ?, ?, ?)
+            """,
+            (
+                entry.index_entry_id,
+                entry.memory_id,
+                entry.normalized_content,
+                entry.tokens_json,
+                entry.source,
+                entry.created_at,
+            ),
+        )
+        self.connection.commit()
+
+    def list_memory_index_entries(self) -> list[MemoryIndexEntry]:
+        rows = self.connection.execute(
+            """
+            SELECT index_entry_id, memory_id, normalized_content, tokens_json,
+                   source, created_at
+            FROM memory_index_entries
+            ORDER BY created_at, index_entry_id
+            """
+        ).fetchall()
+        return [
+            MemoryIndexEntry(
+                index_entry_id=row["index_entry_id"],
+                memory_id=row["memory_id"],
+                normalized_content=row["normalized_content"],
+                tokens_json=row["tokens_json"],
+                source=row["source"],
                 created_at=row["created_at"],
             )
             for row in rows
