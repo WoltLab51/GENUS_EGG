@@ -13,6 +13,7 @@ RawInput -> MeaningCandidate -> ValidationResult -> ReactionProduct -> MemoryObj
 - `genus-egg remember "text"` creates a memory chain.
 - `genus-egg memories` lists stored memory objects.
 - `genus-egg ledger --chain CHAIN_ID` lists ledger entries for one chain.
+- `genus-egg habitat` probes and stores the local habitat manifest.
 - `--db PATH` selects the SQLite database; default is `data/genus_egg.sqlite`.
 
 ## Reaction Rules
@@ -38,5 +39,12 @@ The following tables are part of v0.0-0.2:
 - `reaction_products`
 - `memory_objects`
 - `ledger_entries`
+- `habitat_manifest`
 
 SQLite is the only source of truth. JSON payloads are stored as text.
+
+## Habitat v0.3
+
+The Habitat Core is read-only and boundary-focused. It records OS, repository
+path, SQLite path, Git availability, network permission, GitHub permission, and
+the default permission profile. Network and GitHub access default to false.

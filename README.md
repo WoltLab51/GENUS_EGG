@@ -16,12 +16,14 @@ directly, and no runtime self-modification exists in this version.
 python -m genus_egg.cli --db data/genus_egg.sqlite remember "larumipsum"
 python -m genus_egg.cli --db data/genus_egg.sqlite memories
 python -m genus_egg.cli --db data/genus_egg.sqlite ledger --chain <chain_id>
+python -m genus_egg.cli --db data/genus_egg.sqlite habitat
 ```
 
 After installing the project, the console entrypoint is also available:
 
 ```powershell
 genus-egg --db data/genus_egg.sqlite remember "larumipsum"
+genus-egg --db data/genus_egg.sqlite habitat
 ```
 
 ## Development

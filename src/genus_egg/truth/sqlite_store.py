@@ -4,6 +4,7 @@ import sqlite3
 from pathlib import Path
 from typing import Any
 
+from genus_egg.habitat.habitat_manifest import HabitatManifest
 from genus_egg.kernel.artifacts import ReactionProduct, ReactionRecord, ValidationResult
 from genus_egg.memory.memory_object import MemoryObject
 from genus_egg.semantics.meaning_candidate import MeaningCandidate
@@ -172,6 +173,65 @@ class SQLiteStore:
             )
             for row in rows
         ]
+
+    def save_habitat_manifest(self, manifest: HabitatManifest) -> None:
+        self.connection.execute(
+            """
+            INSERT INTO habitat_manifest
+            (habitat_id, device_id, hostname, os_name, python_version, repo_path,
+             data_path, sqlite_path, network_allowed, git_available,
+             github_allowed, model_access, payload_json, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                manifest.habitat_id,
+                manifest.device_id,
+                manifest.hostname,
+                manifest.os_name,
+                manifest.python_version,
+                manifest.repo_path,
+                manifest.data_path,
+                manifest.sqlite_path,
+                int(manifest.network_allowed),
+                int(manifest.git_available),
+                int(manifest.github_allowed),
+                manifest.model_access,
+                manifest.payload_json,
+                manifest.created_at,
+            ),
+        )
+        self.connection.commit()
+
+    def get_latest_habitat_manifest(self) -> HabitatManifest | None:
+        row = self.connection.execute(
+            """
+            SELECT habitat_id, device_id, hostname, os_name, python_version,
+                   repo_path, data_path, sqlite_path, network_allowed,
+                   git_available, github_allowed, model_access, payload_json,
+                   created_at
+            FROM habitat_manifest
+            ORDER BY created_at DESC, rowid DESC
+            LIMIT 1
+            """
+        ).fetchone()
+        if row is None:
+            return None
+        return HabitatManifest(
+            habitat_id=row["habitat_id"],
+            device_id=row["device_id"],
+            hostname=row["hostname"],
+            os_name=row["os_name"],
+            python_version=row["python_version"],
+            repo_path=row["repo_path"],
+            data_path=row["data_path"],
+            sqlite_path=row["sqlite_path"],
+            network_allowed=bool(row["network_allowed"]),
+            git_available=bool(row["git_available"]),
+            github_allowed=bool(row["github_allowed"]),
+            model_access=row["model_access"],
+            payload_json=row["payload_json"],
+            created_at=row["created_at"],
+        )
 
     def count_rows(self, table: str) -> int:
         if table not in self.table_names():

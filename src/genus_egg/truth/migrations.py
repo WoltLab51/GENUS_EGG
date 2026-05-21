@@ -78,6 +78,23 @@ CREATE TABLE IF NOT EXISTS ledger_entries (
     payload_json TEXT,
     created_at TEXT NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS habitat_manifest (
+    habitat_id TEXT PRIMARY KEY,
+    device_id TEXT NOT NULL,
+    hostname TEXT NOT NULL,
+    os_name TEXT NOT NULL,
+    python_version TEXT NOT NULL,
+    repo_path TEXT,
+    data_path TEXT NOT NULL,
+    sqlite_path TEXT NOT NULL,
+    network_allowed INTEGER NOT NULL,
+    git_available INTEGER NOT NULL,
+    github_allowed INTEGER NOT NULL,
+    model_access TEXT NOT NULL,
+    payload_json TEXT,
+    created_at TEXT NOT NULL
+);
 """
 
 

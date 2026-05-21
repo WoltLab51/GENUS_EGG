@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
+from genus_egg.habitat.environment_probe import EnvironmentProbe
 from genus_egg.kernel.reaction_kernel import ReactionKernel
 from genus_egg.memory.memory_store import MemoryStore
 from genus_egg.truth.ledger import Ledger
@@ -25,6 +26,9 @@ def build_parser() -> argparse.ArgumentParser:
 
     ledger = subparsers.add_parser("ledger", help="List ledger entries for a chain")
     ledger.add_argument("--chain", required=True)
+
+    habitat = subparsers.add_parser("habitat", help="Probe and store the local habitat")
+    habitat.add_argument("--db", default=argparse.SUPPRESS, help="SQLite database path")
 
     return parser
 
@@ -63,6 +67,17 @@ def main(argv: list[str] | None = None) -> int:
                     f"{entry.source_kind}:{entry.source_id}\t"
                     f"{entry.target_kind or '-'}:{entry.target_id or '-'}"
                 )
+            return 0
+
+        if args.command == "habitat":
+            manifest = EnvironmentProbe(args.db).probe()
+            store.save_habitat_manifest(manifest)
+            print(f"habitat_id: {manifest.habitat_id}")
+            print(f"os_name: {manifest.os_name}")
+            print(f"repo_path: {manifest.repo_path}")
+            print(f"sqlite_path: {manifest.sqlite_path}")
+            print(f"git_available: {str(manifest.git_available).lower()}")
+            print(f"network_allowed: {str(manifest.network_allowed).lower()}")
             return 0
 
         return 2
