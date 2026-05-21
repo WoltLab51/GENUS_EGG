@@ -2,8 +2,9 @@
 
 ## Current Version
 
-- Package version: `0.0.6`
-- Architecture scope: consolidated EGG-v0 phases `0.0-0.6`
+- Package version: `0.1.0`
+- Architecture scope: EGG-v0 base plus v0.1 Shadow Testing and Fitness
+  Evaluation
 - Persistence: SQLite is the only source of truth
 - Ledger: append-only
 
@@ -14,6 +15,8 @@
 - Maturation Seed: persisted outcomes, observations, and draft capability needs
 - Development Boundary: draft proposals plus blocking `ApprovalGate`
 - Growth Simulation: explainable draft proposal chain with no patch and no Git
+- Shadow Testing: persisted `ShadowTestPlan` objects for code proposals
+- Fitness Evaluation: persisted scores and rationales with activation blocked
 
 ## Draft-Safe Boundaries
 
@@ -27,6 +30,12 @@ Development Boundary is draft-safe only. It may create `CapabilityProposal` and
 `CodeChangeProposal` records, but `ApprovalGate` blocks file modification and
 activation.
 
+Shadow Testing is draft-safe only. It creates static review plans and does not
+execute code, write files, create patches, or run Git/GitHub.
+
+Fitness Evaluation is draft-safe only. Scores and rationales are informational;
+they do not activate proposals.
+
 ## Explicitly Not Present
 
 - no file modification by GENUS runtime
@@ -37,6 +46,8 @@ activation.
 - no patch generation
 - no autonomous activation
 - no runtime self-modification
+- no dashboard
+- no LLM call
 
 ## Verification
 

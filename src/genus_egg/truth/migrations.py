@@ -146,6 +146,29 @@ CREATE TABLE IF NOT EXISTS code_change_proposals (
     payload_json TEXT,
     created_at TEXT NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS shadow_test_plans (
+    shadow_plan_id TEXT PRIMARY KEY,
+    code_proposal_id TEXT NOT NULL,
+    plan_type TEXT NOT NULL,
+    status TEXT NOT NULL,
+    planned_checks_json TEXT NOT NULL,
+    activation TEXT NOT NULL,
+    payload_json TEXT,
+    created_at TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS fitness_evaluations (
+    evaluation_id TEXT PRIMARY KEY,
+    code_proposal_id TEXT NOT NULL,
+    shadow_plan_id TEXT NOT NULL,
+    score INTEGER NOT NULL,
+    criteria_scores_json TEXT NOT NULL,
+    rationale TEXT NOT NULL,
+    activation TEXT NOT NULL,
+    payload_json TEXT,
+    created_at TEXT NOT NULL
+);
 """
 
 

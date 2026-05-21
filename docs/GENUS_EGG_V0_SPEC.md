@@ -1,19 +1,24 @@
-# GENUS EGG v0.0.6 Spec
+# GENUS EGG v0/v0.1 Spec
 
 ## Goal
 
-Implement and consolidate the first governed GENUS EGG slice through phase
-`0.6`: Reaction Core, Habitat Core, Maturation Seed, Development Boundary, and
-First Growth Simulation.
+GENUS EGG `0.1.0` extends the consolidated EGG-v0 base with the first
+draft-safe evaluation layer: Shadow Testing and Fitness Evaluation.
 
 The system may remember deterministic user input, persist its local habitat,
 record maturation observations, draft capability needs, draft development
-proposals, and explain a growth proposal. It must not modify files, generate
-patches, run Git/GitHub actions, register new runtime reactions, or activate
-new capabilities.
+proposals, explain a growth proposal, create shadow test plans, and score draft
+proposals. It must not modify files, generate patches, run Git/GitHub actions,
+execute proposal code, register new runtime reactions, or activate new
+capabilities.
 
 ```text
 RawInput -> MeaningCandidate -> ValidationResult -> ReactionProduct -> MemoryObject
+```
+
+```text
+CapabilityNeed -> CapabilityProposal -> CodeChangeProposal
+-> ShadowTestPlan -> FitnessEvaluation -> EvaluationReport
 ```
 
 ## CLI
@@ -35,6 +40,11 @@ RawInput -> MeaningCandidate -> ValidationResult -> ReactionProduct -> MemoryObj
 - `genus-egg growth simulate-memory-indexing --need NEED_ID` explains a
   draft-only `ReactionSpec index_memory` growth simulation with rationale and
   test plan.
+- `genus-egg shadow plan --code-proposal CODE_PROPOSAL_ID` creates a
+  draft-only `ShadowTestPlan`.
+- `genus-egg fitness evaluate --code-proposal CODE_PROPOSAL_ID` stores a
+  draft-only `FitnessEvaluation`.
+- `genus-egg fitness list` lists stored fitness evaluations.
 - `--db PATH` selects the SQLite database; default is `data/genus_egg.sqlite`.
 
 ## Reaction Core v0.0-0.2
@@ -65,7 +75,7 @@ The Habitat Core is read-only and boundary-focused. `EnvironmentProbe` may read
 environment metadata and persist a `HabitatManifest`; it may not alter the
 environment.
 
-The default v0.0.6 profile is:
+The default profile is:
 
 - `network_allowed=false`
 - `github_allowed=false`
@@ -110,7 +120,7 @@ For `draft-memory-indexing`, the documented values are:
 - allowed paths: `["src/genus_egg/memory", "tests"]`
 - forbidden paths: at least `.env`, `secrets`, `.git/config`
 
-`ApprovalGate` blocks v0.0.6 activation:
+`ApprovalGate` blocks activation:
 
 - `can_modify_files(...) -> False`
 - `can_activate(...) -> False`
@@ -131,9 +141,51 @@ The output includes proposal ID, code proposal ID, rationale, test plan,
 No patch is generated. No Git command is run. No runtime reaction is registered
 or activated.
 
+## Shadow Testing v0.1
+
+`ShadowTester` accepts an existing `CodeChangeProposal` and creates a
+`ShadowTestPlan`. It reads persisted proposal data and stores a static plan for
+review. It does not execute code, write files, generate patches, call Git or
+GitHub, start workers, or activate anything.
+
+Each plan is stored with:
+
+- `status=draft`
+- `activation=blocked`
+- fixed static-review checks for all evaluation criteria
+- payload markers `patch=none`, `git=none`, `github=none`
+
+If the referenced `CodeChangeProposal` does not exist, planning stops with a
+clear error and stores nothing.
+
+## Fitness Evaluation v0.1
+
+`FitnessEvaluator` evaluates an existing `CodeChangeProposal` and its latest
+`ShadowTestPlan`. If no plan exists yet, it creates a draft shadow plan first.
+
+The fixed criteria are:
+
+- `safety_boundary_fit`
+- `habitat_fit`
+- `test_plan_quality`
+- `scope_control`
+- `memory_flow_benefit`
+- `rollback_readiness`
+- `activation_risk`
+
+The evaluation stores:
+
+- numeric score from `0` to `100`
+- per-criterion numeric scores
+- textual rationale
+- `activation=blocked`
+- payload markers `patch=none`, `git=none`, `github=none`, `workers=none`
+
+Scores do not activate anything. They are informational draft-safe records.
+
 ## Persistence
 
-The v0.0.6 schema contains:
+The `0.1.0` schema contains:
 
 - `raw_inputs`
 - `meaning_candidates`
@@ -148,6 +200,8 @@ The v0.0.6 schema contains:
 - `capability_needs`
 - `capability_proposals`
 - `code_change_proposals`
+- `shadow_test_plans`
+- `fitness_evaluations`
 
 SQLite is the only source of truth. JSON payloads are stored as text.
 
@@ -156,3 +210,5 @@ SQLite is the only source of truth. JSON payloads are stored as text.
 - Package `0.0.2`: EGG-v0 foundation through Reaction Core v0.2.
 - Package `0.0.6`: consolidated EGG-v0 through phase v0.6, including Habitat
   Core, Maturation Seed, Development Boundary, and First Growth Simulation.
+- Package `0.1.0`: Shadow Testing and Fitness Evaluation for existing draft
+  `CodeChangeProposal` records.

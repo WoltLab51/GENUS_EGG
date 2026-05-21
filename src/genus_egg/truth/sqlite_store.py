@@ -6,6 +6,8 @@ from typing import Any
 
 from genus_egg.development.capability_proposal import CapabilityProposal
 from genus_egg.development.code_change_proposal import CodeChangeProposal
+from genus_egg.evaluation.fitness_evaluation import FitnessEvaluation
+from genus_egg.evaluation.shadow_test_plan import ShadowTestPlan
 from genus_egg.habitat.habitat_manifest import HabitatManifest
 from genus_egg.kernel.artifacts import ReactionProduct, ReactionRecord, ValidationResult
 from genus_egg.maturation.capability_need import CapabilityNeed
@@ -491,6 +493,151 @@ class SQLiteStore:
                 allowed_paths_json=row["allowed_paths_json"],
                 forbidden_paths_json=row["forbidden_paths_json"],
                 status=row["status"],
+                payload_json=row["payload_json"],
+                created_at=row["created_at"],
+            )
+            for row in rows
+        ]
+
+    def get_code_change_proposal(
+        self, code_proposal_id: str
+    ) -> CodeChangeProposal | None:
+        row = self.connection.execute(
+            """
+            SELECT code_proposal_id, proposal_id, title, rationale,
+                   allowed_paths_json, forbidden_paths_json, status, payload_json,
+                   created_at
+            FROM code_change_proposals
+            WHERE code_proposal_id = ?
+            """,
+            (code_proposal_id,),
+        ).fetchone()
+        if row is None:
+            return None
+        return CodeChangeProposal(
+            code_proposal_id=row["code_proposal_id"],
+            proposal_id=row["proposal_id"],
+            title=row["title"],
+            rationale=row["rationale"],
+            allowed_paths_json=row["allowed_paths_json"],
+            forbidden_paths_json=row["forbidden_paths_json"],
+            status=row["status"],
+            payload_json=row["payload_json"],
+            created_at=row["created_at"],
+        )
+
+    def save_shadow_test_plan(self, plan: ShadowTestPlan) -> None:
+        self.connection.execute(
+            """
+            INSERT INTO shadow_test_plans
+            (shadow_plan_id, code_proposal_id, plan_type, status,
+             planned_checks_json, activation, payload_json, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                plan.shadow_plan_id,
+                plan.code_proposal_id,
+                plan.plan_type,
+                plan.status,
+                plan.planned_checks_json,
+                plan.activation,
+                plan.payload_json,
+                plan.created_at,
+            ),
+        )
+        self.connection.commit()
+
+    def list_shadow_test_plans(self) -> list[ShadowTestPlan]:
+        rows = self.connection.execute(
+            """
+            SELECT shadow_plan_id, code_proposal_id, plan_type, status,
+                   planned_checks_json, activation, payload_json, created_at
+            FROM shadow_test_plans
+            ORDER BY created_at, rowid
+            """
+        ).fetchall()
+        return [
+            ShadowTestPlan(
+                shadow_plan_id=row["shadow_plan_id"],
+                code_proposal_id=row["code_proposal_id"],
+                plan_type=row["plan_type"],
+                status=row["status"],
+                planned_checks_json=row["planned_checks_json"],
+                activation=row["activation"],
+                payload_json=row["payload_json"],
+                created_at=row["created_at"],
+            )
+            for row in rows
+        ]
+
+    def get_latest_shadow_test_plan_for_code_proposal(
+        self, code_proposal_id: str
+    ) -> ShadowTestPlan | None:
+        row = self.connection.execute(
+            """
+            SELECT shadow_plan_id, code_proposal_id, plan_type, status,
+                   planned_checks_json, activation, payload_json, created_at
+            FROM shadow_test_plans
+            WHERE code_proposal_id = ?
+            ORDER BY created_at DESC, rowid DESC
+            LIMIT 1
+            """,
+            (code_proposal_id,),
+        ).fetchone()
+        if row is None:
+            return None
+        return ShadowTestPlan(
+            shadow_plan_id=row["shadow_plan_id"],
+            code_proposal_id=row["code_proposal_id"],
+            plan_type=row["plan_type"],
+            status=row["status"],
+            planned_checks_json=row["planned_checks_json"],
+            activation=row["activation"],
+            payload_json=row["payload_json"],
+            created_at=row["created_at"],
+        )
+
+    def save_fitness_evaluation(self, evaluation: FitnessEvaluation) -> None:
+        self.connection.execute(
+            """
+            INSERT INTO fitness_evaluations
+            (evaluation_id, code_proposal_id, shadow_plan_id, score,
+             criteria_scores_json, rationale, activation, payload_json, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                evaluation.evaluation_id,
+                evaluation.code_proposal_id,
+                evaluation.shadow_plan_id,
+                evaluation.score,
+                evaluation.criteria_scores_json,
+                evaluation.rationale,
+                evaluation.activation,
+                evaluation.payload_json,
+                evaluation.created_at,
+            ),
+        )
+        self.connection.commit()
+
+    def list_fitness_evaluations(self) -> list[FitnessEvaluation]:
+        rows = self.connection.execute(
+            """
+            SELECT evaluation_id, code_proposal_id, shadow_plan_id, score,
+                   criteria_scores_json, rationale, activation, payload_json,
+                   created_at
+            FROM fitness_evaluations
+            ORDER BY created_at, rowid
+            """
+        ).fetchall()
+        return [
+            FitnessEvaluation(
+                evaluation_id=row["evaluation_id"],
+                code_proposal_id=row["code_proposal_id"],
+                shadow_plan_id=row["shadow_plan_id"],
+                score=row["score"],
+                criteria_scores_json=row["criteria_scores_json"],
+                rationale=row["rationale"],
+                activation=row["activation"],
                 payload_json=row["payload_json"],
                 created_at=row["created_at"],
             )

@@ -2,10 +2,11 @@
 
 ## Current Version
 
-- Package version: `0.0.6`
-- Architecture level: consolidated EGG-v0 slice through phase `0.6`.
-- Current boundary: draft needs and proposals only; no patch, Git, GitHub, or
-  activation.
+- Package version: `0.1.0`
+- Architecture level: EGG-v0 base plus v0.1 Shadow Testing and Fitness
+  Evaluation.
+- Current boundary: draft needs, proposals, shadow plans, and fitness scores
+  only; no patch, Git, GitHub, file modification, worker, or activation.
 
 ## Completed Phases
 
@@ -74,11 +75,24 @@
   indexing need from successful memory-chain observations without activation.
 - Status: completed in `8b6b808`.
 
-## Next Phase
-
-## Future Work - ShadowTester and FitnessEvaluator
+## GENUS EGG v0.1 - ShadowTester and FitnessEvaluator
 
 - Add ShadowTester.
 - Add FitnessEvaluator.
-- Keep generated proposals inactive until explicit approval.
+- Add `ShadowTestPlan`.
+- Add `FitnessEvaluation`.
+- Definition of done: GENUS can create static shadow plans and informational
+  fitness scores for existing `CodeChangeProposal` records without executing
+  code, writing files, creating patches, running Git/GitHub, or activating
+  anything.
+- Status: completed in current v0.1 work.
+
+## Next Phase
+
+## Future Work - EGG Inspection Cockpit
+
+- Show Memory, Ledger, Observations, Needs, Proposals, Shadow Plans, and
+  Fitness Scores.
+- Keep the cockpit read-only unless a later plan explicitly opens a new
+  approval boundary.
 - Status: next.

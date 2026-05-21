@@ -13,4 +13,4 @@ class ApprovalGate:
         return False
 
     def assert_not_active(self) -> None:
-        raise ApprovalBlockedError("Development activation is blocked in v0.5")
+        raise ApprovalBlockedError("Development activation is blocked")

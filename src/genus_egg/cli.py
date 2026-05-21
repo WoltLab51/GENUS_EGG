@@ -9,6 +9,11 @@ from genus_egg.development.development_boundary import (
     DevelopmentBoundary,
     GROWTH_SIMULATION_STATEMENT,
 )
+from genus_egg.evaluation.fitness_evaluator import FitnessEvaluator
+from genus_egg.evaluation.shadow_tester import (
+    CodeChangeProposalNotFoundError,
+    ShadowTester,
+)
 from genus_egg.habitat.environment_probe import EnvironmentProbe
 from genus_egg.kernel.reaction_kernel import ReactionKernel
 from genus_egg.maturation.maturation_seed import MaturationSeed
@@ -70,6 +75,16 @@ def build_parser() -> argparse.ArgumentParser:
         choices=["simulate-memory-indexing"],
     )
     growth.add_argument("--need")
+
+    shadow = subparsers.add_parser("shadow", help="Create draft-only shadow plans")
+    shadow.add_argument("action", choices=["plan"])
+    shadow.add_argument("--code-proposal")
+
+    fitness = subparsers.add_parser(
+        "fitness", help="Evaluate draft code proposals without activation"
+    )
+    fitness.add_argument("action", choices=["evaluate", "list"])
+    fitness.add_argument("--code-proposal")
 
     return parser
 
@@ -211,6 +226,53 @@ def main(argv: list[str] | None = None) -> int:
             print("Patch: none")
             print("Git: none")
             print("Activation: blocked")
+            return 0
+
+        if args.command == "shadow":
+            if not args.code_proposal:
+                print("Missing required --code-proposal CODE_PROPOSAL_ID")
+                return 2
+            try:
+                plan = ShadowTester(store).plan(args.code_proposal)
+            except CodeChangeProposalNotFoundError as error:
+                print(str(error))
+                return 1
+
+            print(f"ShadowTestPlan created: {plan.shadow_plan_id}")
+            print(f"CodeProposal: {plan.code_proposal_id}")
+            print(f"Status: {plan.status}")
+            print("Patch: none")
+            print("Git: none")
+            print(f"Activation: {plan.activation}")
+            return 0
+
+        if args.command == "fitness":
+            if args.action == "evaluate":
+                if not args.code_proposal:
+                    print("Missing required --code-proposal CODE_PROPOSAL_ID")
+                    return 2
+                try:
+                    report = FitnessEvaluator(store).evaluate(args.code_proposal)
+                except CodeChangeProposalNotFoundError as error:
+                    print(str(error))
+                    return 1
+
+                evaluation = report.fitness_evaluation
+                print(f"FitnessEvaluation created: {evaluation.evaluation_id}")
+                print(f"CodeProposal: {evaluation.code_proposal_id}")
+                print(f"ShadowPlan: {evaluation.shadow_plan_id}")
+                print(f"Score: {evaluation.score}")
+                print(f"Rationale: {evaluation.rationale}")
+                print("Patch: none")
+                print("Git: none")
+                print(f"Activation: {evaluation.activation}")
+                return 0
+
+            for evaluation in store.list_fitness_evaluations():
+                print(
+                    f"{evaluation.evaluation_id}\t{evaluation.code_proposal_id}\t"
+                    f"{evaluation.score}\t{evaluation.activation}"
+                )
             return 0
 
         return 2

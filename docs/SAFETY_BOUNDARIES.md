@@ -1,6 +1,6 @@
 # Safety Boundaries
 
-These rules are hard boundaries for GENUS EGG package version `0.0.6`.
+These rules are hard boundaries for GENUS EGG package version `0.1.0`.
 
 - No model writes directly.
 - No memory exists without a `MeaningCandidate`.
@@ -15,9 +15,13 @@ These rules are hard boundaries for GENUS EGG package version `0.0.6`.
 - Maturation Seed is draft-safe only.
 - Pattern detection may create draft capability needs only.
 - The Development Boundary may create draft proposal objects only.
+- Shadow Testing may create static draft plans only.
+- Fitness Evaluation may create informational draft scores only.
 - `ApprovalGate` blocks file modification and activation.
 - Growth Simulation creates no patch and runs no Git.
+- Shadow Testing executes no code and writes no files.
+- Fitness scores activate nothing.
 - There is no Development Core activation in this version.
 - There is no file modification by GENUS runtime.
 - There is no GitHub action, patch generation, auto-merge, agent, worker,
-  vector store, GraphDB, or self-modifying runtime.
+  dashboard, LLM call, vector store, GraphDB, or self-modifying runtime.

@@ -1,17 +1,21 @@
 # GENUS EGG
 
-GENUS EGG `v0.0.6` is a minimal, governed reaction organism backed by
-SQLite. This repository contains the consolidated EGG-v0 slice through phase
-`0.6`: Reaction Core, Habitat Core, Maturation Seed, Development Boundary, and
-the first draft-only Growth Simulation.
+GENUS EGG `v0.1.0` is a minimal, governed reaction organism backed by SQLite.
+It contains the consolidated EGG-v0 base plus the first v0.1 evaluation layer:
+Shadow Testing and Fitness Evaluation.
 
-SQLite is the source of truth. The ledger is append-only. Habitat, Maturation,
-Development, and Growth are draft-safe only: they may observe, store manifests,
-create draft records, and explain proposals, but they do not modify files,
-generate patches, run Git/GitHub actions, or activate new runtime behavior.
+SQLite is the source of truth. The ledger is append-only. GENUS may remember,
+observe, draft, simulate, shadow-test, and evaluate proposals. It still may not
+modify files, generate patches, run Git/GitHub actions, start workers, call an
+LLM, or activate new runtime behavior.
 
 ```text
 RawInput -> MeaningCandidate -> ValidationResult -> ReactionProduct -> MemoryObject
+```
+
+```text
+CapabilityNeed -> CapabilityProposal -> CodeChangeProposal
+-> ShadowTestPlan -> FitnessEvaluation -> EvaluationReport
 ```
 
 ## Components
@@ -58,12 +62,35 @@ runtime registration follows from it.
 
 The Development Boundary can turn an existing `CapabilityNeed` into draft-only
 `CapabilityProposal` and `CodeChangeProposal` objects. `ApprovalGate` blocks
-file modification and activation in v0.0.6.
+file modification and activation.
 
 `genus-egg proposals draft-memory-indexing --need <need_id>` creates proposal
 records only. `genus-egg growth simulate-memory-indexing --need <need_id>`
 adds an explainable Growth Simulation with rationale and test plan, while
 printing `Patch: none`, `Git: none`, and `Activation: blocked`.
+
+## Shadow Testing
+
+`genus-egg shadow plan --code-proposal <code_proposal_id>` creates a
+`ShadowTestPlan` for an existing `CodeChangeProposal`. The plan is a persisted
+static review object. It does not execute code, write files, create patches, run
+Git/GitHub, or activate anything.
+
+## Fitness Evaluation
+
+`genus-egg fitness evaluate --code-proposal <code_proposal_id>` evaluates a
+draft `CodeChangeProposal` and its `ShadowTestPlan` against fixed criteria:
+
+- `safety_boundary_fit`
+- `habitat_fit`
+- `test_plan_quality`
+- `scope_control`
+- `memory_flow_benefit`
+- `rollback_readiness`
+- `activation_risk`
+
+The score is numeric from `0` to `100`, stored in SQLite, and never activates
+the proposal. `genus-egg fitness list` lists stored evaluations.
 
 ## CLI
 
@@ -83,6 +110,9 @@ genus-egg --db data/genus_egg.sqlite needs detect
 genus-egg --db data/genus_egg.sqlite proposals
 genus-egg --db data/genus_egg.sqlite proposals draft-memory-indexing --need <need_id>
 genus-egg --db data/genus_egg.sqlite growth simulate-memory-indexing --need <need_id>
+genus-egg --db data/genus_egg.sqlite shadow plan --code-proposal <code_proposal_id>
+genus-egg --db data/genus_egg.sqlite fitness evaluate --code-proposal <code_proposal_id>
+genus-egg --db data/genus_egg.sqlite fitness list
 ```
 
 The same commands can also be run as a module during local development:
