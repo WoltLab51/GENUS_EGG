@@ -1,15 +1,16 @@
 # GENUS EGG
 
-GENUS EGG `v0.5.0` is a minimal, governed reaction organism backed by SQLite.
+GENUS EGG `v0.6.0` is a minimal, governed reaction organism backed by SQLite.
 It contains the consolidated EGG-v0 base, the v0.1 evaluation layer, the
 read-only Inspection Cockpit, Habitat Contract v1, and the SandboxPatch
-Boundary, and EvidenceChain.
+Boundary, EvidenceChain, and Local GitConnector.
 
 SQLite is the source of truth. The ledger is append-only. GENUS may remember,
 observe, draft, simulate, shadow-test, evaluate proposals, render local
-inspection snapshots, assess its habitat readiness, and draft sandbox patch
-objects after explicit approval. It still may not modify files, apply patches,
-run Git/GitHub actions, start workers, call an LLM, or activate new runtime
+inspection snapshots, assess its habitat readiness, draft sandbox patch objects
+after explicit approval, read local Git status, and store deterministic local
+branch-preparation records. It still may not push, merge, rebase, force-push,
+run GitHub actions, start workers, call an LLM, or activate new runtime
 behavior.
 
 ```text
@@ -130,10 +131,21 @@ stored evidence.
 The runner is not a general shell executor. Evidence can improve Fitness
 Evaluation context, but still activates nothing.
 
+## Local GitConnector
+
+`genus-egg git status` stores a read-only `GitStatusReport` with current branch,
+dirty state, head commit, and remotes for the selected repository path.
+
+`genus-egg git prepare-branch --patch <patch_id>` requires an existing
+`SandboxPatch`, blocks dirty working trees, derives a deterministic branch name,
+stores a `GitBranchPreparation`, and records Evidence. It does not push, merge,
+rebase, force-push, run GitHub, or activate anything.
+
 ## CLI
 
 All commands accept `--db PATH`; the default database is
 `data/genus_egg.sqlite`.
+The Git commands also accept `--repo PATH`; the default repository path is `.`.
 
 ```powershell
 genus-egg --version
@@ -157,6 +169,8 @@ genus-egg --db data/genus_egg.sqlite patch draft --code-proposal <code_proposal_
 genus-egg --db data/genus_egg.sqlite patch list
 genus-egg --db data/genus_egg.sqlite tests run --patch <patch_id>
 genus-egg --db data/genus_egg.sqlite evidence list
+genus-egg --db data/genus_egg.sqlite git status
+genus-egg --db data/genus_egg.sqlite git prepare-branch --patch <patch_id>
 ```
 
 The same commands can also be run as a module during local development:

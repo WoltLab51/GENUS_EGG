@@ -12,6 +12,8 @@ from genus_egg.evidence.evidence_chain import EvidenceChain
 from genus_egg.evidence.evidence_record import EvidenceRecord
 from genus_egg.evidence.test_result import TestResult
 from genus_egg.evidence.test_run import TestRun
+from genus_egg.git_integration.git_branch_preparation import GitBranchPreparation
+from genus_egg.git_integration.git_status_report import GitStatusReport
 from genus_egg.habitat.habitat_manifest import HabitatManifest
 from genus_egg.habitat.habitat_readiness_report import HabitatReadinessReport
 from genus_egg.habitat.resource_snapshot import ResourceSnapshot
@@ -1147,6 +1149,92 @@ class SQLiteStore:
                 code_proposal_id=row["code_proposal_id"],
                 evidence_ids_json=row["evidence_ids_json"],
                 status=row["status"],
+                payload_json=row["payload_json"],
+                created_at=row["created_at"],
+            )
+            for row in rows
+        ]
+
+    def save_git_status_report(self, report: GitStatusReport) -> None:
+        self.connection.execute(
+            """
+            INSERT INTO git_status_reports
+            (git_status_id, repo_path, current_branch, head_commit, dirty,
+             remotes_json, payload_json, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                report.git_status_id,
+                report.repo_path,
+                report.current_branch,
+                report.head_commit,
+                int(report.dirty),
+                report.remotes_json,
+                report.payload_json,
+                report.created_at,
+            ),
+        )
+        self.connection.commit()
+
+    def list_git_status_reports(self) -> list[GitStatusReport]:
+        rows = self.connection.execute(
+            """
+            SELECT git_status_id, repo_path, current_branch, head_commit, dirty,
+                   remotes_json, payload_json, created_at
+            FROM git_status_reports
+            ORDER BY created_at, rowid
+            """
+        ).fetchall()
+        return [
+            GitStatusReport(
+                git_status_id=row["git_status_id"],
+                repo_path=row["repo_path"],
+                current_branch=row["current_branch"],
+                head_commit=row["head_commit"],
+                dirty=bool(row["dirty"]),
+                remotes_json=row["remotes_json"],
+                payload_json=row["payload_json"],
+                created_at=row["created_at"],
+            )
+            for row in rows
+        ]
+
+    def save_git_branch_preparation(self, preparation: GitBranchPreparation) -> None:
+        self.connection.execute(
+            """
+            INSERT INTO git_branch_preparations
+            (git_preparation_id, patch_id, branch_name, status, activation,
+             payload_json, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                preparation.git_preparation_id,
+                preparation.patch_id,
+                preparation.branch_name,
+                preparation.status,
+                preparation.activation,
+                preparation.payload_json,
+                preparation.created_at,
+            ),
+        )
+        self.connection.commit()
+
+    def list_git_branch_preparations(self) -> list[GitBranchPreparation]:
+        rows = self.connection.execute(
+            """
+            SELECT git_preparation_id, patch_id, branch_name, status, activation,
+                   payload_json, created_at
+            FROM git_branch_preparations
+            ORDER BY created_at, rowid
+            """
+        ).fetchall()
+        return [
+            GitBranchPreparation(
+                git_preparation_id=row["git_preparation_id"],
+                patch_id=row["patch_id"],
+                branch_name=row["branch_name"],
+                status=row["status"],
+                activation=row["activation"],
                 payload_json=row["payload_json"],
                 created_at=row["created_at"],
             )

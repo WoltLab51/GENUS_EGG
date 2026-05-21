@@ -2,10 +2,10 @@
 
 ## Current Version
 
-- Package version: `0.5.0`
+- Package version: `0.6.0`
 - Architecture scope: EGG-v0 base plus Shadow/Fitness evaluation and read-only
   Inspection Cockpit, Habitat Contract v1, SandboxPatch Boundary, and
-  EvidenceChain
+  EvidenceChain, plus Local GitConnector preparation records
 - Persistence: SQLite is the only source of truth
 - Ledger: append-only
 
@@ -23,6 +23,8 @@
   `HabitatReadinessReport`
 - SandboxPatch Boundary: explicit approval plus draft patch records only
 - EvidenceChain: controlled test evidence for sandbox patch drafts
+- Local GitConnector: read-only Git status plus blocked branch-preparation
+  records for approved sandbox patches
 
 ## Draft-Safe Boundaries
 
@@ -54,6 +56,10 @@ approval, but it does not write files, run Git, run GitHub, or activate code.
 EvidenceChain is bounded to controlled internal checks. It is not a general
 shell executor, and evidence never activates code by itself.
 
+Local GitConnector is preparation-only. It may read status and record a
+deterministic local branch preparation for an existing `SandboxPatch`, but it
+does not push, merge, rebase, force-push, call GitHub, or activate code.
+
 ## Explicitly Not Present
 
 - no file modification by GENUS runtime
@@ -61,7 +67,7 @@ shell executor, and evidence never activates code by itself.
 - no agents or workers
 - no vector store
 - no GraphDB
-- no patch generation
+- no active patch application
 - no autonomous activation
 - no runtime self-modification
 - no write-capable dashboard

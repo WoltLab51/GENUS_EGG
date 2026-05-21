@@ -1,11 +1,14 @@
 from __future__ import annotations
 
+import subprocess
+
 from genus_egg.cockpit.data_adapter import CockpitDataAdapter
 from genus_egg.cockpit.html_renderer import CockpitHtmlRenderer
 from genus_egg.development.development_boundary import DevelopmentBoundary
 from genus_egg.evaluation.fitness_evaluator import FitnessEvaluator
-from genus_egg.evidence.test_runner import TestRunner
 from genus_egg.evaluation.shadow_tester import ShadowTester
+from genus_egg.evidence.test_runner import TestRunner
+from genus_egg.git_integration.local_git_connector import LocalGitConnector
 from genus_egg.habitat.environment_probe import EnvironmentProbe
 from genus_egg.habitat.habitat_contract import HabitatContract
 from genus_egg.kernel.reaction_kernel import ReactionKernel
@@ -35,6 +38,10 @@ def _populate_cockpit_fixture(store: SQLiteStore) -> None:
     patch_boundary.approve(code_proposal.code_proposal_id)
     patch, _, _ = patch_boundary.draft(code_proposal.code_proposal_id)
     TestRunner(store).run_for_patch(patch.patch_id)
+    repo_path = store.db_path.parent / "repo"
+    repo_path.mkdir()
+    subprocess.run(["git", "init"], cwd=repo_path, check=True, capture_output=True)
+    LocalGitConnector(store, repo_path=repo_path).prepare_branch(patch.patch_id)
     assert result.ledger_entries == 7
 
 
@@ -59,8 +66,10 @@ def test_cockpit_data_adapter_reads_all_relevant_object_counts(tmp_path):
     assert snapshot.patch_approval_count == 1
     assert snapshot.sandbox_patch_count == 1
     assert snapshot.test_run_count == 1
-    assert snapshot.evidence_record_count == 1
+    assert snapshot.evidence_record_count == 2
     assert snapshot.evidence_chain_count == 1
+    assert snapshot.git_status_count == 1
+    assert snapshot.git_preparation_count == 1
     assert snapshot.latest_habitat_id is not None
     assert snapshot.latest_fitness_score is not None
     assert snapshot.activation_state == "blocked"
@@ -93,6 +102,8 @@ def test_cockpit_adapter_is_read_only(tmp_path):
             "test_results",
             "evidence_records",
             "evidence_chains",
+            "git_status_reports",
+            "git_branch_preparations",
         ]
     }
 

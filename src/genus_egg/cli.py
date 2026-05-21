@@ -15,6 +15,10 @@ from genus_egg.evaluation.shadow_tester import (
     ShadowTester,
 )
 from genus_egg.evidence.test_runner import SandboxPatchNotFoundError, TestRunner
+from genus_egg.git_integration.local_git_connector import (
+    DirtyGitTreeError,
+    LocalGitConnector,
+)
 from genus_egg.habitat.environment_probe import EnvironmentProbe
 from genus_egg.habitat.habitat_contract import HabitatContract
 from genus_egg.kernel.reaction_kernel import ReactionKernel
@@ -109,6 +113,11 @@ def build_parser() -> argparse.ArgumentParser:
 
     evidence = subparsers.add_parser("evidence", help="List stored evidence records")
     evidence.add_argument("action", choices=["list"])
+
+    git_parser = subparsers.add_parser("git", help="Inspect or prepare local Git")
+    git_parser.add_argument("action", choices=["status", "prepare-branch"])
+    git_parser.add_argument("--repo", default=".")
+    git_parser.add_argument("--patch")
 
     return parser
 
@@ -388,6 +397,34 @@ def main(argv: list[str] | None = None) -> int:
                     f"{evidence.evidence_id}\t{evidence.code_proposal_id}\t"
                     f"{evidence.evidence_type}\t{evidence.summary}"
                 )
+            return 0
+
+        if args.command == "git":
+            connector = LocalGitConnector(store, repo_path=args.repo)
+            if args.action == "status":
+                report = connector.status()
+                print(f"GitStatus: {report.git_status_id}")
+                print(f"Branch: {report.current_branch or 'unknown'}")
+                print(f"Dirty: {str(report.dirty).lower()}")
+                print(f"Head: {report.head_commit or 'unknown'}")
+                print("Mode: read-only")
+                return 0
+
+            if not args.patch:
+                print("Missing required --patch PATCH_ID")
+                return 2
+            try:
+                preparation = connector.prepare_branch(args.patch)
+            except (ValueError, DirtyGitTreeError) as error:
+                print(str(error))
+                return 1
+            print(f"GitBranchPreparation: {preparation.git_preparation_id}")
+            print(f"Patch: {preparation.patch_id}")
+            print(f"Branch: {preparation.branch_name}")
+            print(f"Status: {preparation.status}")
+            print("Push: none")
+            print("Merge: none")
+            print(f"Activation: {preparation.activation}")
             return 0
 
         return 2

@@ -1,18 +1,19 @@
-# GENUS EGG v0/v0.5 Spec
+# GENUS EGG v0/v0.6 Spec
 
 ## Goal
 
-GENUS EGG `0.5.0` extends the consolidated EGG-v0 base, v0.1 evaluation layer,
+GENUS EGG `0.6.0` extends the consolidated EGG-v0 base, v0.1 evaluation layer,
 read-only Inspection Cockpit, and Habitat Contract v1 with a SandboxPatch
-Boundary and EvidenceChain.
+Boundary, EvidenceChain, and Local GitConnector.
 
 The system may remember deterministic user input, persist its local habitat,
 record maturation observations, draft capability needs, draft development
 proposals, explain a growth proposal, create shadow test plans, score draft
 proposals, render local inspection snapshots, assess habitat readiness, and
-draft sandbox patch records after approval. It must not modify files, apply
-patches, run Git/GitHub actions, execute arbitrary commands, register new
-runtime reactions, or activate new capabilities.
+draft sandbox patch records after approval. It may read local Git status and
+store deterministic branch-preparation records. It must not push, merge,
+rebase, force-push, run GitHub actions, execute arbitrary commands, register
+new runtime reactions, or activate new capabilities.
 
 ```text
 RawInput -> MeaningCandidate -> ValidationResult -> ReactionProduct -> MemoryObject
@@ -56,7 +57,12 @@ CapabilityNeed -> CapabilityProposal -> CodeChangeProposal
 - `genus-egg tests run --patch PATCH_ID` runs the controlled internal
   `sandbox_patch_static_check`.
 - `genus-egg evidence list` lists stored evidence records.
+- `genus-egg git status` stores and prints a read-only local Git status report.
+- `genus-egg git prepare-branch --patch PATCH_ID` stores a deterministic local
+  branch-preparation record for an existing `SandboxPatch`.
 - `--db PATH` selects the SQLite database; default is `data/genus_egg.sqlite`.
+- `genus-egg git ... --repo PATH` selects the local repository path for Git
+  inspection; default is `.`.
 
 ## Reaction Core v0.0-0.2
 
@@ -248,9 +254,25 @@ For a `SandboxPatch`, it stores:
 `CodeChangeProposal`. Evidence improves traceability, but it does not activate
 the proposal.
 
+## Local GitConnector v0.6
+
+`LocalGitConnector` can read local Git metadata and persist:
+
+- `GitStatusReport`
+- `GitBranchPreparation`
+
+`genus-egg git status` reads the selected repository path and stores current
+branch, dirty state, head commit, remotes, and a `git=read_only` payload.
+
+`genus-egg git prepare-branch --patch PATCH_ID` requires an existing
+`SandboxPatch`, blocks dirty working trees, derives a deterministic
+`genus/sandbox-...` branch name, stores the preparation record, and creates an
+`EvidenceRecord` documenting the preparation. It does not push, merge, rebase,
+force-push, call GitHub, or activate anything.
+
 ## Persistence
 
-The `0.5.0` schema contains:
+The `0.6.0` schema contains:
 
 - `raw_inputs`
 - `meaning_candidates`
@@ -277,6 +299,8 @@ The `0.5.0` schema contains:
 - `test_results`
 - `evidence_records`
 - `evidence_chains`
+- `git_status_reports`
+- `git_branch_preparations`
 
 SQLite is the only source of truth. JSON payloads are stored as text.
 
@@ -293,3 +317,4 @@ SQLite is the only source of truth. JSON payloads are stored as text.
 - Package `0.4.0`: SandboxPatch Boundary with explicit approval and draft patch
   records only.
 - Package `0.5.0`: Controlled TestRunner and EvidenceChain.
+- Package `0.6.0`: Local GitConnector status and branch-preparation records.

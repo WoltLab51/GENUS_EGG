@@ -25,6 +25,8 @@ class CockpitHtmlRenderer:
             ("Test Runs", snapshot.test_run_count),
             ("Evidence Records", snapshot.evidence_record_count),
             ("Evidence Chains", snapshot.evidence_chain_count),
+            ("Git Status Reports", snapshot.git_status_count),
+            ("Git Preparations", snapshot.git_preparation_count),
         ]
         table_rows = "\n".join(
             f"<tr><th>{escape(label)}</th><td>{value}</td></tr>"

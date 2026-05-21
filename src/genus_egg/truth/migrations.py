@@ -274,6 +274,27 @@ CREATE TABLE IF NOT EXISTS evidence_chains (
     payload_json TEXT,
     created_at TEXT NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS git_status_reports (
+    git_status_id TEXT PRIMARY KEY,
+    repo_path TEXT NOT NULL,
+    current_branch TEXT,
+    head_commit TEXT,
+    dirty INTEGER NOT NULL,
+    remotes_json TEXT NOT NULL,
+    payload_json TEXT,
+    created_at TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS git_branch_preparations (
+    git_preparation_id TEXT PRIMARY KEY,
+    patch_id TEXT NOT NULL,
+    branch_name TEXT NOT NULL,
+    status TEXT NOT NULL,
+    activation TEXT NOT NULL,
+    payload_json TEXT,
+    created_at TEXT NOT NULL
+);
 """
 
 

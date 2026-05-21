@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.6.0 - 2026-05-21
+
+- Added Local GitConnector with read-only `GitStatusReport` storage.
+- Added `GitBranchPreparation` records for existing sandbox patches.
+- Added SQLite tables for Git status and branch-preparation records.
+- Added `genus-egg git status` and `genus-egg git prepare-branch --patch PATCH_ID`.
+- Extended the Inspection Cockpit to include local Git status and preparation
+  counts.
+- Kept Git bounded: no push, merge, rebase, force-push, GitHub action, or
+  activation.
+
 ## 0.5.0 - 2026-05-21
 
 - Added controlled TestRunner for sandbox patch static checks.

@@ -22,6 +22,8 @@ class CockpitSnapshot:
     test_run_count: int
     evidence_record_count: int
     evidence_chain_count: int
+    git_status_count: int
+    git_preparation_count: int
     latest_habitat_id: str | None
     latest_fitness_score: int | None
     activation_state: str
