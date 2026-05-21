@@ -49,8 +49,6 @@
   code, and activation remains blocked.
 - Status: completed in `c4d2a82`.
 
-## Next Phase
-
 ## Phase 0.6 - First Growth Simulation
 
 - Simulate a memory indexing proposal.
@@ -59,4 +57,8 @@
 - Only proposal, rationale, and test plan.
 - Definition of done: GENUS can explain that it proposes a new
   `ReactionSpec index_memory` because memory retrieval would benefit from it.
-- Status: next.
+- Status: completed in the phase 0.6 implementation.
+
+## Next Phase
+
+- Later phases are outside the current EGG-v0 document slice.

@@ -1,8 +1,9 @@
 # GENUS EGG
 
 GENUS EGG is a minimal, governed reaction organism. The current implementation
-covers phases `0.0-0.5`: deterministic memory reaction, habitat awareness,
-maturation seed records, and a blocked development boundary.
+covers phases `0.0-0.6`: deterministic memory reaction, habitat awareness,
+maturation seed records, a blocked development boundary, and first growth
+simulation.
 
 ```text
 RawInput -> MeaningCandidate -> ValidationResult -> ReactionProduct -> MemoryObject
@@ -22,6 +23,7 @@ python -m genus_egg.cli --db data/genus_egg.sqlite habitat
 python -m genus_egg.cli --db data/genus_egg.sqlite observations
 python -m genus_egg.cli --db data/genus_egg.sqlite needs draft-memory-indexing
 python -m genus_egg.cli --db data/genus_egg.sqlite proposals draft-memory-indexing --need <need_id>
+python -m genus_egg.cli --db data/genus_egg.sqlite growth simulate-memory-indexing --need <need_id>
 ```
 
 After installing the project, the console entrypoint is also available:
@@ -32,6 +34,7 @@ genus-egg --db data/genus_egg.sqlite habitat
 genus-egg --db data/genus_egg.sqlite observations
 genus-egg --db data/genus_egg.sqlite needs draft-memory-indexing
 genus-egg --db data/genus_egg.sqlite proposals draft-memory-indexing --need <need_id>
+genus-egg --db data/genus_egg.sqlite growth simulate-memory-indexing --need <need_id>
 ```
 
 ## Development

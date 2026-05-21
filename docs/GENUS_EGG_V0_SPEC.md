@@ -2,14 +2,15 @@
 
 ## Goal
 
-Implement the first governed GENUS EGG v0 slice through phase `0.5`:
+Implement the first governed GENUS EGG v0 slice through phase `0.6`:
 
 ```text
 RawInput -> MeaningCandidate -> ValidationResult -> ReactionProduct -> MemoryObject
 ```
 
-The current system also records Habitat, Maturation Seed, and Development
-Boundary artifacts, but it does not activate new capabilities or modify code.
+The current system also records Habitat, Maturation Seed, Development Boundary,
+and Growth Simulation artifacts, but it does not activate new capabilities or
+modify code.
 
 ## CLI
 
@@ -22,6 +23,9 @@ Boundary artifacts, but it does not activate new capabilities or modify code.
   capability need without activation.
 - `genus-egg proposals draft-memory-indexing --need NEED_ID` creates draft-only
   development proposal objects without activation.
+- `genus-egg growth simulate-memory-indexing --need NEED_ID` explains a
+  draft-only `ReactionSpec index_memory` growth simulation with rationale and
+  test plan.
 - `--db PATH` selects the SQLite database; default is `data/genus_egg.sqlite`.
 
 ## Reaction Rules
@@ -75,3 +79,9 @@ GENUS may turn an existing `CapabilityNeed` into draft-only
 `CapabilityProposal` and `CodeChangeProposal` records. The `ApprovalGate` blocks
 file modification and activation. No code patch, Git operation, runtime mutation,
 or automatic activation is allowed.
+
+## First Growth Simulation v0.6
+
+GENUS can explain: `Ich schlage eine neue ReactionSpec index_memory vor, weil Memory-Retrieval später davon profitieren könnte.`
+The simulation stores only draft proposal objects and a test plan. It creates no
+patch, runs no Git command, and does not register or activate a runtime reaction.

@@ -6,6 +6,7 @@ from pathlib import Path
 from genus_egg.development.development_boundary import (
     CapabilityNeedNotFoundError,
     DevelopmentBoundary,
+    GROWTH_SIMULATION_STATEMENT,
 )
 from genus_egg.habitat.environment_probe import EnvironmentProbe
 from genus_egg.kernel.reaction_kernel import ReactionKernel
@@ -55,6 +56,13 @@ def build_parser() -> argparse.ArgumentParser:
         default="list",
     )
     proposals.add_argument("--need")
+
+    growth = subparsers.add_parser("growth", help="Run draft-only growth simulations")
+    growth.add_argument(
+        "action",
+        choices=["simulate-memory-indexing"],
+    )
+    growth.add_argument("--need")
 
     return parser
 
@@ -157,6 +165,33 @@ def main(argv: list[str] | None = None) -> int:
 
             for proposal in store.list_capability_proposals():
                 print(f"{proposal.proposal_id}\t{proposal.status}\t{proposal.description}")
+            return 0
+
+        if args.command == "growth":
+            if not args.need:
+                print("Missing required --need NEED_ID")
+                return 2
+            try:
+                proposal, code_proposal = (
+                    DevelopmentBoundary(store).draft_memory_indexing_proposal(
+                        args.need
+                    )
+                )
+            except CapabilityNeedNotFoundError as error:
+                print(str(error))
+                return 1
+
+            print(GROWTH_SIMULATION_STATEMENT)
+            print(f"Proposal: {proposal.proposal_id}")
+            print(f"CodeProposal: {code_proposal.code_proposal_id}")
+            print(f"Rationale: {code_proposal.rationale}")
+            print("Testplan:")
+            print("- Add tests for index_memory ReactionSpec registration.")
+            print("- Add tests that MemoryIndexEntry records are created from MemoryObject.")
+            print("- Add retrieval tests proving indexed lookup improves memory search.")
+            print("Patch: none")
+            print("Git: none")
+            print("Activation: blocked")
             return 0
 
         return 2

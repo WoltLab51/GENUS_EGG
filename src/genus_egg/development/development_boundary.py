@@ -12,6 +12,17 @@ from genus_egg.time import utc_now
 from genus_egg.truth.sqlite_store import SQLiteStore
 
 
+GROWTH_SIMULATION_STATEMENT = (
+    "Ich schlage eine neue ReactionSpec index_memory vor, weil Memory-Retrieval "
+    "später davon profitieren könnte."
+)
+MEMORY_INDEXING_TEST_PLAN = [
+    "Add tests for index_memory ReactionSpec registration.",
+    "Add tests that MemoryIndexEntry records are created from MemoryObject.",
+    "Add retrieval tests proving indexed lookup improves memory search.",
+]
+
+
 class CapabilityNeedNotFoundError(ValueError):
     pass
 
@@ -64,6 +75,8 @@ class DevelopmentBoundary:
                     "activation": "blocked",
                     "can_modify_files": self.approval_gate.can_modify_files(),
                     "can_activate": self.approval_gate.can_activate(),
+                    "growth_simulation_statement": GROWTH_SIMULATION_STATEMENT,
+                    "test_plan": MEMORY_INDEXING_TEST_PLAN,
                 },
                 sort_keys=True,
             ),

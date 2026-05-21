@@ -8,6 +8,7 @@ from genus_egg.development.approval_gate import ApprovalBlockedError, ApprovalGa
 from genus_egg.development.development_boundary import (
     CapabilityNeedNotFoundError,
     DevelopmentBoundary,
+    GROWTH_SIMULATION_STATEMENT,
 )
 from genus_egg.habitat.permission_profile import PermissionProfile
 from genus_egg.maturation.maturation_seed import MaturationSeed
@@ -50,11 +51,16 @@ def test_draft_capability_and_code_change_proposals_can_be_saved_and_loaded(tmp_
     assert {".env", "secrets", ".git/config"}.issubset(
         set(json.loads(code_proposals[0].forbidden_paths_json))
     )
-    assert json.loads(code_proposals[0].payload_json or "{}") == {
-        "activation": "blocked",
-        "can_activate": False,
-        "can_modify_files": False,
-    }
+    payload = json.loads(code_proposals[0].payload_json or "{}")
+    assert payload["activation"] == "blocked"
+    assert payload["can_activate"] is False
+    assert payload["can_modify_files"] is False
+    assert payload["growth_simulation_statement"] == GROWTH_SIMULATION_STATEMENT
+    assert payload["test_plan"] == [
+        "Add tests for index_memory ReactionSpec registration.",
+        "Add tests that MemoryIndexEntry records are created from MemoryObject.",
+        "Add retrieval tests proving indexed lookup improves memory search.",
+    ]
     store.close()
 
 
