@@ -1,11 +1,12 @@
-# GENUS EGG v0/v0.9 Spec
+# GENUS EGG 1.0 Spec
 
 ## Goal
 
-GENUS EGG `0.9.0` extends the consolidated EGG-v0 base, v0.1 evaluation layer,
-read-only Inspection Cockpit, and Habitat Contract v1 with a SandboxPatch
-Boundary, EvidenceChain, Local GitConnector, draft-only GitHubConnector, and
-Activation Boundary, plus Monitoring, Fossilization, and Rollback.
+GENUS EGG `1.0.0` consolidates the complete first EGG slice for Desktop/Server
+Habitats. It includes the EGG-v0 Reaction Core, v0.1 Shadow/Fitness evaluation,
+read-only Inspection Cockpit, Habitat Contract v1, SandboxPatch Boundary,
+EvidenceChain, Local GitConnector, draft-only GitHubConnector, Activation
+Boundary, and Monitoring/Fossilization/Rollback.
 
 The system may remember deterministic user input, persist its local habitat,
 record maturation observations, draft capability needs, draft development
@@ -367,9 +368,36 @@ runtime behavior.
 `FossilRecord` marks a source object as fossilized and keeps
 `deletes_truth=false`. Fossilization never removes SQLite truth.
 
+## Complete EGG 1.0
+
+GENUS EGG 1.0 can:
+
+- react and remember through the deterministic Reaction Core
+- observe outcomes and draft capability needs
+- create draft proposals and growth simulations
+- plan shadow tests and evaluate fitness
+- inspect SQLite truth through the read-only Cockpit
+- assess Habitat readiness and resources
+- create SandboxPatch records after approval
+- store bounded TestRunner evidence
+- prepare local Git records without push/merge/rebase
+- store draft-only GitHub PR records behind explicit Habitat and evidence gates
+- model activation requests, decisions, candidates, and compatibility checks
+- store rollback, monitoring, capability activation, and fossil records
+
+GENUS EGG 1.0 cannot:
+
+- autonomously merge
+- autonomously activate
+- rewrite its active runtime core live
+- mutate secrets or permissions
+- write forbidden paths
+- use GitHub without explicit Habitat permission and prerequisites
+- let scores, PRs, merges, approvals, or evidence activate code by themselves
+
 ## Persistence
 
-The `0.9.0` schema contains:
+The `1.0.0` schema contains:
 
 - `raw_inputs`
 - `meaning_candidates`
@@ -430,3 +458,5 @@ SQLite is the only source of truth. JSON payloads are stored as text.
   candidates, and compatibility checks.
 - Package `0.9.0`: Rollback plans, blocked capability activations, capability
   monitors, and fossil records.
+- Package `1.0.0`: Complete first EGG consolidation with end-to-end demo,
+  capability matrix, and post-1.0 roadmap.

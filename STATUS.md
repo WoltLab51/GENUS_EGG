@@ -2,12 +2,8 @@
 
 ## Current Version
 
-- Package version: `0.9.0`
-- Architecture scope: EGG-v0 base plus Shadow/Fitness evaluation and read-only
-  Inspection Cockpit, Habitat Contract v1, SandboxPatch Boundary, and
-  EvidenceChain, Local GitConnector preparation records, and draft-only
-  GitHubConnector records, Activation Boundary records, and lifecycle rollback,
-  monitoring, and fossil records
+- Package version: `1.0.0`
+- Architecture scope: Complete first EGG for Desktop/Server Habitats
 - Persistence: SQLite is the only source of truth
 - Ledger: append-only
 
@@ -33,6 +29,30 @@
   compatibility checks, and explicit rejection decisions
 - Monitoring/Fossilization/Rollback: rollback plans, blocked capability
   activation records, capability monitors, and fossil records
+
+## Capability Matrix
+
+| Capability | 1.0 status | Boundary |
+| --- | --- | --- |
+| Memory reaction | active | deterministic `remember`, seven ledger entries |
+| Ledger | active | append-only |
+| Habitat probe | active | read-only |
+| Habitat readiness | active | informational only |
+| Maturation observations | active | draft-safe |
+| Capability needs | draft | no activation |
+| Development proposals | draft | no file modification |
+| Growth simulation | draft | no patch or Git |
+| Shadow testing | draft | no execution |
+| Fitness evaluation | draft | scores activate nothing |
+| Inspection Cockpit | read-only | no writes |
+| SandboxPatch | draft | approval required, no active application |
+| Test evidence | bounded | internal checks only |
+| Local GitConnector | bounded | local preparation records, no push/merge/rebase |
+| GitHubConnector | draft-only | no non-draft PR, merge, labels, reviewers, secrets |
+| Activation Boundary | modeled | blocked without explicit decision and rollback |
+| RollbackPlan | record | no automatic rollback execution |
+| Monitoring | record | observes only |
+| Fossilization | record | deletes no truth |
 
 ## Draft-Safe Boundaries
 

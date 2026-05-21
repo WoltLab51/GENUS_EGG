@@ -5,17 +5,15 @@ labels for architecture milestones from the concept document.
 
 ## Current State
 
-- Package version: `0.9.0`
-- Architecture level: EGG-v0 base plus Shadow/Fitness evaluation, read-only
-  Inspection Cockpit, Habitat Contract v1, SandboxPatch Boundary, and
-  EvidenceChain, Local GitConnector, draft-only GitHubConnector, and Activation
-  Boundary, plus Monitoring, Fossilization, and Rollback
+- Package version: `1.0.0`
+- Architecture level: Complete first EGG for Desktop/Server Habitats
 - Current boundary: draft needs, proposals, shadow plans, fitness scores,
   cockpit projections, readiness reports, patch draft records, and evidence
   records only; local Git status and preparation records are allowed, but no
   push, merge, rebase, non-draft GitHub action, autonomous activation, or
   runtime self-modification
-- Next architecture target: Complete EGG 1.0
+- Next architecture target: post-1.0 physiology, resource economy,
+  distributed Habitats, and stronger inspection surfaces
 
 ## History
 
@@ -38,10 +36,11 @@ labels for architecture milestones from the concept document.
   and runtime compatibility checks.
 - `0.9.0`: Rollback plans, blocked capability activations, capability monitors,
   and fossil records.
+- `1.0.0`: Complete first EGG consolidation for Desktop/Server Habitats.
 
 ## Boundary
 
-Version `0.9.0` may create memories through the deterministic Reaction Core,
+Version `1.0.0` may create memories through the deterministic Reaction Core,
 may create draft needs, draft proposals, shadow test plans, and fitness
 evaluations, may render read-only cockpit snapshots, and may store resource and
 readiness records. It may create draft patch records after approval, read local

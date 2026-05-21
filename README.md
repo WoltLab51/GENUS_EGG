@@ -1,10 +1,11 @@
 # GENUS EGG
 
-GENUS EGG `v0.9.0` is a minimal, governed reaction organism backed by SQLite.
-It contains the consolidated EGG-v0 base, the v0.1 evaluation layer, the
-read-only Inspection Cockpit, Habitat Contract v1, and the SandboxPatch
-Boundary, EvidenceChain, Local GitConnector, draft-only GitHubConnector, and
-Activation Boundary, plus Monitoring, Fossilization, and Rollback records.
+GENUS EGG `1.0.0` is a complete first EGG: a minimal, governed reaction
+organism backed by SQLite. It can react, remember, observe, inspect its Habitat,
+form draft needs and proposals, plan shadow tests, evaluate fitness, prepare
+SandboxPatch records after approval, store evidence, prepare local Git and
+draft-only GitHub PR records behind boundaries, model activation requests, and
+keep rollback, monitoring, and fossilization records.
 
 SQLite is the source of truth. The ledger is append-only. GENUS may remember,
 observe, draft, simulate, shadow-test, evaluate proposals, render local
@@ -16,6 +17,14 @@ activation requests and rejection decisions. It still may not merge, auto-merge,
 create non-draft PRs, mutate issues, change labels or reviewers, touch
 secrets/permissions, start workers, call an LLM, or activate new runtime
 behavior.
+
+The 1.0 rule remains:
+
+```text
+GENUS merged nicht eigenmaechtig,
+aktiviert nicht eigenmaechtig
+und veraendert seinen aktiven Kern nicht live.
+```
 
 ```text
 RawInput -> MeaningCandidate -> ValidationResult -> ReactionProduct -> MemoryObject

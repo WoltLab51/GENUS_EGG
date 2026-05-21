@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.0.0 - 2026-05-21
+
+- Released the complete GENUS EGG 1.0 slice for Desktop/Server Habitats.
+- Added an end-to-end EGG 1.0 demo test covering memory, Habitat readiness,
+  needs, proposals, shadow plans, fitness, sandbox patches, evidence, local Git
+  preparation, draft-only GitHub records, activation requests, rollback,
+  monitoring, fossilization, and rejection.
+- Updated README, STATUS, ROADMAP, VERSIONING, Safety Boundaries, and v0 Spec
+  into the 1.0 consolidated system description.
+- Kept the constitution intact: no autonomous merge, no autonomous activation,
+  no live active-core rewrite, no secrets/permissions mutation, and no truth
+  deletion.
+
 ## 0.9.0 - 2026-05-21
 
 - Added lifecycle models: `RollbackPlan`, `CapabilityActivation`,

@@ -2,16 +2,14 @@
 
 ## Current Version
 
-- Package version: `0.9.0`
-- Architecture level: EGG-v0 base plus Shadow/Fitness evaluation, read-only
-  Inspection Cockpit, Habitat Contract v1, SandboxPatch Boundary, and
-  EvidenceChain, Local GitConnector, draft-only GitHubConnector, and Activation
-  Boundary, plus Monitoring, Fossilization, and Rollback.
+- Package version: `1.0.0`
+- Architecture level: Complete first EGG for Desktop/Server Habitats.
 - Current boundary: draft needs, proposals, shadow plans, fitness scores,
   cockpit projections, readiness reports, patch draft records, and evidence
   records only; local Git status, preparation records, and draft-only GitHub PR
   records are allowed when gated, but no merge, auto-merge, non-draft PR,
-  issue mutation, worker, active capability activation, or truth deletion.
+  issue mutation, worker, autonomous activation, live core rewrite, or truth
+  deletion.
 
 ## Completed Phases
 
@@ -107,8 +105,6 @@
 - Add ready, limited, and blocked readiness status.
 - Status: completed in current v0.3 work.
 
-## Next Phase
-
 ## GENUS EGG v0.4 - SandboxPatch after Approval
 
 - Add PatchApproval, SandboxPatch, PatchFileChange, and PatchRiskAssessment.
@@ -128,8 +124,6 @@
 - No push, merge, rebase, or force-push.
 - Status: completed in current v0.6 work.
 
-## Next Phase
-
 ## GENUS EGG v0.7 - GitHubConnector Draft PR Only
 
 - Add GitHub metadata checks and draft-PR-only boundary.
@@ -137,8 +131,6 @@
 - No merge, auto-merge, issue mutation, labels, reviewers, secrets, or
   permission changes.
 - Status: completed in current v0.7 work.
-
-## Next Phase
 
 ## GENUS EGG v0.8 - Activation Boundary
 
@@ -148,8 +140,6 @@
 - Score, merge, and PR records activate nothing by themselves.
 - Status: completed in current v0.8 work.
 
-## Next Phase
-
 ## GENUS EGG v0.9 - Monitoring, Fossilization, and Rollback
 
 - Add CapabilityActivation, CapabilityMonitor, FossilRecord, and RollbackPlan.
@@ -157,12 +147,19 @@
 - Fossilization marks history without deleting truth.
 - Status: completed in current v0.9 work.
 
-## Next Phase
-
 ## GENUS EGG v1.0 - Complete EGG
 
 - Consolidate complete EGG system description.
 - Confirm CLI end-to-end demonstration.
 - Convert STATUS into capability matrix.
 - Mark post-1.0 topics separately.
-- Status: next.
+- Status: completed in current v1.0 work.
+
+## Post-1.0 Topics
+
+- richer physiology and resource economy
+- stronger local inspection Cockpit
+- Browser/mobile Habitats
+- multi-Habitat sync
+- more formal approval language
+- social/coordination dynamics between Habitats

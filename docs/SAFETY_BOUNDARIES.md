@@ -1,6 +1,6 @@
 # Safety Boundaries
 
-These rules are hard boundaries for GENUS EGG package version `0.9.0`.
+These rules are hard boundaries for GENUS EGG package version `1.0.0`.
 
 - No model writes directly.
 - No memory exists without a `MeaningCandidate`.
