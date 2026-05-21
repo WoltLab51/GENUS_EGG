@@ -1,5 +1,12 @@
 # GENUS EGG Roadmap
 
+## Current Version
+
+- Package version: `0.1.0`
+- Architecture level: completed EGG-v0 slice plus EGG v0.1 PatternDetector.
+- Current boundary: draft needs and proposals only; no patch, Git, GitHub, or
+  activation.
+
 ## Completed Phases
 
 ## Phase 0.0 - Project Skeleton
@@ -57,7 +64,7 @@
 - Only proposal, rationale, and test plan.
 - Definition of done: GENUS can explain that it proposes a new
   `ReactionSpec index_memory` because memory retrieval would benefit from it.
-- Status: completed in the phase 0.6 implementation.
+- Status: completed in `5b8b294`.
 
 ## EGG v0.1 - PatternDetector
 
@@ -65,7 +72,7 @@
 - Add first real CapabilityNeed detection from stored observations.
 - Definition of done: `genus-egg needs detect` can derive a draft memory
   indexing need from successful memory-chain observations.
-- Status: completed in the EGG v0.1 PatternDetector implementation.
+- Status: completed in `8b6b808`.
 
 ## Next Phase
 

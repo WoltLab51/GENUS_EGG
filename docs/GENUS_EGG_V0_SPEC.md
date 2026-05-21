@@ -1,8 +1,9 @@
-# GENUS EGG v0 Spec
+# GENUS EGG v0.1 Spec
 
 ## Goal
 
-Implement the first governed GENUS EGG v0 slice through phase `0.6`:
+Implement the first governed GENUS EGG slice through package version `0.1.0`:
+the completed EGG-v0 slice (`0.0-0.6`) plus EGG v0.1 PatternDetector.
 
 ```text
 RawInput -> MeaningCandidate -> ValidationResult -> ReactionProduct -> MemoryObject
@@ -84,7 +85,7 @@ or automatic activation is allowed.
 
 ## First Growth Simulation v0.6
 
-GENUS can explain: `Ich schlage eine neue ReactionSpec index_memory vor, weil Memory-Retrieval später davon profitieren könnte.`
+GENUS can explain: `Ich schlage eine neue ReactionSpec index_memory vor, weil Memory-Retrieval spaeter davon profitieren koennte.`
 The simulation stores only draft proposal objects and a test plan. It creates no
 patch, runs no Git command, and does not register or activate a runtime reaction.
 
@@ -93,3 +94,8 @@ patch, runs no Git command, and does not register or activate a runtime reaction
 The PatternDetector scans existing `ObservationRecord` data and can derive the
 draft memory indexing `CapabilityNeed` from observed successful memory chains.
 It does not activate the need, write code, create patches, or run Git.
+
+## Version Mapping
+
+- Package `0.0.2`: EGG-v0 foundation through Reaction Core v0.2.
+- Package `0.1.0`: EGG-v0 completed through v0.6 plus EGG v0.1 PatternDetector.

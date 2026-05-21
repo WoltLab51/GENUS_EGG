@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
+from genus_egg import __version__
 from genus_egg.development.development_boundary import (
     CapabilityNeedNotFoundError,
     DevelopmentBoundary,
@@ -22,6 +23,11 @@ DEFAULT_DB = Path("data/genus_egg.sqlite")
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="genus-egg")
+    parser.add_argument(
+        "--version",
+        action="version",
+        version=f"genus-egg {__version__}",
+    )
     parser.add_argument("--db", default=str(DEFAULT_DB), help="SQLite database path")
 
     subparsers = parser.add_subparsers(dest="command", required=True)

@@ -1,7 +1,7 @@
 # Safety Boundaries
 
-These rules are hard boundaries for GENUS EGG through the current EGG v0.1
-PatternDetector phase:
+These rules are hard boundaries for GENUS EGG package version `0.1.0`, through
+the current EGG v0.1 PatternDetector phase:
 
 - No model writes directly.
 - No memory exists without a `MeaningCandidate`.

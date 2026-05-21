@@ -1,9 +1,8 @@
 # GENUS EGG
 
 GENUS EGG is a minimal, governed reaction organism. The current implementation
-covers phases `0.0-0.6` plus the first `EGG v0.1` seed: deterministic memory
-reaction, habitat awareness, maturation records, a blocked development boundary,
-first growth simulation, and PatternDetector-based need detection.
+covers package version `0.1.0`: the completed EGG-v0 slice (`0.0-0.6`) plus
+the first EGG v0.1 capability, PatternDetector-based need detection.
 
 ```text
 RawInput -> MeaningCandidate -> ValidationResult -> ReactionProduct -> MemoryObject
@@ -16,6 +15,7 @@ this version.
 ## Quick Start
 
 ```powershell
+python -m genus_egg.cli --version
 python -m genus_egg.cli --db data/genus_egg.sqlite remember "larumipsum"
 python -m genus_egg.cli --db data/genus_egg.sqlite memories
 python -m genus_egg.cli --db data/genus_egg.sqlite ledger --chain <chain_id>
@@ -30,6 +30,7 @@ python -m genus_egg.cli --db data/genus_egg.sqlite growth simulate-memory-indexi
 After installing the project, the console entrypoint is also available:
 
 ```powershell
+genus-egg --version
 genus-egg --db data/genus_egg.sqlite remember "larumipsum"
 genus-egg --db data/genus_egg.sqlite habitat
 genus-egg --db data/genus_egg.sqlite observations
