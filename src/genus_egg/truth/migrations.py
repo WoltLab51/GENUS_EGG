@@ -95,6 +95,35 @@ CREATE TABLE IF NOT EXISTS habitat_manifest (
     payload_json TEXT,
     created_at TEXT NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS reaction_outcomes (
+    outcome_id TEXT PRIMARY KEY,
+    chain_id TEXT NOT NULL,
+    final_status TEXT NOT NULL,
+    final_product_type TEXT,
+    success INTEGER NOT NULL,
+    reason_code TEXT,
+    duration_ms INTEGER,
+    created_at TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS observation_records (
+    observation_id TEXT PRIMARY KEY,
+    chain_id TEXT NOT NULL,
+    observation_type TEXT NOT NULL,
+    payload_json TEXT NOT NULL,
+    created_at TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS capability_needs (
+    need_id TEXT PRIMARY KEY,
+    source_observation_id TEXT,
+    need_type TEXT NOT NULL,
+    description TEXT NOT NULL,
+    status TEXT NOT NULL,
+    payload_json TEXT,
+    created_at TEXT NOT NULL
+);
 """
 
 

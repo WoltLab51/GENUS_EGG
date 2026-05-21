@@ -17,6 +17,8 @@ python -m genus_egg.cli --db data/genus_egg.sqlite remember "larumipsum"
 python -m genus_egg.cli --db data/genus_egg.sqlite memories
 python -m genus_egg.cli --db data/genus_egg.sqlite ledger --chain <chain_id>
 python -m genus_egg.cli --db data/genus_egg.sqlite habitat
+python -m genus_egg.cli --db data/genus_egg.sqlite observations
+python -m genus_egg.cli --db data/genus_egg.sqlite needs draft-memory-indexing
 ```
 
 After installing the project, the console entrypoint is also available:
@@ -24,6 +26,8 @@ After installing the project, the console entrypoint is also available:
 ```powershell
 genus-egg --db data/genus_egg.sqlite remember "larumipsum"
 genus-egg --db data/genus_egg.sqlite habitat
+genus-egg --db data/genus_egg.sqlite observations
+genus-egg --db data/genus_egg.sqlite needs draft-memory-indexing
 ```
 
 ## Development

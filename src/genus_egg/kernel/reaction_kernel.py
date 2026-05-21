@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from time import perf_counter
 
 from genus_egg.ids import new_id
 from genus_egg.kernel.artifacts import (
@@ -15,6 +16,7 @@ from genus_egg.kernel.reaction_graph import ReactionGraph
 from genus_egg.kernel.reaction_registry import ReactionRegistry
 from genus_egg.kernel.reaction_spec import ReactionSpec
 from genus_egg.kernel.working_set import WorkingSet
+from genus_egg.maturation.maturation_seed import MaturationSeed
 from genus_egg.memory.memory_object import MemoryObject
 from genus_egg.semantics.raw_input import RawInput
 from genus_egg.semantics.semantic_parse_adapter import SemanticParseAdapter
@@ -41,6 +43,7 @@ class ReactionKernel:
         self.registry = registry or self._default_registry()
 
     def remember(self, text: str) -> KernelResult:
+        started_at = perf_counter()
         chain_id = new_id("chain")
         raw_input = RawInput(
             input_id=new_id("input"),
@@ -87,6 +90,11 @@ class ReactionKernel:
             self._persist_reaction_output(reaction.name, product)
 
             if reaction.name == "create_memory":
+                self._record_maturation_success(
+                    working_set,
+                    reason_code="memory_created",
+                    duration_ms=int((perf_counter() - started_at) * 1000),
+                )
                 return self._result(working_set, "completed", "memory_created")
 
             depth += 1
@@ -248,6 +256,16 @@ class ReactionKernel:
                 target_id=None,
                 payload={"reason_code": "memory_created"},
             )
+
+    def _record_maturation_success(
+        self, working_set: WorkingSet, reason_code: str, duration_ms: int
+    ) -> None:
+        MaturationSeed(self.store).record_successful_memory_chain(
+            chain_id=working_set.chain_id,
+            reason_code=reason_code,
+            duration_ms=duration_ms,
+            ledger_entries=len(self.ledger.list_by_chain(working_set.chain_id)),
+        )
 
     def _result(
         self, working_set: WorkingSet, outcome: str, reason_code: str

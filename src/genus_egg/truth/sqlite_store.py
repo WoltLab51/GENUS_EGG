@@ -6,6 +6,9 @@ from typing import Any
 
 from genus_egg.habitat.habitat_manifest import HabitatManifest
 from genus_egg.kernel.artifacts import ReactionProduct, ReactionRecord, ValidationResult
+from genus_egg.maturation.capability_need import CapabilityNeed
+from genus_egg.maturation.observation_record import ObservationRecord
+from genus_egg.maturation.reaction_outcome import ReactionOutcome
 from genus_egg.memory.memory_object import MemoryObject
 from genus_egg.semantics.meaning_candidate import MeaningCandidate
 from genus_egg.semantics.raw_input import RawInput
@@ -232,6 +235,128 @@ class SQLiteStore:
             payload_json=row["payload_json"],
             created_at=row["created_at"],
         )
+
+    def save_reaction_outcome(self, outcome: ReactionOutcome) -> None:
+        self.connection.execute(
+            """
+            INSERT INTO reaction_outcomes
+            (outcome_id, chain_id, final_status, final_product_type, success,
+             reason_code, duration_ms, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                outcome.outcome_id,
+                outcome.chain_id,
+                outcome.final_status,
+                outcome.final_product_type,
+                int(outcome.success),
+                outcome.reason_code,
+                outcome.duration_ms,
+                outcome.created_at,
+            ),
+        )
+        self.connection.commit()
+
+    def list_reaction_outcomes(self) -> list[ReactionOutcome]:
+        rows = self.connection.execute(
+            """
+            SELECT outcome_id, chain_id, final_status, final_product_type,
+                   success, reason_code, duration_ms, created_at
+            FROM reaction_outcomes
+            ORDER BY created_at, rowid
+            """
+        ).fetchall()
+        return [
+            ReactionOutcome(
+                outcome_id=row["outcome_id"],
+                chain_id=row["chain_id"],
+                final_status=row["final_status"],
+                final_product_type=row["final_product_type"],
+                success=bool(row["success"]),
+                reason_code=row["reason_code"],
+                duration_ms=row["duration_ms"],
+                created_at=row["created_at"],
+            )
+            for row in rows
+        ]
+
+    def save_observation_record(self, observation: ObservationRecord) -> None:
+        self.connection.execute(
+            """
+            INSERT INTO observation_records
+            (observation_id, chain_id, observation_type, payload_json, created_at)
+            VALUES (?, ?, ?, ?, ?)
+            """,
+            (
+                observation.observation_id,
+                observation.chain_id,
+                observation.observation_type,
+                observation.payload_json,
+                observation.created_at,
+            ),
+        )
+        self.connection.commit()
+
+    def list_observation_records(self) -> list[ObservationRecord]:
+        rows = self.connection.execute(
+            """
+            SELECT observation_id, chain_id, observation_type, payload_json, created_at
+            FROM observation_records
+            ORDER BY created_at, rowid
+            """
+        ).fetchall()
+        return [
+            ObservationRecord(
+                observation_id=row["observation_id"],
+                chain_id=row["chain_id"],
+                observation_type=row["observation_type"],
+                payload_json=row["payload_json"],
+                created_at=row["created_at"],
+            )
+            for row in rows
+        ]
+
+    def save_capability_need(self, need: CapabilityNeed) -> None:
+        self.connection.execute(
+            """
+            INSERT INTO capability_needs
+            (need_id, source_observation_id, need_type, description, status,
+             payload_json, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                need.need_id,
+                need.source_observation_id,
+                need.need_type,
+                need.description,
+                need.status,
+                need.payload_json,
+                need.created_at,
+            ),
+        )
+        self.connection.commit()
+
+    def list_capability_needs(self) -> list[CapabilityNeed]:
+        rows = self.connection.execute(
+            """
+            SELECT need_id, source_observation_id, need_type, description, status,
+                   payload_json, created_at
+            FROM capability_needs
+            ORDER BY created_at, rowid
+            """
+        ).fetchall()
+        return [
+            CapabilityNeed(
+                need_id=row["need_id"],
+                source_observation_id=row["source_observation_id"],
+                need_type=row["need_type"],
+                description=row["description"],
+                status=row["status"],
+                payload_json=row["payload_json"],
+                created_at=row["created_at"],
+            )
+            for row in rows
+        ]
 
     def count_rows(self, table: str) -> int:
         if table not in self.table_names():

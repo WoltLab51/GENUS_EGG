@@ -5,6 +5,7 @@ from pathlib import Path
 
 from genus_egg.habitat.environment_probe import EnvironmentProbe
 from genus_egg.kernel.reaction_kernel import ReactionKernel
+from genus_egg.maturation.maturation_seed import MaturationSeed
 from genus_egg.memory.memory_store import MemoryStore
 from genus_egg.truth.ledger import Ledger
 from genus_egg.truth.sqlite_store import SQLiteStore
@@ -29,6 +30,16 @@ def build_parser() -> argparse.ArgumentParser:
 
     habitat = subparsers.add_parser("habitat", help="Probe and store the local habitat")
     habitat.add_argument("--db", default=argparse.SUPPRESS, help="SQLite database path")
+
+    subparsers.add_parser("observations", help="List maturation observations")
+
+    needs = subparsers.add_parser("needs", help="List or draft capability needs")
+    needs.add_argument(
+        "action",
+        nargs="?",
+        choices=["list", "draft-memory-indexing"],
+        default="list",
+    )
 
     return parser
 
@@ -78,6 +89,33 @@ def main(argv: list[str] | None = None) -> int:
             print(f"sqlite_path: {manifest.sqlite_path}")
             print(f"git_available: {str(manifest.git_available).lower()}")
             print(f"network_allowed: {str(manifest.network_allowed).lower()}")
+            return 0
+
+        if args.command == "observations":
+            for observation in store.list_observation_records():
+                print(
+                    f"{observation.observation_id}\t{observation.chain_id}\t"
+                    f"{observation.observation_type}"
+                )
+            return 0
+
+        if args.command == "needs":
+            if args.action == "draft-memory-indexing":
+                observations = store.list_observation_records()
+                source_observation_id = (
+                    observations[-1].observation_id if observations else None
+                )
+                need = MaturationSeed(store).draft_memory_indexing_need(
+                    source_observation_id=source_observation_id
+                )
+                print(f"CapabilityNeed drafted: {need.description}")
+                print(f"Need: {need.need_id}")
+                print(f"Status: {need.status}")
+                print(f"Activation: none")
+                return 0
+
+            for need in store.list_capability_needs():
+                print(f"{need.need_id}\t{need.status}\t{need.description}")
             return 0
 
         return 2

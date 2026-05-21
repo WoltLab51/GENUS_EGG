@@ -25,6 +25,7 @@
 
 - Phase 0.3: Habitat Core v0 with `genus-egg habitat`, `HabitatManifest`,
   `EnvironmentProbe`, and `PermissionProfile`.
-- Phase 0.4: Maturation Seed.
+- Phase 0.4: Maturation Seed with `ReactionOutcome`, `ObservationRecord`, and
+  draft-only `CapabilityNeed`.
 - Phase 0.5: Development Boundary.
 - Phase 0.6: First Growth Simulation.
