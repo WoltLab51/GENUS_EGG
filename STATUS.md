@@ -2,9 +2,9 @@
 
 ## Current Version
 
-- Package version: `0.1.0`
-- Architecture scope: EGG-v0 base plus v0.1 Shadow Testing and Fitness
-  Evaluation
+- Package version: `0.2.0`
+- Architecture scope: EGG-v0 base plus Shadow/Fitness evaluation and read-only
+  Inspection Cockpit
 - Persistence: SQLite is the only source of truth
 - Ledger: append-only
 
@@ -17,6 +17,7 @@
 - Growth Simulation: explainable draft proposal chain with no patch and no Git
 - Shadow Testing: persisted `ShadowTestPlan` objects for code proposals
 - Fitness Evaluation: persisted scores and rationales with activation blocked
+- Inspection Cockpit: read-only local projection over SQLite truth
 
 ## Draft-Safe Boundaries
 
@@ -36,6 +37,9 @@ execute code, write files, create patches, or run Git/GitHub.
 Fitness Evaluation is draft-safe only. Scores and rationales are informational;
 they do not activate proposals.
 
+Inspection Cockpit is read-only only. It renders local visibility from SQLite
+and does not write records, trigger routes, run workers, or call Git/GitHub.
+
 ## Explicitly Not Present
 
 - no file modification by GENUS runtime
@@ -46,7 +50,7 @@ they do not activate proposals.
 - no patch generation
 - no autonomous activation
 - no runtime self-modification
-- no dashboard
+- no write-capable dashboard
 - no LLM call
 
 ## Verification

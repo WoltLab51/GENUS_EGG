@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "genus-egg"
-version = "0.1.0"
-description = "SQLite-backed governed reaction organism for GENUS EGG v0.1."
+version = "0.2.0"
+description = "SQLite-backed governed reaction organism for GENUS EGG v0.2."
 readme = "README.md"
 requires-python = ">=3.12"
 authors = [{ name = "GENUS EGG" }]
@@ -22,4 +22,4 @@ where = ["src"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["src"]
-addopts = "--basetemp=.pytest-tmp"
+addopts = "--basetemp=.pytest-tmp-genus -p no:cacheprovider"

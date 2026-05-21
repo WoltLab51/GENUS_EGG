@@ -181,6 +181,17 @@ class SQLiteStore:
             for row in rows
         ]
 
+    def list_ledger_entries(self) -> list[dict[str, Any]]:
+        rows = self.connection.execute(
+            """
+            SELECT ledger_id, chain_id, step, event_type, source_kind, source_id,
+                   target_kind, target_id, payload_json, created_at
+            FROM ledger_entries
+            ORDER BY created_at, rowid
+            """
+        ).fetchall()
+        return [dict(row) for row in rows]
+
     def save_habitat_manifest(self, manifest: HabitatManifest) -> None:
         self.connection.execute(
             """

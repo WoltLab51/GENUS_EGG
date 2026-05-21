@@ -1,3 +1,3 @@
-"""GENUS EGG v0.1 governed reaction organism."""
+"""GENUS EGG v0.2 governed reaction organism."""
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"

@@ -1,13 +1,14 @@
 # GENUS EGG
 
-GENUS EGG `v0.1.0` is a minimal, governed reaction organism backed by SQLite.
-It contains the consolidated EGG-v0 base plus the first v0.1 evaluation layer:
-Shadow Testing and Fitness Evaluation.
+GENUS EGG `v0.2.0` is a minimal, governed reaction organism backed by SQLite.
+It contains the consolidated EGG-v0 base, the v0.1 evaluation layer, and the
+first read-only Inspection Cockpit.
 
 SQLite is the source of truth. The ledger is append-only. GENUS may remember,
-observe, draft, simulate, shadow-test, and evaluate proposals. It still may not
-modify files, generate patches, run Git/GitHub actions, start workers, call an
-LLM, or activate new runtime behavior.
+observe, draft, simulate, shadow-test, evaluate proposals, and render local
+inspection snapshots. It still may not modify files, generate patches, run
+Git/GitHub actions, start workers, call an LLM, or activate new runtime
+behavior.
 
 ```text
 RawInput -> MeaningCandidate -> ValidationResult -> ReactionProduct -> MemoryObject
@@ -91,6 +92,16 @@ draft `CodeChangeProposal` and its `ShadowTestPlan` against fixed criteria:
 
 The score is numeric from `0` to `100`, stored in SQLite, and never activates
 the proposal. `genus-egg fitness list` lists stored evaluations.
+
+## Inspection Cockpit
+
+The Inspection Cockpit is a read-only projection over SQLite truth. It provides
+a `CockpitDataAdapter` for counters across Memories, Ledger, Habitat,
+Observations, Needs, Proposals, Shadow Plans, and Fitness Scores, plus a small
+HTML renderer for local inspection.
+
+The cockpit does not expose writes, routes, workers, auth, cloud sync, Git,
+GitHub, patch creation, or activation.
 
 ## CLI
 

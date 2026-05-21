@@ -1,6 +1,7 @@
 __pycache__/
 .pytest_cache/
 .pytest-tmp/
+.pytest-tmp-genus/
 .mypy_cache/
 .ruff_cache/
 .venv/

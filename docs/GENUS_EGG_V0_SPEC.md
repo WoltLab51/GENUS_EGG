@@ -1,16 +1,16 @@
-# GENUS EGG v0/v0.1 Spec
+# GENUS EGG v0/v0.2 Spec
 
 ## Goal
 
-GENUS EGG `0.1.0` extends the consolidated EGG-v0 base with the first
-draft-safe evaluation layer: Shadow Testing and Fitness Evaluation.
+GENUS EGG `0.2.0` extends the consolidated EGG-v0 base and v0.1 evaluation
+layer with a read-only Inspection Cockpit.
 
 The system may remember deterministic user input, persist its local habitat,
 record maturation observations, draft capability needs, draft development
-proposals, explain a growth proposal, create shadow test plans, and score draft
-proposals. It must not modify files, generate patches, run Git/GitHub actions,
-execute proposal code, register new runtime reactions, or activate new
-capabilities.
+proposals, explain a growth proposal, create shadow test plans, score draft
+proposals, and render local inspection snapshots. It must not modify files,
+generate patches, run Git/GitHub actions, execute proposal code, register new
+runtime reactions, or activate new capabilities.
 
 ```text
 RawInput -> MeaningCandidate -> ValidationResult -> ReactionProduct -> MemoryObject
@@ -183,9 +183,19 @@ The evaluation stores:
 
 Scores do not activate anything. They are informational draft-safe records.
 
+## Inspection Cockpit v0.2
+
+`CockpitDataAdapter` reads SQLite truth and projects counts for Memories,
+Ledger, Habitat, Reaction Outcomes, Observations, Needs, Proposals, Shadow
+Plans, and Fitness Evaluations.
+
+`CockpitHtmlRenderer` renders the snapshot into a local HTML inspection view.
+It is read-only: no route, renderer, or adapter writes to SQLite, starts
+workers, runs Git/GitHub, creates patches, or activates proposals.
+
 ## Persistence
 
-The `0.1.0` schema contains:
+The `0.2.0` schema contains:
 
 - `raw_inputs`
 - `meaning_candidates`
@@ -212,3 +222,4 @@ SQLite is the only source of truth. JSON payloads are stored as text.
   Core, Maturation Seed, Development Boundary, and First Growth Simulation.
 - Package `0.1.0`: Shadow Testing and Fitness Evaluation for existing draft
   `CodeChangeProposal` records.
+- Package `0.2.0`: Read-only Inspection Cockpit over SQLite truth.

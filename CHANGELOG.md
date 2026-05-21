@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.2.0 - 2026-05-21
+
+- Added read-only Inspection Cockpit data projection.
+- Added local HTML rendering for Cockpit snapshots.
+- Added tests proving the Cockpit reads Memories, Ledger, Habitat,
+  Observations, Needs, Proposals, Shadow Plans, and Fitness Scores without
+  writing to SQLite.
+- Kept runtime scope closed: no auth, cloud, worker, patch, Git/GitHub, or
+  activation.
+
 ## 0.1.0 - 2026-05-21
 
 - Added draft-safe Shadow Testing for existing `CodeChangeProposal` records.
