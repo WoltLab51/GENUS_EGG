@@ -235,6 +235,45 @@ CREATE TABLE IF NOT EXISTS patch_file_changes (
     payload_json TEXT,
     created_at TEXT NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS test_runs (
+    test_run_id TEXT PRIMARY KEY,
+    patch_id TEXT NOT NULL,
+    command_name TEXT NOT NULL,
+    status TEXT NOT NULL,
+    payload_json TEXT,
+    created_at TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS test_results (
+    test_result_id TEXT PRIMARY KEY,
+    test_run_id TEXT NOT NULL,
+    result TEXT NOT NULL,
+    passed INTEGER NOT NULL,
+    summary TEXT NOT NULL,
+    payload_json TEXT,
+    created_at TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS evidence_records (
+    evidence_id TEXT PRIMARY KEY,
+    source_kind TEXT NOT NULL,
+    source_id TEXT NOT NULL,
+    code_proposal_id TEXT NOT NULL,
+    evidence_type TEXT NOT NULL,
+    summary TEXT NOT NULL,
+    payload_json TEXT,
+    created_at TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS evidence_chains (
+    evidence_chain_id TEXT PRIMARY KEY,
+    code_proposal_id TEXT NOT NULL,
+    evidence_ids_json TEXT NOT NULL,
+    status TEXT NOT NULL,
+    payload_json TEXT,
+    created_at TEXT NOT NULL
+);
 """
 
 

@@ -19,6 +19,9 @@ class CockpitSnapshot:
     fitness_evaluation_count: int
     sandbox_patch_count: int
     patch_approval_count: int
+    test_run_count: int
+    evidence_record_count: int
+    evidence_chain_count: int
     latest_habitat_id: str | None
     latest_fitness_score: int | None
     activation_state: str

@@ -1,6 +1,6 @@
 # Safety Boundaries
 
-These rules are hard boundaries for GENUS EGG package version `0.4.0`.
+These rules are hard boundaries for GENUS EGG package version `0.5.0`.
 
 - No model writes directly.
 - No memory exists without a `MeaningCandidate`.
@@ -21,6 +21,8 @@ These rules are hard boundaries for GENUS EGG package version `0.4.0`.
 - Habitat readiness is informational and grants no permissions.
 - SandboxPatch records require explicit PatchApproval.
 - SandboxPatch records are not applied to the working tree.
+- TestRunner is limited to controlled internal checks, not arbitrary shell.
+- Evidence records are informational and activate nothing.
 - `ApprovalGate` blocks file modification and activation.
 - Growth Simulation creates no patch and runs no Git.
 - Shadow Testing executes no code and writes no files.

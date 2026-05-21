@@ -22,6 +22,9 @@ class CockpitHtmlRenderer:
             ("Fitness Evaluations", snapshot.fitness_evaluation_count),
             ("Patch Approvals", snapshot.patch_approval_count),
             ("Sandbox Patches", snapshot.sandbox_patch_count),
+            ("Test Runs", snapshot.test_run_count),
+            ("Evidence Records", snapshot.evidence_record_count),
+            ("Evidence Chains", snapshot.evidence_chain_count),
         ]
         table_rows = "\n".join(
             f"<tr><th>{escape(label)}</th><td>{value}</td></tr>"

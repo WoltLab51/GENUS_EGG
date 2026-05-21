@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.5.0 - 2026-05-21
+
+- Added controlled TestRunner for sandbox patch static checks.
+- Added `TestRun`, `TestResult`, `EvidenceRecord`, and `EvidenceChain`.
+- Added SQLite tables for test and evidence records.
+- Added `genus-egg tests run --patch PATCH_ID` and `genus-egg evidence list`.
+- Fitness Evaluation now references stored evidence when present.
+- Kept tests internal and bounded: no arbitrary shell executor and no
+  activation.
+
 ## 0.4.0 - 2026-05-21
 
 - Added SandboxPatch Boundary with explicit `PatchApproval`.

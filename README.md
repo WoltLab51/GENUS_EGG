@@ -1,9 +1,9 @@
 # GENUS EGG
 
-GENUS EGG `v0.4.0` is a minimal, governed reaction organism backed by SQLite.
+GENUS EGG `v0.5.0` is a minimal, governed reaction organism backed by SQLite.
 It contains the consolidated EGG-v0 base, the v0.1 evaluation layer, the
 read-only Inspection Cockpit, Habitat Contract v1, and the SandboxPatch
-Boundary.
+Boundary, and EvidenceChain.
 
 SQLite is the source of truth. The ledger is append-only. GENUS may remember,
 observe, draft, simulate, shadow-test, evaluate proposals, render local
@@ -120,6 +120,16 @@ approval for a draft sandbox patch. `genus-egg patch draft --code-proposal
 No patch is applied to the working tree. No Git or GitHub action is run.
 Activation remains blocked.
 
+## EvidenceChain
+
+`genus-egg tests run --patch <patch_id>` runs the controlled internal
+`sandbox_patch_static_check` and stores `TestRun`, `TestResult`,
+`EvidenceRecord`, and `EvidenceChain` records. `genus-egg evidence list` shows
+stored evidence.
+
+The runner is not a general shell executor. Evidence can improve Fitness
+Evaluation context, but still activates nothing.
+
 ## CLI
 
 All commands accept `--db PATH`; the default database is
@@ -145,6 +155,8 @@ genus-egg --db data/genus_egg.sqlite fitness list
 genus-egg --db data/genus_egg.sqlite patch approve --code-proposal <code_proposal_id>
 genus-egg --db data/genus_egg.sqlite patch draft --code-proposal <code_proposal_id>
 genus-egg --db data/genus_egg.sqlite patch list
+genus-egg --db data/genus_egg.sqlite tests run --patch <patch_id>
+genus-egg --db data/genus_egg.sqlite evidence list
 ```
 
 The same commands can also be run as a module during local development:

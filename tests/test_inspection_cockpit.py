@@ -4,6 +4,7 @@ from genus_egg.cockpit.data_adapter import CockpitDataAdapter
 from genus_egg.cockpit.html_renderer import CockpitHtmlRenderer
 from genus_egg.development.development_boundary import DevelopmentBoundary
 from genus_egg.evaluation.fitness_evaluator import FitnessEvaluator
+from genus_egg.evidence.test_runner import TestRunner
 from genus_egg.evaluation.shadow_tester import ShadowTester
 from genus_egg.habitat.environment_probe import EnvironmentProbe
 from genus_egg.habitat.habitat_contract import HabitatContract
@@ -32,7 +33,8 @@ def _populate_cockpit_fixture(store: SQLiteStore) -> None:
     FitnessEvaluator(store).evaluate(code_proposal.code_proposal_id)
     patch_boundary = SandboxPatchBoundary(store)
     patch_boundary.approve(code_proposal.code_proposal_id)
-    patch_boundary.draft(code_proposal.code_proposal_id)
+    patch, _, _ = patch_boundary.draft(code_proposal.code_proposal_id)
+    TestRunner(store).run_for_patch(patch.patch_id)
     assert result.ledger_entries == 7
 
 
@@ -56,6 +58,9 @@ def test_cockpit_data_adapter_reads_all_relevant_object_counts(tmp_path):
     assert snapshot.fitness_evaluation_count == 1
     assert snapshot.patch_approval_count == 1
     assert snapshot.sandbox_patch_count == 1
+    assert snapshot.test_run_count == 1
+    assert snapshot.evidence_record_count == 1
+    assert snapshot.evidence_chain_count == 1
     assert snapshot.latest_habitat_id is not None
     assert snapshot.latest_fitness_score is not None
     assert snapshot.activation_state == "blocked"
@@ -84,6 +89,10 @@ def test_cockpit_adapter_is_read_only(tmp_path):
             "sandbox_patches",
             "patch_file_changes",
             "patch_risk_assessments",
+            "test_runs",
+            "test_results",
+            "evidence_records",
+            "evidence_chains",
         ]
     }
 

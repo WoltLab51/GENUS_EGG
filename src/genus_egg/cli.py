@@ -14,6 +14,7 @@ from genus_egg.evaluation.shadow_tester import (
     CodeChangeProposalNotFoundError,
     ShadowTester,
 )
+from genus_egg.evidence.test_runner import SandboxPatchNotFoundError, TestRunner
 from genus_egg.habitat.environment_probe import EnvironmentProbe
 from genus_egg.habitat.habitat_contract import HabitatContract
 from genus_egg.kernel.reaction_kernel import ReactionKernel
@@ -101,6 +102,13 @@ def build_parser() -> argparse.ArgumentParser:
     patch = subparsers.add_parser("patch", help="Approve or draft sandbox patches")
     patch.add_argument("action", choices=["approve", "draft", "list"])
     patch.add_argument("--code-proposal")
+
+    tests = subparsers.add_parser("tests", help="Run controlled GENUS test checks")
+    tests.add_argument("action", choices=["run"])
+    tests.add_argument("--patch")
+
+    evidence = subparsers.add_parser("evidence", help="List stored evidence records")
+    evidence.add_argument("action", choices=["list"])
 
     return parser
 
@@ -350,6 +358,35 @@ def main(argv: list[str] | None = None) -> int:
                 print(
                     f"{patch.patch_id}\t{patch.code_proposal_id}\t"
                     f"{patch.status}\t{patch.activation}"
+                )
+            return 0
+
+        if args.command == "tests":
+            if not args.patch:
+                print("Missing required --patch PATCH_ID")
+                return 2
+            try:
+                test_run, test_result, evidence, chain = TestRunner(store).run_for_patch(
+                    args.patch
+                )
+            except SandboxPatchNotFoundError as error:
+                print(str(error))
+                return 1
+            print(f"TestRun created: {test_run.test_run_id}")
+            print(f"TestResult: {test_result.test_result_id}")
+            print(f"Evidence: {evidence.evidence_id}")
+            print(f"EvidenceChain: {chain.evidence_chain_id}")
+            print(f"Result: {test_result.result}")
+            print("Command: sandbox_patch_static_check")
+            print("Shell: none")
+            print("Activation: blocked")
+            return 0
+
+        if args.command == "evidence":
+            for evidence in store.list_evidence_records():
+                print(
+                    f"{evidence.evidence_id}\t{evidence.code_proposal_id}\t"
+                    f"{evidence.evidence_type}\t{evidence.summary}"
                 )
             return 0
 

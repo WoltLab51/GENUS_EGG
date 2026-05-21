@@ -8,6 +8,10 @@ from genus_egg.development.capability_proposal import CapabilityProposal
 from genus_egg.development.code_change_proposal import CodeChangeProposal
 from genus_egg.evaluation.fitness_evaluation import FitnessEvaluation
 from genus_egg.evaluation.shadow_test_plan import ShadowTestPlan
+from genus_egg.evidence.evidence_chain import EvidenceChain
+from genus_egg.evidence.evidence_record import EvidenceRecord
+from genus_egg.evidence.test_result import TestResult
+from genus_egg.evidence.test_run import TestRun
 from genus_egg.habitat.habitat_manifest import HabitatManifest
 from genus_egg.habitat.habitat_readiness_report import HabitatReadinessReport
 from genus_egg.habitat.resource_snapshot import ResourceSnapshot
@@ -911,6 +915,29 @@ class SQLiteStore:
             for row in rows
         ]
 
+    def get_sandbox_patch(self, patch_id: str) -> SandboxPatch | None:
+        row = self.connection.execute(
+            """
+            SELECT patch_id, code_proposal_id, approval_id, risk_assessment_id,
+                   status, activation, payload_json, created_at
+            FROM sandbox_patches
+            WHERE patch_id = ?
+            """,
+            (patch_id,),
+        ).fetchone()
+        if row is None:
+            return None
+        return SandboxPatch(
+            patch_id=row["patch_id"],
+            code_proposal_id=row["code_proposal_id"],
+            approval_id=row["approval_id"],
+            risk_assessment_id=row["risk_assessment_id"],
+            status=row["status"],
+            activation=row["activation"],
+            payload_json=row["payload_json"],
+            created_at=row["created_at"],
+        )
+
     def save_patch_file_change(self, change: PatchFileChange) -> None:
         self.connection.execute(
             """
@@ -947,6 +974,179 @@ class SQLiteStore:
                 target_path=row["target_path"],
                 change_type=row["change_type"],
                 content_preview=row["content_preview"],
+                payload_json=row["payload_json"],
+                created_at=row["created_at"],
+            )
+            for row in rows
+        ]
+
+    def save_test_run(self, test_run: TestRun) -> None:
+        self.connection.execute(
+            """
+            INSERT INTO test_runs
+            (test_run_id, patch_id, command_name, status, payload_json, created_at)
+            VALUES (?, ?, ?, ?, ?, ?)
+            """,
+            (
+                test_run.test_run_id,
+                test_run.patch_id,
+                test_run.command_name,
+                test_run.status,
+                test_run.payload_json,
+                test_run.created_at,
+            ),
+        )
+        self.connection.commit()
+
+    def list_test_runs(self) -> list[TestRun]:
+        rows = self.connection.execute(
+            """
+            SELECT test_run_id, patch_id, command_name, status, payload_json, created_at
+            FROM test_runs
+            ORDER BY created_at, rowid
+            """
+        ).fetchall()
+        return [
+            TestRun(
+                test_run_id=row["test_run_id"],
+                patch_id=row["patch_id"],
+                command_name=row["command_name"],
+                status=row["status"],
+                payload_json=row["payload_json"],
+                created_at=row["created_at"],
+            )
+            for row in rows
+        ]
+
+    def save_test_result(self, result: TestResult) -> None:
+        self.connection.execute(
+            """
+            INSERT INTO test_results
+            (test_result_id, test_run_id, result, passed, summary, payload_json,
+             created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                result.test_result_id,
+                result.test_run_id,
+                result.result,
+                int(result.passed),
+                result.summary,
+                result.payload_json,
+                result.created_at,
+            ),
+        )
+        self.connection.commit()
+
+    def list_test_results(self) -> list[TestResult]:
+        rows = self.connection.execute(
+            """
+            SELECT test_result_id, test_run_id, result, passed, summary,
+                   payload_json, created_at
+            FROM test_results
+            ORDER BY created_at, rowid
+            """
+        ).fetchall()
+        return [
+            TestResult(
+                test_result_id=row["test_result_id"],
+                test_run_id=row["test_run_id"],
+                result=row["result"],
+                passed=bool(row["passed"]),
+                summary=row["summary"],
+                payload_json=row["payload_json"],
+                created_at=row["created_at"],
+            )
+            for row in rows
+        ]
+
+    def save_evidence_record(self, evidence: EvidenceRecord) -> None:
+        self.connection.execute(
+            """
+            INSERT INTO evidence_records
+            (evidence_id, source_kind, source_id, code_proposal_id, evidence_type,
+             summary, payload_json, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                evidence.evidence_id,
+                evidence.source_kind,
+                evidence.source_id,
+                evidence.code_proposal_id,
+                evidence.evidence_type,
+                evidence.summary,
+                evidence.payload_json,
+                evidence.created_at,
+            ),
+        )
+        self.connection.commit()
+
+    def list_evidence_records(self) -> list[EvidenceRecord]:
+        rows = self.connection.execute(
+            """
+            SELECT evidence_id, source_kind, source_id, code_proposal_id,
+                   evidence_type, summary, payload_json, created_at
+            FROM evidence_records
+            ORDER BY created_at, rowid
+            """
+        ).fetchall()
+        return [
+            EvidenceRecord(
+                evidence_id=row["evidence_id"],
+                source_kind=row["source_kind"],
+                source_id=row["source_id"],
+                code_proposal_id=row["code_proposal_id"],
+                evidence_type=row["evidence_type"],
+                summary=row["summary"],
+                payload_json=row["payload_json"],
+                created_at=row["created_at"],
+            )
+            for row in rows
+        ]
+
+    def list_evidence_records_for_code_proposal(
+        self, code_proposal_id: str
+    ) -> list[EvidenceRecord]:
+        return [
+            evidence
+            for evidence in self.list_evidence_records()
+            if evidence.code_proposal_id == code_proposal_id
+        ]
+
+    def save_evidence_chain(self, chain: EvidenceChain) -> None:
+        self.connection.execute(
+            """
+            INSERT INTO evidence_chains
+            (evidence_chain_id, code_proposal_id, evidence_ids_json, status,
+             payload_json, created_at)
+            VALUES (?, ?, ?, ?, ?, ?)
+            """,
+            (
+                chain.evidence_chain_id,
+                chain.code_proposal_id,
+                chain.evidence_ids_json,
+                chain.status,
+                chain.payload_json,
+                chain.created_at,
+            ),
+        )
+        self.connection.commit()
+
+    def list_evidence_chains(self) -> list[EvidenceChain]:
+        rows = self.connection.execute(
+            """
+            SELECT evidence_chain_id, code_proposal_id, evidence_ids_json, status,
+                   payload_json, created_at
+            FROM evidence_chains
+            ORDER BY created_at, rowid
+            """
+        ).fetchall()
+        return [
+            EvidenceChain(
+                evidence_chain_id=row["evidence_chain_id"],
+                code_proposal_id=row["code_proposal_id"],
+                evidence_ids_json=row["evidence_ids_json"],
+                status=row["status"],
                 payload_json=row["payload_json"],
                 created_at=row["created_at"],
             )

@@ -1,18 +1,18 @@
-# GENUS EGG v0/v0.4 Spec
+# GENUS EGG v0/v0.5 Spec
 
 ## Goal
 
-GENUS EGG `0.4.0` extends the consolidated EGG-v0 base, v0.1 evaluation layer,
+GENUS EGG `0.5.0` extends the consolidated EGG-v0 base, v0.1 evaluation layer,
 read-only Inspection Cockpit, and Habitat Contract v1 with a SandboxPatch
-Boundary.
+Boundary and EvidenceChain.
 
 The system may remember deterministic user input, persist its local habitat,
 record maturation observations, draft capability needs, draft development
 proposals, explain a growth proposal, create shadow test plans, score draft
 proposals, render local inspection snapshots, assess habitat readiness, and
 draft sandbox patch records after approval. It must not modify files, apply
-patches, run Git/GitHub actions, execute proposal code, register new runtime
-reactions, or activate new capabilities.
+patches, run Git/GitHub actions, execute arbitrary commands, register new
+runtime reactions, or activate new capabilities.
 
 ```text
 RawInput -> MeaningCandidate -> ValidationResult -> ReactionProduct -> MemoryObject
@@ -53,6 +53,9 @@ CapabilityNeed -> CapabilityProposal -> CodeChangeProposal
 - `genus-egg patch draft --code-proposal CODE_PROPOSAL_ID` stores draft-only
   sandbox patch records.
 - `genus-egg patch list` lists stored sandbox patches.
+- `genus-egg tests run --patch PATCH_ID` runs the controlled internal
+  `sandbox_patch_static_check`.
+- `genus-egg evidence list` lists stored evidence records.
 - `--db PATH` selects the SQLite database; default is `data/genus_egg.sqlite`.
 
 ## Reaction Core v0.0-0.2
@@ -229,9 +232,25 @@ Patch targets must be inside the proposal allowed paths and outside forbidden
 paths. The boundary stores proposed file changes only; it does not write files,
 apply patches, run Git, call GitHub, or activate anything.
 
+## TestRunner and EvidenceChain v0.5
+
+`TestRunner` is bounded to the internal `sandbox_patch_static_check`. It is not
+a general shell executor.
+
+For a `SandboxPatch`, it stores:
+
+- `TestRun`
+- `TestResult`
+- `EvidenceRecord`
+- `EvidenceChain`
+
+`FitnessEvaluator` references stored evidence when it evaluates a related
+`CodeChangeProposal`. Evidence improves traceability, but it does not activate
+the proposal.
+
 ## Persistence
 
-The `0.4.0` schema contains:
+The `0.5.0` schema contains:
 
 - `raw_inputs`
 - `meaning_candidates`
@@ -254,6 +273,10 @@ The `0.4.0` schema contains:
 - `patch_risk_assessments`
 - `sandbox_patches`
 - `patch_file_changes`
+- `test_runs`
+- `test_results`
+- `evidence_records`
+- `evidence_chains`
 
 SQLite is the only source of truth. JSON payloads are stored as text.
 
@@ -269,3 +292,4 @@ SQLite is the only source of truth. JSON payloads are stored as text.
   HabitatReadinessReport.
 - Package `0.4.0`: SandboxPatch Boundary with explicit approval and draft patch
   records only.
+- Package `0.5.0`: Controlled TestRunner and EvidenceChain.

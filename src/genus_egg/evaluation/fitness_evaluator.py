@@ -35,6 +35,9 @@ class FitnessEvaluator:
         allowed_paths = json.loads(code_proposal.allowed_paths_json)
         forbidden_paths = json.loads(code_proposal.forbidden_paths_json)
         test_plan = payload.get("test_plan", [])
+        evidence_records = self.store.list_evidence_records_for_code_proposal(
+            code_proposal_id
+        )
         title_and_rationale = f"{code_proposal.title} {code_proposal.rationale}".lower()
 
         criteria_scores = {
@@ -46,9 +49,7 @@ class FitnessEvaluator:
             "habitat_fit": self._score_bool(
                 {".env", "secrets", ".git/config"}.issubset(set(forbidden_paths))
             ),
-            "test_plan_quality": 90
-            if isinstance(test_plan, list) and len(test_plan) >= 3
-            else 60,
+            "test_plan_quality": self._test_plan_score(test_plan, evidence_records),
             "scope_control": 90
             if code_proposal.status == "draft"
             and allowed_paths == ["src/genus_egg/memory", "tests"]
@@ -79,6 +80,9 @@ class FitnessEvaluator:
             payload_json=json.dumps(
                 {
                     "criteria": [criterion.name for criterion in EVALUATION_CRITERIA],
+                    "references_evidence_ids": [
+                        evidence.evidence_id for evidence in evidence_records
+                    ],
                     "patch": "none",
                     "git": "none",
                     "github": "none",
@@ -100,3 +104,11 @@ class FitnessEvaluator:
     @staticmethod
     def _score_bool(value: bool) -> int:
         return 100 if value else 0
+
+    @staticmethod
+    def _test_plan_score(test_plan: object, evidence_records: list[object]) -> int:
+        if evidence_records:
+            return 100
+        if isinstance(test_plan, list) and len(test_plan) >= 3:
+            return 75
+        return 50

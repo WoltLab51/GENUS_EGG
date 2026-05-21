@@ -2,9 +2,10 @@
 
 ## Current Version
 
-- Package version: `0.4.0`
+- Package version: `0.5.0`
 - Architecture scope: EGG-v0 base plus Shadow/Fitness evaluation and read-only
-  Inspection Cockpit, Habitat Contract v1, and SandboxPatch Boundary
+  Inspection Cockpit, Habitat Contract v1, SandboxPatch Boundary, and
+  EvidenceChain
 - Persistence: SQLite is the only source of truth
 - Ledger: append-only
 
@@ -21,6 +22,7 @@
 - Habitat Contract v1: persisted `ResourceSnapshot` and
   `HabitatReadinessReport`
 - SandboxPatch Boundary: explicit approval plus draft patch records only
+- EvidenceChain: controlled test evidence for sandbox patch drafts
 
 ## Draft-Safe Boundaries
 
@@ -48,6 +50,9 @@ status, but it does not open network, GitHub, patch, or activation authority.
 
 SandboxPatch Boundary is draft-safe only. It creates patch records after
 approval, but it does not write files, run Git, run GitHub, or activate code.
+
+EvidenceChain is bounded to controlled internal checks. It is not a general
+shell executor, and evidence never activates code by itself.
 
 ## Explicitly Not Present
 
