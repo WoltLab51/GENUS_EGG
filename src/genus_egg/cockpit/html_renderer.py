@@ -11,6 +11,8 @@ class CockpitHtmlRenderer:
             ("Memories", snapshot.memory_count),
             ("Ledger Entries", snapshot.ledger_entry_count),
             ("Habitat Manifests", snapshot.habitat_manifest_count),
+            ("Resource Snapshots", snapshot.resource_snapshot_count),
+            ("Habitat Readiness Reports", snapshot.habitat_readiness_report_count),
             ("Reaction Outcomes", snapshot.reaction_outcome_count),
             ("Observations", snapshot.observation_count),
             ("Capability Needs", snapshot.capability_need_count),

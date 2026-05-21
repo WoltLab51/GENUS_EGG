@@ -8,6 +8,8 @@ class CockpitSnapshot:
     memory_count: int
     ledger_entry_count: int
     habitat_manifest_count: int
+    resource_snapshot_count: int
+    habitat_readiness_report_count: int
     reaction_outcome_count: int
     observation_count: int
     capability_need_count: int

@@ -2,12 +2,12 @@
 
 ## Current Version
 
-- Package version: `0.2.0`
-- Architecture level: EGG-v0 base plus v0.1 Shadow/Fitness evaluation and v0.2
-  read-only Inspection Cockpit.
-- Current boundary: draft needs, proposals, shadow plans, fitness scores, and
-  cockpit projections only; no patch, Git, GitHub, file modification, worker,
-  or activation.
+- Package version: `0.3.0`
+- Architecture level: EGG-v0 base plus Shadow/Fitness evaluation, read-only
+  Inspection Cockpit, and Habitat Contract v1.
+- Current boundary: draft needs, proposals, shadow plans, fitness scores,
+  cockpit projections, and readiness reports only; no patch, Git, GitHub, file
+  modification, worker, or activation.
 
 ## Completed Phases
 
@@ -96,11 +96,17 @@
   approval boundary.
 - Status: completed in current v0.2 work.
 
-## Next Phase
-
 ## GENUS EGG v0.3 - Habitat Contract v1
 
 - Add ResourceSnapshot.
 - Add HabitatReadinessReport.
 - Add ready, limited, and blocked readiness status.
+- Status: completed in current v0.3 work.
+
+## Next Phase
+
+## GENUS EGG v0.4 - SandboxPatch after Approval
+
+- Add PatchApproval, SandboxPatch, PatchFileChange, and PatchRiskAssessment.
+- Keep patch creation blocked without explicit approval.
 - Status: next.

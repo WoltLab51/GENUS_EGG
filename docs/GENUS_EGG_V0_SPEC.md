@@ -1,16 +1,16 @@
-# GENUS EGG v0/v0.2 Spec
+# GENUS EGG v0/v0.3 Spec
 
 ## Goal
 
-GENUS EGG `0.2.0` extends the consolidated EGG-v0 base and v0.1 evaluation
-layer with a read-only Inspection Cockpit.
+GENUS EGG `0.3.0` extends the consolidated EGG-v0 base, v0.1 evaluation layer,
+and read-only Inspection Cockpit with Habitat Contract v1.
 
 The system may remember deterministic user input, persist its local habitat,
 record maturation observations, draft capability needs, draft development
 proposals, explain a growth proposal, create shadow test plans, score draft
-proposals, and render local inspection snapshots. It must not modify files,
-generate patches, run Git/GitHub actions, execute proposal code, register new
-runtime reactions, or activate new capabilities.
+proposals, render local inspection snapshots, and assess habitat readiness. It
+must not modify files, generate patches, run Git/GitHub actions, execute
+proposal code, register new runtime reactions, or activate new capabilities.
 
 ```text
 RawInput -> MeaningCandidate -> ValidationResult -> ReactionProduct -> MemoryObject
@@ -28,6 +28,7 @@ CapabilityNeed -> CapabilityProposal -> CodeChangeProposal
 - `genus-egg memories` lists stored memory objects.
 - `genus-egg ledger --chain CHAIN_ID` lists ledger entries for one chain.
 - `genus-egg habitat` probes and stores the local habitat manifest.
+- `genus-egg habitat readiness` stores a resource snapshot and readiness report.
 - `genus-egg observations` lists maturation observations.
 - `genus-egg needs` lists stored capability needs.
 - `genus-egg needs draft-memory-indexing` creates a deterministic draft
@@ -193,9 +194,21 @@ Plans, and Fitness Evaluations.
 It is read-only: no route, renderer, or adapter writes to SQLite, starts
 workers, runs Git/GitHub, creates patches, or activates proposals.
 
+## Habitat Contract v0.3
+
+`HabitatContract` creates a `ResourceSnapshot` from safe local reads and a
+`HabitatReadinessReport` with status `ready`, `limited`, or `blocked`.
+
+The resource snapshot records CPU count, CPU label, total/available memory when
+visible, disk total/free space, and `temperature=unknown` when no safe sensor is
+available.
+
+Readiness is deterministic and informational. It can mark a Habitat as ready,
+limited, or blocked, but it grants no permissions and activates nothing.
+
 ## Persistence
 
-The `0.2.0` schema contains:
+The `0.3.0` schema contains:
 
 - `raw_inputs`
 - `meaning_candidates`
@@ -205,6 +218,8 @@ The `0.2.0` schema contains:
 - `memory_objects`
 - `ledger_entries`
 - `habitat_manifest`
+- `resource_snapshots`
+- `habitat_readiness_reports`
 - `reaction_outcomes`
 - `observation_records`
 - `capability_needs`
@@ -223,3 +238,5 @@ SQLite is the only source of truth. JSON payloads are stored as text.
 - Package `0.1.0`: Shadow Testing and Fitness Evaluation for existing draft
   `CodeChangeProposal` records.
 - Package `0.2.0`: Read-only Inspection Cockpit over SQLite truth.
+- Package `0.3.0`: Habitat Contract v1 with ResourceSnapshot and
+  HabitatReadinessReport.

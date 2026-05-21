@@ -1,14 +1,14 @@
 # GENUS EGG
 
-GENUS EGG `v0.2.0` is a minimal, governed reaction organism backed by SQLite.
-It contains the consolidated EGG-v0 base, the v0.1 evaluation layer, and the
-first read-only Inspection Cockpit.
+GENUS EGG `v0.3.0` is a minimal, governed reaction organism backed by SQLite.
+It contains the consolidated EGG-v0 base, the v0.1 evaluation layer, the
+read-only Inspection Cockpit, and Habitat Contract v1.
 
 SQLite is the source of truth. The ledger is append-only. GENUS may remember,
-observe, draft, simulate, shadow-test, evaluate proposals, and render local
-inspection snapshots. It still may not modify files, generate patches, run
-Git/GitHub actions, start workers, call an LLM, or activate new runtime
-behavior.
+observe, draft, simulate, shadow-test, evaluate proposals, render local
+inspection snapshots, and assess its habitat readiness. It still may not modify
+files, generate patches, run Git/GitHub actions, start workers, call an LLM, or
+activate new runtime behavior.
 
 ```text
 RawInput -> MeaningCandidate -> ValidationResult -> ReactionProduct -> MemoryObject
@@ -48,6 +48,11 @@ Default boundaries stay closed:
 - `github_allowed=false`
 - `model_access=local_stub`
 - forbidden paths include `.env`, `secrets`, and `.git/config`
+
+`genus-egg habitat readiness` stores a `ResourceSnapshot` and
+`HabitatReadinessReport` with `ready`, `limited`, or `blocked` status. The
+resource snapshot records CPU count, CPU label, memory visibility, disk
+capacity/free space, and `temperature=unknown` when no safe sensor is available.
 
 ## Maturation Seed
 
@@ -114,6 +119,7 @@ genus-egg --db data/genus_egg.sqlite remember "larumipsum"
 genus-egg --db data/genus_egg.sqlite memories
 genus-egg --db data/genus_egg.sqlite ledger --chain <chain_id>
 genus-egg --db data/genus_egg.sqlite habitat
+genus-egg --db data/genus_egg.sqlite habitat readiness
 genus-egg --db data/genus_egg.sqlite observations
 genus-egg --db data/genus_egg.sqlite needs
 genus-egg --db data/genus_egg.sqlite needs draft-memory-indexing

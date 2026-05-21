@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.3.0 - 2026-05-21
+
+- Added Habitat Contract v1 with `ResourceSnapshot` and
+  `HabitatReadinessReport`.
+- Added SQLite tables for resource snapshots and readiness reports.
+- Added `genus-egg habitat readiness`.
+- Extended the Inspection Cockpit to include resource and readiness counts.
+- Kept habitat probing read-only; readiness remains informational and
+  activation stays blocked.
+
 ## 0.2.0 - 2026-05-21
 
 - Added read-only Inspection Cockpit data projection.

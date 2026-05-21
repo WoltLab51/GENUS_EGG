@@ -18,6 +18,10 @@ class CockpitDataAdapter:
             memory_count=len(self.store.list_memory_objects()),
             ledger_entry_count=len(self.store.list_ledger_entries()),
             habitat_manifest_count=self.store.count_rows("habitat_manifest"),
+            resource_snapshot_count=len(self.store.list_resource_snapshots()),
+            habitat_readiness_report_count=len(
+                self.store.list_habitat_readiness_reports()
+            ),
             reaction_outcome_count=len(self.store.list_reaction_outcomes()),
             observation_count=len(self.store.list_observation_records()),
             capability_need_count=len(self.store.list_capability_needs()),

@@ -15,6 +15,7 @@ from genus_egg.evaluation.shadow_tester import (
     ShadowTester,
 )
 from genus_egg.habitat.environment_probe import EnvironmentProbe
+from genus_egg.habitat.habitat_contract import HabitatContract
 from genus_egg.kernel.reaction_kernel import ReactionKernel
 from genus_egg.maturation.maturation_seed import MaturationSeed
 from genus_egg.maturation.pattern_detector import PatternDetector
@@ -46,6 +47,12 @@ def build_parser() -> argparse.ArgumentParser:
     ledger.add_argument("--chain", required=True)
 
     habitat = subparsers.add_parser("habitat", help="Probe and store the local habitat")
+    habitat.add_argument(
+        "action",
+        nargs="?",
+        choices=["probe", "readiness"],
+        default="probe",
+    )
     habitat.add_argument("--db", default=argparse.SUPPRESS, help="SQLite database path")
 
     subparsers.add_parser("observations", help="List maturation observations")
@@ -128,6 +135,21 @@ def main(argv: list[str] | None = None) -> int:
         if args.command == "habitat":
             manifest = EnvironmentProbe(args.db).probe()
             store.save_habitat_manifest(manifest)
+            if args.action == "readiness":
+                contract = HabitatContract()
+                snapshot = contract.snapshot_resources(manifest)
+                report = contract.assess(manifest, snapshot)
+                store.save_resource_snapshot(snapshot)
+                store.save_habitat_readiness_report(report)
+                print(f"habitat_id: {manifest.habitat_id}")
+                print(f"snapshot_id: {snapshot.snapshot_id}")
+                print(f"readiness: {report.status}")
+                print(f"reason: {report.reason_code}")
+                print(f"cpu_count: {snapshot.cpu_count}")
+                print(f"memory_total_mb: {snapshot.memory_total_mb or 'unknown'}")
+                print(f"disk_free_mb: {snapshot.disk_free_mb}")
+                print("Activation: blocked")
+                return 0
             print(f"habitat_id: {manifest.habitat_id}")
             print(f"os_name: {manifest.os_name}")
             print(f"repo_path: {manifest.repo_path}")

@@ -2,9 +2,9 @@
 
 ## Current Version
 
-- Package version: `0.2.0`
+- Package version: `0.3.0`
 - Architecture scope: EGG-v0 base plus Shadow/Fitness evaluation and read-only
-  Inspection Cockpit
+  Inspection Cockpit and Habitat Contract v1
 - Persistence: SQLite is the only source of truth
 - Ledger: append-only
 
@@ -18,6 +18,8 @@
 - Shadow Testing: persisted `ShadowTestPlan` objects for code proposals
 - Fitness Evaluation: persisted scores and rationales with activation blocked
 - Inspection Cockpit: read-only local projection over SQLite truth
+- Habitat Contract v1: persisted `ResourceSnapshot` and
+  `HabitatReadinessReport`
 
 ## Draft-Safe Boundaries
 
@@ -39,6 +41,9 @@ they do not activate proposals.
 
 Inspection Cockpit is read-only only. It renders local visibility from SQLite
 and does not write records, trigger routes, run workers, or call Git/GitHub.
+
+Habitat Contract v1 is observational. It records local physiology and readiness
+status, but it does not open network, GitHub, patch, or activation authority.
 
 ## Explicitly Not Present
 

@@ -6,6 +6,7 @@ from genus_egg.development.development_boundary import DevelopmentBoundary
 from genus_egg.evaluation.fitness_evaluator import FitnessEvaluator
 from genus_egg.evaluation.shadow_tester import ShadowTester
 from genus_egg.habitat.environment_probe import EnvironmentProbe
+from genus_egg.habitat.habitat_contract import HabitatContract
 from genus_egg.kernel.reaction_kernel import ReactionKernel
 from genus_egg.maturation.maturation_seed import MaturationSeed
 from genus_egg.truth.ledger import Ledger
@@ -14,7 +15,12 @@ from genus_egg.truth.sqlite_store import SQLiteStore
 
 def _populate_cockpit_fixture(store: SQLiteStore) -> None:
     result = ReactionKernel(store, Ledger(store)).remember("larumipsum")
-    store.save_habitat_manifest(EnvironmentProbe(store.db_path).probe())
+    manifest = EnvironmentProbe(store.db_path).probe()
+    store.save_habitat_manifest(manifest)
+    contract = HabitatContract()
+    snapshot = contract.snapshot_resources(manifest)
+    store.save_resource_snapshot(snapshot)
+    store.save_habitat_readiness_report(contract.assess(manifest, snapshot))
     need = MaturationSeed(store).draft_memory_indexing_need(
         source_observation_id=store.list_observation_records()[-1].observation_id
     )
@@ -35,6 +41,8 @@ def test_cockpit_data_adapter_reads_all_relevant_object_counts(tmp_path):
     assert snapshot.memory_count == 1
     assert snapshot.ledger_entry_count == 7
     assert snapshot.habitat_manifest_count == 1
+    assert snapshot.resource_snapshot_count == 1
+    assert snapshot.habitat_readiness_report_count == 1
     assert snapshot.reaction_outcome_count == 1
     assert snapshot.observation_count == 1
     assert snapshot.capability_need_count == 1
@@ -57,6 +65,8 @@ def test_cockpit_adapter_is_read_only(tmp_path):
             "memory_objects",
             "ledger_entries",
             "habitat_manifest",
+            "resource_snapshots",
+            "habitat_readiness_reports",
             "reaction_outcomes",
             "observation_records",
             "capability_needs",

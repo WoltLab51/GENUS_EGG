@@ -9,6 +9,8 @@ from genus_egg.development.code_change_proposal import CodeChangeProposal
 from genus_egg.evaluation.fitness_evaluation import FitnessEvaluation
 from genus_egg.evaluation.shadow_test_plan import ShadowTestPlan
 from genus_egg.habitat.habitat_manifest import HabitatManifest
+from genus_egg.habitat.habitat_readiness_report import HabitatReadinessReport
+from genus_egg.habitat.resource_snapshot import ResourceSnapshot
 from genus_egg.kernel.artifacts import ReactionProduct, ReactionRecord, ValidationResult
 from genus_egg.maturation.capability_need import CapabilityNeed
 from genus_egg.maturation.observation_record import ObservationRecord
@@ -250,6 +252,104 @@ class SQLiteStore:
             payload_json=row["payload_json"],
             created_at=row["created_at"],
         )
+
+    def save_resource_snapshot(self, snapshot: ResourceSnapshot) -> None:
+        self.connection.execute(
+            """
+            INSERT INTO resource_snapshots
+            (snapshot_id, habitat_id, cpu_count, cpu_label, memory_total_mb,
+             memory_available_mb, disk_total_mb, disk_free_mb, temperature_celsius,
+             payload_json, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                snapshot.snapshot_id,
+                snapshot.habitat_id,
+                snapshot.cpu_count,
+                snapshot.cpu_label,
+                snapshot.memory_total_mb,
+                snapshot.memory_available_mb,
+                snapshot.disk_total_mb,
+                snapshot.disk_free_mb,
+                snapshot.temperature_celsius,
+                snapshot.payload_json,
+                snapshot.created_at,
+            ),
+        )
+        self.connection.commit()
+
+    def list_resource_snapshots(self) -> list[ResourceSnapshot]:
+        rows = self.connection.execute(
+            """
+            SELECT snapshot_id, habitat_id, cpu_count, cpu_label, memory_total_mb,
+                   memory_available_mb, disk_total_mb, disk_free_mb,
+                   temperature_celsius, payload_json, created_at
+            FROM resource_snapshots
+            ORDER BY created_at, rowid
+            """
+        ).fetchall()
+        return [
+            ResourceSnapshot(
+                snapshot_id=row["snapshot_id"],
+                habitat_id=row["habitat_id"],
+                cpu_count=row["cpu_count"],
+                cpu_label=row["cpu_label"],
+                memory_total_mb=row["memory_total_mb"],
+                memory_available_mb=row["memory_available_mb"],
+                disk_total_mb=row["disk_total_mb"],
+                disk_free_mb=row["disk_free_mb"],
+                temperature_celsius=row["temperature_celsius"],
+                payload_json=row["payload_json"],
+                created_at=row["created_at"],
+            )
+            for row in rows
+        ]
+
+    def save_habitat_readiness_report(
+        self, report: HabitatReadinessReport
+    ) -> None:
+        self.connection.execute(
+            """
+            INSERT INTO habitat_readiness_reports
+            (report_id, habitat_id, snapshot_id, status, reason_code, checks_json,
+             payload_json, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                report.report_id,
+                report.habitat_id,
+                report.snapshot_id,
+                report.status,
+                report.reason_code,
+                report.checks_json,
+                report.payload_json,
+                report.created_at,
+            ),
+        )
+        self.connection.commit()
+
+    def list_habitat_readiness_reports(self) -> list[HabitatReadinessReport]:
+        rows = self.connection.execute(
+            """
+            SELECT report_id, habitat_id, snapshot_id, status, reason_code,
+                   checks_json, payload_json, created_at
+            FROM habitat_readiness_reports
+            ORDER BY created_at, rowid
+            """
+        ).fetchall()
+        return [
+            HabitatReadinessReport(
+                report_id=row["report_id"],
+                habitat_id=row["habitat_id"],
+                snapshot_id=row["snapshot_id"],
+                status=row["status"],
+                reason_code=row["reason_code"],
+                checks_json=row["checks_json"],
+                payload_json=row["payload_json"],
+                created_at=row["created_at"],
+            )
+            for row in rows
+        ]
 
     def save_reaction_outcome(self, outcome: ReactionOutcome) -> None:
         self.connection.execute(

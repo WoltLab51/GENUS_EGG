@@ -96,6 +96,31 @@ CREATE TABLE IF NOT EXISTS habitat_manifest (
     created_at TEXT NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS resource_snapshots (
+    snapshot_id TEXT PRIMARY KEY,
+    habitat_id TEXT NOT NULL,
+    cpu_count INTEGER,
+    cpu_label TEXT NOT NULL,
+    memory_total_mb INTEGER,
+    memory_available_mb INTEGER,
+    disk_total_mb INTEGER NOT NULL,
+    disk_free_mb INTEGER NOT NULL,
+    temperature_celsius REAL,
+    payload_json TEXT,
+    created_at TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS habitat_readiness_reports (
+    report_id TEXT PRIMARY KEY,
+    habitat_id TEXT NOT NULL,
+    snapshot_id TEXT NOT NULL,
+    status TEXT NOT NULL,
+    reason_code TEXT NOT NULL,
+    checks_json TEXT NOT NULL,
+    payload_json TEXT,
+    created_at TEXT NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS reaction_outcomes (
     outcome_id TEXT PRIMARY KEY,
     chain_id TEXT NOT NULL,
