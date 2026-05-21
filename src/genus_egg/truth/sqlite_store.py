@@ -1,0 +1,186 @@
+from __future__ import annotations
+
+import sqlite3
+from pathlib import Path
+from typing import Any
+
+from genus_egg.kernel.artifacts import ReactionProduct, ReactionRecord, ValidationResult
+from genus_egg.memory.memory_object import MemoryObject
+from genus_egg.semantics.meaning_candidate import MeaningCandidate
+from genus_egg.semantics.raw_input import RawInput
+from genus_egg.truth.migrations import apply_migrations
+
+
+class SQLiteStore:
+    def __init__(self, db_path: str | Path) -> None:
+        self.db_path = Path(db_path)
+        if self.db_path.parent:
+            self.db_path.parent.mkdir(parents=True, exist_ok=True)
+        self.connection = sqlite3.connect(self.db_path)
+        self.connection.row_factory = sqlite3.Row
+        apply_migrations(self.connection)
+
+    def close(self) -> None:
+        self.connection.close()
+
+    def table_names(self) -> set[str]:
+        rows = self.connection.execute(
+            "SELECT name FROM sqlite_master WHERE type='table'"
+        ).fetchall()
+        return {row["name"] for row in rows}
+
+    def save_raw_input(self, raw_input: RawInput) -> None:
+        self.connection.execute(
+            """
+            INSERT INTO raw_inputs
+            (input_id, chain_id, signal_type, source_type, raw_text, created_at)
+            VALUES (?, ?, ?, ?, ?, ?)
+            """,
+            (
+                raw_input.input_id,
+                raw_input.chain_id,
+                raw_input.signal_type,
+                raw_input.source_type,
+                raw_input.raw_text,
+                raw_input.created_at,
+            ),
+        )
+        self.connection.commit()
+
+    def save_meaning_candidate(self, meaning: MeaningCandidate) -> None:
+        self.connection.execute(
+            """
+            INSERT INTO meaning_candidates
+            (meaning_id, chain_id, source_input_id, intent, content,
+             interpretation_confidence, needs_clarification, adapter_version,
+             created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                meaning.meaning_id,
+                meaning.chain_id,
+                meaning.source_input_id,
+                meaning.intent,
+                meaning.content,
+                meaning.interpretation_confidence,
+                int(meaning.needs_clarification),
+                meaning.adapter_version,
+                meaning.created_at,
+            ),
+        )
+        self.connection.commit()
+
+    def save_validation_result(self, validation: ValidationResult) -> None:
+        self.connection.execute(
+            """
+            INSERT INTO validation_results
+            (validation_id, chain_id, source_meaning_id, result, reason_code,
+             created_at)
+            VALUES (?, ?, ?, ?, ?, ?)
+            """,
+            (
+                validation.validation_id,
+                validation.chain_id,
+                validation.source_meaning_id,
+                validation.result,
+                validation.reason_code,
+                validation.created_at,
+            ),
+        )
+        self.connection.commit()
+
+    def save_reaction(self, reaction: ReactionRecord) -> None:
+        self.connection.execute(
+            """
+            INSERT INTO reactions
+            (reaction_id, chain_id, source_validation_id, reaction_type, context,
+             reaction_state, resolver_mode, cube_coord, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                reaction.reaction_id,
+                reaction.chain_id,
+                reaction.source_validation_id,
+                reaction.reaction_type,
+                reaction.context,
+                reaction.reaction_state,
+                reaction.resolver_mode,
+                reaction.cube_coord,
+                reaction.created_at,
+            ),
+        )
+        self.connection.commit()
+
+    def save_reaction_product(self, product: ReactionProduct) -> None:
+        self.connection.execute(
+            """
+            INSERT INTO reaction_products
+            (product_id, chain_id, produced_by_reaction_id, product_type,
+             continuation_policy, payload_json, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                product.product_id,
+                product.chain_id,
+                product.produced_by_reaction_id,
+                product.product_type,
+                product.continuation_policy,
+                product.payload_json,
+                product.created_at,
+            ),
+        )
+        self.connection.commit()
+
+    def save_memory_object(self, memory: MemoryObject) -> None:
+        self.connection.execute(
+            """
+            INSERT INTO memory_objects
+            (memory_id, chain_id, memory_type, content, memory_state,
+             source_product_id, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                memory.memory_id,
+                memory.chain_id,
+                memory.memory_type,
+                memory.content,
+                memory.memory_state,
+                memory.source_product_id,
+                memory.created_at,
+            ),
+        )
+        self.connection.commit()
+
+    def list_memory_objects(self) -> list[MemoryObject]:
+        rows = self.connection.execute(
+            """
+            SELECT memory_id, chain_id, memory_type, content, memory_state,
+                   source_product_id, created_at
+            FROM memory_objects
+            ORDER BY created_at, memory_id
+            """
+        ).fetchall()
+        return [
+            MemoryObject(
+                memory_id=row["memory_id"],
+                chain_id=row["chain_id"],
+                memory_type=row["memory_type"],
+                content=row["content"],
+                memory_state=row["memory_state"],
+                source_product_id=row["source_product_id"],
+                created_at=row["created_at"],
+            )
+            for row in rows
+        ]
+
+    def count_rows(self, table: str) -> int:
+        if table not in self.table_names():
+            raise ValueError(f"unknown table: {table}")
+        row = self.connection.execute(f"SELECT COUNT(*) AS count FROM {table}").fetchone()
+        return int(row["count"])
+
+    def fetch_one(self, table: str) -> dict[str, Any]:
+        if table not in self.table_names():
+            raise ValueError(f"unknown table: {table}")
+        row = self.connection.execute(f"SELECT * FROM {table} LIMIT 1").fetchone()
+        return dict(row) if row else {}
