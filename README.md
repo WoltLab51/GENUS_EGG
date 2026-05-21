@@ -1,10 +1,10 @@
 # GENUS EGG
 
-GENUS EGG `v0.8.0` is a minimal, governed reaction organism backed by SQLite.
+GENUS EGG `v0.9.0` is a minimal, governed reaction organism backed by SQLite.
 It contains the consolidated EGG-v0 base, the v0.1 evaluation layer, the
 read-only Inspection Cockpit, Habitat Contract v1, and the SandboxPatch
 Boundary, EvidenceChain, Local GitConnector, draft-only GitHubConnector, and
-Activation Boundary.
+Activation Boundary, plus Monitoring, Fossilization, and Rollback records.
 
 SQLite is the source of truth. The ledger is append-only. GENUS may remember,
 observe, draft, simulate, shadow-test, evaluate proposals, render local
@@ -168,6 +168,20 @@ exist. The request remains `Status: blocked` with
 `ActivationDecision`. Scores, PR records, merges, and approvals never activate
 runtime behavior by themselves.
 
+## Monitoring, Fossilization, And Rollback
+
+`genus-egg rollback plan --code-proposal <code_proposal_id>` stores a
+`RollbackPlan`. With rollback data present, activation requests can become
+`review_required`, but activation remains blocked.
+
+`genus-egg monitor capability --code-proposal <code_proposal_id>` records a
+`CapabilityMonitor` with reaction outcomes, errors, boundary violations, and a
+simple utility score. `genus-egg monitor activation --request <request_id>`
+stores a blocked `CapabilityActivation` record only when a rollback plan exists.
+
+`genus-egg fossilize record --source-kind KIND --source-id ID` stores a
+`FossilRecord`. Fossilization marks history and never deletes SQLite truth.
+
 ## CLI
 
 All commands accept `--db PATH`; the default database is
@@ -202,6 +216,13 @@ genus-egg --db data/genus_egg.sqlite github draft-pr --patch <patch_id>
 genus-egg --db data/genus_egg.sqlite activation request --code-proposal <code_proposal_id>
 genus-egg --db data/genus_egg.sqlite activation reject --request <request_id>
 genus-egg --db data/genus_egg.sqlite activation list
+genus-egg --db data/genus_egg.sqlite rollback plan --code-proposal <code_proposal_id>
+genus-egg --db data/genus_egg.sqlite rollback list
+genus-egg --db data/genus_egg.sqlite monitor capability --code-proposal <code_proposal_id>
+genus-egg --db data/genus_egg.sqlite monitor activation --request <request_id>
+genus-egg --db data/genus_egg.sqlite monitor list
+genus-egg --db data/genus_egg.sqlite fossilize record --source-kind KIND --source-id ID
+genus-egg --db data/genus_egg.sqlite fossilize list
 ```
 
 The same commands can also be run as a module during local development:

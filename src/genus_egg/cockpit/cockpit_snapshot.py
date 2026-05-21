@@ -27,6 +27,10 @@ class CockpitSnapshot:
     github_draft_pr_count: int
     activation_request_count: int
     activation_decision_count: int
+    rollback_plan_count: int
+    capability_activation_count: int
+    capability_monitor_count: int
+    fossil_record_count: int
     latest_habitat_id: str | None
     latest_fitness_score: int | None
     activation_state: str

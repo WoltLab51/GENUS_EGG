@@ -30,6 +30,10 @@ class CockpitHtmlRenderer:
             ("GitHub Draft PRs", snapshot.github_draft_pr_count),
             ("Activation Requests", snapshot.activation_request_count),
             ("Activation Decisions", snapshot.activation_decision_count),
+            ("Rollback Plans", snapshot.rollback_plan_count),
+            ("Capability Activations", snapshot.capability_activation_count),
+            ("Capability Monitors", snapshot.capability_monitor_count),
+            ("Fossil Records", snapshot.fossil_record_count),
         ]
         table_rows = "\n".join(
             f"<tr><th>{escape(label)}</th><td>{value}</td></tr>"

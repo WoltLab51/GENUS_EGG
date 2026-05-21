@@ -32,6 +32,10 @@ from genus_egg.github_integration.github_connector import (
 from genus_egg.habitat.environment_probe import EnvironmentProbe
 from genus_egg.habitat.habitat_contract import HabitatContract
 from genus_egg.kernel.reaction_kernel import ReactionKernel
+from genus_egg.lifecycle.lifecycle_boundary import (
+    LifecycleBoundary,
+    RollbackPlanRequiredError,
+)
 from genus_egg.maturation.maturation_seed import MaturationSeed
 from genus_egg.maturation.pattern_detector import PatternDetector
 from genus_egg.memory.memory_store import MemoryStore
@@ -139,6 +143,21 @@ def build_parser() -> argparse.ArgumentParser:
     activation.add_argument("--code-proposal")
     activation.add_argument("--request")
     activation.add_argument("--rationale", default="Rejected by explicit boundary.")
+
+    rollback = subparsers.add_parser("rollback", help="Create or list rollback plans")
+    rollback.add_argument("action", choices=["plan", "list"])
+    rollback.add_argument("--code-proposal")
+
+    monitor = subparsers.add_parser("monitor", help="Create or list monitors")
+    monitor.add_argument("action", choices=["capability", "activation", "list"])
+    monitor.add_argument("--code-proposal")
+    monitor.add_argument("--request")
+
+    fossilize = subparsers.add_parser("fossilize", help="Create or list fossils")
+    fossilize.add_argument("action", choices=["record", "list"])
+    fossilize.add_argument("--source-kind")
+    fossilize.add_argument("--source-id")
+    fossilize.add_argument("--reason", default="No longer eligible for activation.")
 
     return parser
 
@@ -514,6 +533,92 @@ def main(argv: list[str] | None = None) -> int:
                 print(
                     f"{request.activation_request_id}\t{request.code_proposal_id}\t"
                     f"{request.status}\t{request.activation}"
+                )
+            return 0
+
+        if args.command == "rollback":
+            boundary = LifecycleBoundary(store)
+            if args.action == "plan":
+                if not args.code_proposal:
+                    print("Missing required --code-proposal CODE_PROPOSAL_ID")
+                    return 2
+                try:
+                    plan = boundary.create_rollback_plan(args.code_proposal)
+                except CodeChangeProposalNotFoundError as error:
+                    print(str(error))
+                    return 1
+                print(f"RollbackPlan: {plan.rollback_plan_id}")
+                print(f"CodeProposal: {plan.code_proposal_id}")
+                print(f"Status: {plan.status}")
+                print("Activation: blocked")
+                return 0
+
+            for plan in store.list_rollback_plans():
+                print(f"{plan.rollback_plan_id}\t{plan.code_proposal_id}\t{plan.status}")
+            return 0
+
+        if args.command == "monitor":
+            boundary = LifecycleBoundary(store)
+            if args.action == "capability":
+                if not args.code_proposal:
+                    print("Missing required --code-proposal CODE_PROPOSAL_ID")
+                    return 2
+                try:
+                    monitor = boundary.monitor(args.code_proposal)
+                except CodeChangeProposalNotFoundError as error:
+                    print(str(error))
+                    return 1
+                print(f"CapabilityMonitor: {monitor.monitor_id}")
+                print(f"CodeProposal: {monitor.code_proposal_id}")
+                print(f"Outcomes: {monitor.reaction_outcome_count}")
+                print(f"Errors: {monitor.error_count}")
+                print(f"BoundaryViolations: {monitor.boundary_violation_count}")
+                print(f"UtilityScore: {monitor.utility_score}")
+                print("Activation: blocked")
+                return 0
+
+            if args.action == "activation":
+                if not args.request:
+                    print("Missing required --request REQUEST_ID")
+                    return 2
+                try:
+                    activation = boundary.record_activation_candidate(args.request)
+                except (ActivationRequestNotFoundError, RollbackPlanRequiredError) as error:
+                    print(str(error))
+                    return 1
+                print(f"CapabilityActivation: {activation.capability_activation_id}")
+                print(f"Request: {activation.activation_request_id}")
+                print(f"RollbackPlan: {activation.rollback_plan_id}")
+                print(f"Status: {activation.status}")
+                print(f"Activation: {activation.activation}")
+                return 0
+
+            for monitor in store.list_capability_monitors():
+                print(
+                    f"{monitor.monitor_id}\t{monitor.code_proposal_id}\t"
+                    f"{monitor.utility_score}\t{monitor.status}"
+                )
+            return 0
+
+        if args.command == "fossilize":
+            boundary = LifecycleBoundary(store)
+            if args.action == "record":
+                if not args.source_kind or not args.source_id:
+                    print("Missing required --source-kind KIND and --source-id ID")
+                    return 2
+                fossil = boundary.fossilize(
+                    args.source_kind, args.source_id, args.reason
+                )
+                print(f"FossilRecord: {fossil.fossil_record_id}")
+                print(f"Source: {fossil.source_kind}:{fossil.source_id}")
+                print(f"Status: {fossil.status}")
+                print("Activation: blocked")
+                return 0
+
+            for fossil in store.list_fossil_records():
+                print(
+                    f"{fossil.fossil_record_id}\t{fossil.source_kind}:"
+                    f"{fossil.source_id}\t{fossil.status}"
                 )
             return 0
 

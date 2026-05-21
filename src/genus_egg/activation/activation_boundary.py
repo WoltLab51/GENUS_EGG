@@ -38,12 +38,20 @@ class ActivationBoundary:
             raise ActivationPrerequisiteError("EvidenceChain required")
         if self.store.get_latest_patch_approval(code_proposal_id) is None:
             raise ActivationPrerequisiteError("PatchApproval required")
+        rollback_plan = self._latest_rollback_plan(code_proposal_id)
+        rollback_available = rollback_plan is not None
+        reason_code = (
+            "explicit_activation_decision_required"
+            if rollback_available
+            else "rollback_data_missing"
+        )
+        status = "review_required" if rollback_available else "blocked"
 
         request = ActivationRequest(
             activation_request_id=new_id("activationrequest"),
             code_proposal_id=code_proposal_id,
-            status="blocked",
-            reason_code="rollback_data_missing",
+            status=status,
+            reason_code=reason_code,
             activation="blocked",
             payload_json=json.dumps(
                 {
@@ -52,7 +60,10 @@ class ActivationBoundary:
                     "evidence_required": True,
                     "approval_required": True,
                     "rollback_required": True,
-                    "rollback_available": False,
+                    "rollback_available": rollback_available,
+                    "rollback_plan_id": (
+                        rollback_plan.rollback_plan_id if rollback_plan else None
+                    ),
                     "score_activates": False,
                     "pr_activates": False,
                     "merge_activates": False,
@@ -76,8 +87,8 @@ class ActivationBoundary:
         check = RuntimeCompatibilityCheck(
             compatibility_check_id=new_id("compatcheck"),
             activation_request_id=request.activation_request_id,
-            status="blocked",
-            reason_code="rollback_data_missing",
+            status=status,
+            reason_code=reason_code,
             payload_json=json.dumps(
                 {
                     "runtime_mutation": "none",
@@ -126,3 +137,11 @@ class ActivationBoundary:
             chain.code_proposal_id == code_proposal_id
             for chain in self.store.list_evidence_chains()
         )
+
+    def _latest_rollback_plan(self, code_proposal_id: str):
+        plans = [
+            plan
+            for plan in self.store.list_rollback_plans()
+            if plan.code_proposal_id == code_proposal_id
+        ]
+        return plans[-1] if plans else None

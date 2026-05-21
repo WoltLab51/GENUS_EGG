@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.9.0 - 2026-05-21
+
+- Added lifecycle models: `RollbackPlan`, `CapabilityActivation`,
+  `CapabilityMonitor`, and `FossilRecord`.
+- Added SQLite tables for rollback plans, capability activations, monitors, and
+  fossil records.
+- Added `rollback`, `monitor`, and `fossilize` CLI commands.
+- Activation requests can become `review_required` only when rollback data is
+  present; activation still remains blocked.
+- Monitoring records outcomes and boundary violations; fossilization marks
+  history without deleting truth.
+
 ## 0.8.0 - 2026-05-21
 
 - Added Activation Boundary models: `ActivationRequest`,

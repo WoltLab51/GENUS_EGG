@@ -1,11 +1,11 @@
-# GENUS EGG v0/v0.8 Spec
+# GENUS EGG v0/v0.9 Spec
 
 ## Goal
 
-GENUS EGG `0.8.0` extends the consolidated EGG-v0 base, v0.1 evaluation layer,
+GENUS EGG `0.9.0` extends the consolidated EGG-v0 base, v0.1 evaluation layer,
 read-only Inspection Cockpit, and Habitat Contract v1 with a SandboxPatch
 Boundary, EvidenceChain, Local GitConnector, draft-only GitHubConnector, and
-Activation Boundary.
+Activation Boundary, plus Monitoring, Fossilization, and Rollback.
 
 The system may remember deterministic user input, persist its local habitat,
 record maturation observations, draft capability needs, draft development
@@ -16,7 +16,8 @@ store deterministic branch-preparation records. It must not push, merge,
 rebase, force-push, run GitHub actions, execute arbitrary commands, register
 new runtime reactions, or activate new capabilities. GitHub remains blocked by
 default and draft-only when explicitly allowed. Activation remains modeled and
-blocked unless a later phase adds rollback-backed decision paths.
+blocked. Rollback, monitoring, and fossilization add evidence and history
+without live runtime mutation.
 
 ```text
 RawInput -> MeaningCandidate -> ValidationResult -> ReactionProduct -> MemoryObject
@@ -71,6 +72,14 @@ CapabilityNeed -> CapabilityProposal -> CodeChangeProposal
 - `genus-egg activation reject --request REQUEST_ID` stores a blocked rejection
   decision.
 - `genus-egg activation list` lists stored activation requests.
+- `genus-egg rollback plan --code-proposal CODE_PROPOSAL_ID` stores a rollback
+  plan.
+- `genus-egg monitor capability --code-proposal CODE_PROPOSAL_ID` stores a
+  capability monitor record.
+- `genus-egg monitor activation --request REQUEST_ID` stores a blocked
+  capability activation record when rollback data exists.
+- `genus-egg fossilize record --source-kind KIND --source-id ID` stores a
+  fossil record without deleting truth.
 - `--db PATH` selects the SQLite database; default is `data/genus_egg.sqlite`.
 - `genus-egg git ... --repo PATH` selects the local repository path for Git
   inspection; default is `.`.
@@ -335,9 +344,32 @@ Rejection stores an `ActivationDecision` with `decision=rejected` and
 `activation=blocked`; this can mark the request as fossilized in payload data
 without deleting history.
 
+## Monitoring, Fossilization, And Rollback v0.9
+
+Lifecycle records add rollback readiness and post-decision observability:
+
+- `RollbackPlan`
+- `CapabilityActivation`
+- `CapabilityMonitor`
+- `FossilRecord`
+
+`RollbackPlan` is required before an activation request can become
+`review_required`; without it, requests remain blocked with
+`rollback_data_missing`.
+
+`CapabilityActivation` records are still blocked and do not perform runtime
+mutation. They link an activation request to a rollback plan.
+
+`CapabilityMonitor` records reaction outcome count, error count, boundary
+violation count, and utility score. Monitoring observes; it does not change
+runtime behavior.
+
+`FossilRecord` marks a source object as fossilized and keeps
+`deletes_truth=false`. Fossilization never removes SQLite truth.
+
 ## Persistence
 
-The `0.8.0` schema contains:
+The `0.9.0` schema contains:
 
 - `raw_inputs`
 - `meaning_candidates`
@@ -371,6 +403,10 @@ The `0.8.0` schema contains:
 - `activation_decisions`
 - `reaction_spec_candidates`
 - `runtime_compatibility_checks`
+- `rollback_plans`
+- `capability_activations`
+- `capability_monitors`
+- `fossil_records`
 
 SQLite is the only source of truth. JSON payloads are stored as text.
 
@@ -392,3 +428,5 @@ SQLite is the only source of truth. JSON payloads are stored as text.
   approval, local Git preparation, and passing evidence.
 - Package `0.8.0`: Activation Boundary with blocked requests, decisions,
   candidates, and compatibility checks.
+- Package `0.9.0`: Rollback plans, blocked capability activations, capability
+  monitors, and fossil records.

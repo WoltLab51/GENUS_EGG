@@ -346,6 +346,48 @@ CREATE TABLE IF NOT EXISTS runtime_compatibility_checks (
     payload_json TEXT,
     created_at TEXT NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS rollback_plans (
+    rollback_plan_id TEXT PRIMARY KEY,
+    code_proposal_id TEXT NOT NULL,
+    status TEXT NOT NULL,
+    steps_json TEXT NOT NULL,
+    payload_json TEXT,
+    created_at TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS capability_activations (
+    capability_activation_id TEXT PRIMARY KEY,
+    activation_request_id TEXT NOT NULL,
+    code_proposal_id TEXT NOT NULL,
+    rollback_plan_id TEXT NOT NULL,
+    status TEXT NOT NULL,
+    activation TEXT NOT NULL,
+    payload_json TEXT,
+    created_at TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS capability_monitors (
+    monitor_id TEXT PRIMARY KEY,
+    code_proposal_id TEXT NOT NULL,
+    reaction_outcome_count INTEGER NOT NULL,
+    error_count INTEGER NOT NULL,
+    boundary_violation_count INTEGER NOT NULL,
+    utility_score INTEGER NOT NULL,
+    status TEXT NOT NULL,
+    payload_json TEXT,
+    created_at TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS fossil_records (
+    fossil_record_id TEXT PRIMARY KEY,
+    source_kind TEXT NOT NULL,
+    source_id TEXT NOT NULL,
+    reason TEXT NOT NULL,
+    status TEXT NOT NULL,
+    payload_json TEXT,
+    created_at TEXT NOT NULL
+);
 """
 
 

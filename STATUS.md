@@ -2,11 +2,12 @@
 
 ## Current Version
 
-- Package version: `0.8.0`
+- Package version: `0.9.0`
 - Architecture scope: EGG-v0 base plus Shadow/Fitness evaluation and read-only
   Inspection Cockpit, Habitat Contract v1, SandboxPatch Boundary, and
   EvidenceChain, Local GitConnector preparation records, and draft-only
-  GitHubConnector records, plus Activation Boundary records
+  GitHubConnector records, Activation Boundary records, and lifecycle rollback,
+  monitoring, and fossil records
 - Persistence: SQLite is the only source of truth
 - Ledger: append-only
 
@@ -30,6 +31,8 @@
   preparation, and passing evidence
 - Activation Boundary: blocked activation requests, reaction spec candidates,
   compatibility checks, and explicit rejection decisions
+- Monitoring/Fossilization/Rollback: rollback plans, blocked capability
+  activation records, capability monitors, and fossil records
 
 ## Draft-Safe Boundaries
 
@@ -75,6 +78,11 @@ approval, evidence, and fitness records, but remain blocked without rollback
 data. Activation decisions can reject a request; no decision path activates code
 in this version.
 
+Rollback plans are required before an activation request can move from
+`blocked` to `review_required`. CapabilityActivation records remain blocked.
+Monitoring records outcomes and boundary violations. Fossilization marks
+history without deleting SQLite truth.
+
 ## Explicitly Not Present
 
 - no file modification by GENUS runtime
@@ -87,6 +95,7 @@ in this version.
 - no issue/label/reviewer automation
 - no autonomous activation
 - no activation without rollback data
+- no deletion of truth during fossilization
 - no runtime self-modification
 - no write-capable dashboard
 - no LLM call

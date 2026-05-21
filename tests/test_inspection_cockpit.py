@@ -17,6 +17,7 @@ from genus_egg.habitat.habitat_contract import HabitatContract
 from genus_egg.habitat.habitat_manifest import HabitatManifest
 from genus_egg.ids import new_id
 from genus_egg.kernel.reaction_kernel import ReactionKernel
+from genus_egg.lifecycle.lifecycle_boundary import LifecycleBoundary
 from genus_egg.maturation.maturation_seed import MaturationSeed
 from genus_egg.patching.sandbox_patch_boundary import SandboxPatchBoundary
 from genus_egg.time import utc_now
@@ -67,11 +68,22 @@ def _populate_cockpit_fixture(store: SQLiteStore) -> None:
         )
     )
     GitHubConnector(store).draft_pr(patch.patch_id)
+    lifecycle = LifecycleBoundary(store)
+    lifecycle.create_rollback_plan(code_proposal.code_proposal_id)
     activation_request, _, _ = ActivationBoundary(store).request(
         code_proposal.code_proposal_id
     )
+    capability_activation = lifecycle.record_activation_candidate(
+        activation_request.activation_request_id
+    )
+    lifecycle.monitor(code_proposal.code_proposal_id)
+    lifecycle.fossilize(
+        "capability_activation",
+        capability_activation.capability_activation_id,
+        "Inspection fixture fossil.",
+    )
     ActivationBoundary(store).reject(
-        activation_request.activation_request_id, "No rollback plan."
+        activation_request.activation_request_id, "Not ready for activation."
     )
     assert result.ledger_entries == 7
 
@@ -104,6 +116,10 @@ def test_cockpit_data_adapter_reads_all_relevant_object_counts(tmp_path):
     assert snapshot.github_draft_pr_count == 1
     assert snapshot.activation_request_count == 1
     assert snapshot.activation_decision_count == 1
+    assert snapshot.rollback_plan_count == 1
+    assert snapshot.capability_activation_count == 1
+    assert snapshot.capability_monitor_count == 1
+    assert snapshot.fossil_record_count == 1
     assert snapshot.latest_habitat_id is not None
     assert snapshot.latest_fitness_score is not None
     assert snapshot.activation_state == "blocked"
@@ -143,6 +159,10 @@ def test_cockpit_adapter_is_read_only(tmp_path):
             "activation_decisions",
             "reaction_spec_candidates",
             "runtime_compatibility_checks",
+            "rollback_plans",
+            "capability_activations",
+            "capability_monitors",
+            "fossil_records",
         ]
     }
 

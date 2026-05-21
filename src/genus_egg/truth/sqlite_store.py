@@ -23,6 +23,10 @@ from genus_egg.habitat.habitat_manifest import HabitatManifest
 from genus_egg.habitat.habitat_readiness_report import HabitatReadinessReport
 from genus_egg.habitat.resource_snapshot import ResourceSnapshot
 from genus_egg.kernel.artifacts import ReactionProduct, ReactionRecord, ValidationResult
+from genus_egg.lifecycle.capability_activation import CapabilityActivation
+from genus_egg.lifecycle.capability_monitor import CapabilityMonitor
+from genus_egg.lifecycle.fossil_record import FossilRecord
+from genus_egg.lifecycle.rollback_plan import RollbackPlan
 from genus_egg.maturation.capability_need import CapabilityNeed
 from genus_egg.maturation.observation_record import ObservationRecord
 from genus_egg.maturation.reaction_outcome import ReactionOutcome
@@ -1454,6 +1458,180 @@ class SQLiteStore:
                 activation_request_id=row["activation_request_id"],
                 status=row["status"],
                 reason_code=row["reason_code"],
+                payload_json=row["payload_json"],
+                created_at=row["created_at"],
+            )
+            for row in rows
+        ]
+
+    def save_rollback_plan(self, plan: RollbackPlan) -> None:
+        self.connection.execute(
+            """
+            INSERT INTO rollback_plans
+            (rollback_plan_id, code_proposal_id, status, steps_json, payload_json,
+             created_at)
+            VALUES (?, ?, ?, ?, ?, ?)
+            """,
+            (
+                plan.rollback_plan_id,
+                plan.code_proposal_id,
+                plan.status,
+                plan.steps_json,
+                plan.payload_json,
+                plan.created_at,
+            ),
+        )
+        self.connection.commit()
+
+    def list_rollback_plans(self) -> list[RollbackPlan]:
+        rows = self.connection.execute(
+            """
+            SELECT rollback_plan_id, code_proposal_id, status, steps_json,
+                   payload_json, created_at
+            FROM rollback_plans
+            ORDER BY created_at, rowid
+            """
+        ).fetchall()
+        return [
+            RollbackPlan(
+                rollback_plan_id=row["rollback_plan_id"],
+                code_proposal_id=row["code_proposal_id"],
+                status=row["status"],
+                steps_json=row["steps_json"],
+                payload_json=row["payload_json"],
+                created_at=row["created_at"],
+            )
+            for row in rows
+        ]
+
+    def save_capability_activation(self, activation: CapabilityActivation) -> None:
+        self.connection.execute(
+            """
+            INSERT INTO capability_activations
+            (capability_activation_id, activation_request_id, code_proposal_id,
+             rollback_plan_id, status, activation, payload_json, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                activation.capability_activation_id,
+                activation.activation_request_id,
+                activation.code_proposal_id,
+                activation.rollback_plan_id,
+                activation.status,
+                activation.activation,
+                activation.payload_json,
+                activation.created_at,
+            ),
+        )
+        self.connection.commit()
+
+    def list_capability_activations(self) -> list[CapabilityActivation]:
+        rows = self.connection.execute(
+            """
+            SELECT capability_activation_id, activation_request_id, code_proposal_id,
+                   rollback_plan_id, status, activation, payload_json, created_at
+            FROM capability_activations
+            ORDER BY created_at, rowid
+            """
+        ).fetchall()
+        return [
+            CapabilityActivation(
+                capability_activation_id=row["capability_activation_id"],
+                activation_request_id=row["activation_request_id"],
+                code_proposal_id=row["code_proposal_id"],
+                rollback_plan_id=row["rollback_plan_id"],
+                status=row["status"],
+                activation=row["activation"],
+                payload_json=row["payload_json"],
+                created_at=row["created_at"],
+            )
+            for row in rows
+        ]
+
+    def save_capability_monitor(self, monitor: CapabilityMonitor) -> None:
+        self.connection.execute(
+            """
+            INSERT INTO capability_monitors
+            (monitor_id, code_proposal_id, reaction_outcome_count, error_count,
+             boundary_violation_count, utility_score, status, payload_json,
+             created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                monitor.monitor_id,
+                monitor.code_proposal_id,
+                monitor.reaction_outcome_count,
+                monitor.error_count,
+                monitor.boundary_violation_count,
+                monitor.utility_score,
+                monitor.status,
+                monitor.payload_json,
+                monitor.created_at,
+            ),
+        )
+        self.connection.commit()
+
+    def list_capability_monitors(self) -> list[CapabilityMonitor]:
+        rows = self.connection.execute(
+            """
+            SELECT monitor_id, code_proposal_id, reaction_outcome_count,
+                   error_count, boundary_violation_count, utility_score, status,
+                   payload_json, created_at
+            FROM capability_monitors
+            ORDER BY created_at, rowid
+            """
+        ).fetchall()
+        return [
+            CapabilityMonitor(
+                monitor_id=row["monitor_id"],
+                code_proposal_id=row["code_proposal_id"],
+                reaction_outcome_count=row["reaction_outcome_count"],
+                error_count=row["error_count"],
+                boundary_violation_count=row["boundary_violation_count"],
+                utility_score=row["utility_score"],
+                status=row["status"],
+                payload_json=row["payload_json"],
+                created_at=row["created_at"],
+            )
+            for row in rows
+        ]
+
+    def save_fossil_record(self, fossil: FossilRecord) -> None:
+        self.connection.execute(
+            """
+            INSERT INTO fossil_records
+            (fossil_record_id, source_kind, source_id, reason, status,
+             payload_json, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                fossil.fossil_record_id,
+                fossil.source_kind,
+                fossil.source_id,
+                fossil.reason,
+                fossil.status,
+                fossil.payload_json,
+                fossil.created_at,
+            ),
+        )
+        self.connection.commit()
+
+    def list_fossil_records(self) -> list[FossilRecord]:
+        rows = self.connection.execute(
+            """
+            SELECT fossil_record_id, source_kind, source_id, reason, status,
+                   payload_json, created_at
+            FROM fossil_records
+            ORDER BY created_at, rowid
+            """
+        ).fetchall()
+        return [
+            FossilRecord(
+                fossil_record_id=row["fossil_record_id"],
+                source_kind=row["source_kind"],
+                source_id=row["source_id"],
+                reason=row["reason"],
+                status=row["status"],
                 payload_json=row["payload_json"],
                 created_at=row["created_at"],
             )
