@@ -1,12 +1,15 @@
-# GENUS EGG v0.0-0.2 Spec
+# GENUS EGG v0 Spec
 
 ## Goal
 
-Implement the first deterministic GENUS EGG flow:
+Implement the first governed GENUS EGG v0 slice through phase `0.5`:
 
 ```text
 RawInput -> MeaningCandidate -> ValidationResult -> ReactionProduct -> MemoryObject
 ```
+
+The current system also records Habitat, Maturation Seed, and Development
+Boundary artifacts, but it does not activate new capabilities or modify code.
 
 ## CLI
 
@@ -35,7 +38,7 @@ There is no creative selection.
 
 ## Persistence
 
-The following tables are part of v0.0-0.2:
+The following tables are part of the current v0 schema:
 
 - `raw_inputs`
 - `meaning_candidates`

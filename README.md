@@ -1,14 +1,16 @@
 # GENUS EGG
 
-GENUS EGG is a minimal, governed reaction organism. Version `0.0-0.2`
-implements the first deterministic slice:
+GENUS EGG is a minimal, governed reaction organism. The current implementation
+covers phases `0.0-0.5`: deterministic memory reaction, habitat awareness,
+maturation seed records, and a blocked development boundary.
 
 ```text
 RawInput -> MeaningCandidate -> ValidationResult -> ReactionProduct -> MemoryObject
 ```
 
 SQLite is the source of truth. The ledger is append-only. No model writes
-directly, and no runtime self-modification exists in this version.
+directly, no patch is generated, and no runtime self-modification exists in
+this version.
 
 ## Quick Start
 
@@ -35,5 +37,5 @@ genus-egg --db data/genus_egg.sqlite proposals draft-memory-indexing --need <nee
 ## Development
 
 ```powershell
-python -m pytest
+.venv\Scripts\python.exe -m pytest
 ```

@@ -1,6 +1,7 @@
 # Safety Boundaries
 
-These rules are hard boundaries for GENUS EGG v0.0-0.2:
+These rules are hard boundaries for GENUS EGG v0 through the current phase
+`0.5`:
 
 - No model writes directly.
 - No memory exists without a `MeaningCandidate`.
@@ -11,5 +12,7 @@ These rules are hard boundaries for GENUS EGG v0.0-0.2:
 - The ledger is append-only.
 - SQLite is the source of truth.
 - The graph is projection, not truth.
+- The Development Boundary may create draft proposal objects only.
+- `ApprovalGate` blocks file modification and activation.
 - There is no Development Core activation in this version.
 - There is no GitHub action, patch generation, auto-merge, or self-modifying runtime.
