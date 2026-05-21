@@ -295,6 +295,18 @@ CREATE TABLE IF NOT EXISTS git_branch_preparations (
     payload_json TEXT,
     created_at TEXT NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS github_draft_prs (
+    github_draft_pr_id TEXT PRIMARY KEY,
+    patch_id TEXT NOT NULL,
+    branch_name TEXT NOT NULL,
+    repository TEXT NOT NULL,
+    status TEXT NOT NULL,
+    is_draft INTEGER NOT NULL,
+    activation TEXT NOT NULL,
+    payload_json TEXT,
+    created_at TEXT NOT NULL
+);
 """
 
 

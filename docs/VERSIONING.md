@@ -5,16 +5,16 @@ labels for architecture milestones from the concept document.
 
 ## Current State
 
-- Package version: `0.6.0`
+- Package version: `0.7.0`
 - Architecture level: EGG-v0 base plus Shadow/Fitness evaluation, read-only
   Inspection Cockpit, Habitat Contract v1, SandboxPatch Boundary, and
-  EvidenceChain, and Local GitConnector
+  EvidenceChain, Local GitConnector, and draft-only GitHubConnector
 - Current boundary: draft needs, proposals, shadow plans, fitness scores,
   cockpit projections, readiness reports, patch draft records, and evidence
   records only; local Git status and preparation records are allowed, but no
-  push, merge, rebase, GitHub, autonomous activation, or runtime
-  self-modification
-- Next architecture target: Draft-only GitHubConnector
+  push, merge, rebase, non-draft GitHub action, autonomous activation, or
+  runtime self-modification
+- Next architecture target: Activation Boundary
 
 ## History
 
@@ -31,14 +31,18 @@ labels for architecture milestones from the concept document.
 - `0.5.0`: Controlled TestRunner, TestResult, EvidenceRecord, and EvidenceChain.
 - `0.6.0`: Local GitConnector with read-only Git status and deterministic
   branch-preparation records.
+- `0.7.0`: Draft-only GitHubConnector records gated by Habitat, approval, local
+  Git preparation, and passing evidence.
 
 ## Boundary
 
-Version `0.6.0` may create memories through the deterministic Reaction Core,
+Version `0.7.0` may create memories through the deterministic Reaction Core,
 may create draft needs, draft proposals, shadow test plans, and fitness
 evaluations, may render read-only cockpit snapshots, and may store resource and
 readiness records. It may create draft patch records after approval, read local
-Git status, and store deterministic local branch-preparation evidence. It must
-not push, merge, rebase, force-push, call GitHub, activate runtime reactions,
-modify files through GENUS itself, start agents/workers, call an LLM, run
-arbitrary shell commands, or introduce vector/graph storage.
+Git status, store deterministic local branch-preparation evidence, and store
+draft-only GitHub PR records when explicitly allowed and evidenced. It must not
+create non-draft PRs, merge, auto-merge, mutate issues, change labels or
+reviewers, touch secrets/permissions, activate runtime reactions, start
+agents/workers, call an LLM, run arbitrary shell commands, or introduce
+vector/graph storage.

@@ -36,6 +36,7 @@ class CockpitDataAdapter:
             evidence_chain_count=len(self.store.list_evidence_chains()),
             git_status_count=len(self.store.list_git_status_reports()),
             git_preparation_count=len(self.store.list_git_branch_preparations()),
+            github_draft_pr_count=len(self.store.list_github_draft_prs()),
             latest_habitat_id=latest_habitat.habitat_id if latest_habitat else None,
             latest_fitness_score=latest_fitness.score if latest_fitness else None,
             activation_state="blocked",

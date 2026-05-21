@@ -1,10 +1,10 @@
-# GENUS EGG v0/v0.6 Spec
+# GENUS EGG v0/v0.7 Spec
 
 ## Goal
 
-GENUS EGG `0.6.0` extends the consolidated EGG-v0 base, v0.1 evaluation layer,
+GENUS EGG `0.7.0` extends the consolidated EGG-v0 base, v0.1 evaluation layer,
 read-only Inspection Cockpit, and Habitat Contract v1 with a SandboxPatch
-Boundary, EvidenceChain, and Local GitConnector.
+Boundary, EvidenceChain, Local GitConnector, and draft-only GitHubConnector.
 
 The system may remember deterministic user input, persist its local habitat,
 record maturation observations, draft capability needs, draft development
@@ -13,7 +13,8 @@ proposals, render local inspection snapshots, assess habitat readiness, and
 draft sandbox patch records after approval. It may read local Git status and
 store deterministic branch-preparation records. It must not push, merge,
 rebase, force-push, run GitHub actions, execute arbitrary commands, register
-new runtime reactions, or activate new capabilities.
+new runtime reactions, or activate new capabilities. GitHub remains blocked by
+default and draft-only when explicitly allowed.
 
 ```text
 RawInput -> MeaningCandidate -> ValidationResult -> ReactionProduct -> MemoryObject
@@ -60,6 +61,8 @@ CapabilityNeed -> CapabilityProposal -> CodeChangeProposal
 - `genus-egg git status` stores and prints a read-only local Git status report.
 - `genus-egg git prepare-branch --patch PATCH_ID` stores a deterministic local
   branch-preparation record for an existing `SandboxPatch`.
+- `genus-egg github draft-pr --patch PATCH_ID` stores a draft-only GitHub PR
+  boundary record when all prerequisites pass.
 - `--db PATH` selects the SQLite database; default is `data/genus_egg.sqlite`.
 - `genus-egg git ... --repo PATH` selects the local repository path for Git
   inspection; default is `.`.
@@ -270,9 +273,34 @@ branch, dirty state, head commit, remotes, and a `git=read_only` payload.
 `EvidenceRecord` documenting the preparation. It does not push, merge, rebase,
 force-push, call GitHub, or activate anything.
 
+## GitHubConnector v0.7
+
+`GitHubConnector` is blocked by default because the Habitat default is
+`github_allowed=false`.
+
+`genus-egg github draft-pr --patch PATCH_ID` requires:
+
+- an existing `SandboxPatch`
+- the patch approval that created the sandbox patch
+- latest Habitat with `github_allowed=true`
+- local `GitBranchPreparation`
+- passing TestRunner evidence
+
+When those prerequisites exist, the connector stores:
+
+- `GitHubDraftPr`
+
+The stored record has `is_draft=true` and `activation=blocked`. Its payload
+explicitly keeps `push=none`, `merge=none`, `auto_merge=none`,
+`issue_mutation=none`, `labels=none`, `reviewers=none`, `secrets=none`, and
+`permissions=none`.
+
+The connector offers no non-draft PR path, no merge path, no issue mutation, no
+labels/reviewers, no secret or permission changes, and no activation.
+
 ## Persistence
 
-The `0.6.0` schema contains:
+The `0.7.0` schema contains:
 
 - `raw_inputs`
 - `meaning_candidates`
@@ -301,6 +329,7 @@ The `0.6.0` schema contains:
 - `evidence_chains`
 - `git_status_reports`
 - `git_branch_preparations`
+- `github_draft_prs`
 
 SQLite is the only source of truth. JSON payloads are stored as text.
 
@@ -318,3 +347,5 @@ SQLite is the only source of truth. JSON payloads are stored as text.
   records only.
 - Package `0.5.0`: Controlled TestRunner and EvidenceChain.
 - Package `0.6.0`: Local GitConnector status and branch-preparation records.
+- Package `0.7.0`: Draft-only GitHubConnector records gated by Habitat,
+  approval, local Git preparation, and passing evidence.

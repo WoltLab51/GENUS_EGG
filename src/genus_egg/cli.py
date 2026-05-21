@@ -19,6 +19,11 @@ from genus_egg.git_integration.local_git_connector import (
     DirtyGitTreeError,
     LocalGitConnector,
 )
+from genus_egg.github_integration.github_connector import (
+    GitHubBlockedError,
+    GitHubConnector,
+    GitHubPrerequisiteError,
+)
 from genus_egg.habitat.environment_probe import EnvironmentProbe
 from genus_egg.habitat.habitat_contract import HabitatContract
 from genus_egg.kernel.reaction_kernel import ReactionKernel
@@ -118,6 +123,11 @@ def build_parser() -> argparse.ArgumentParser:
     git_parser.add_argument("action", choices=["status", "prepare-branch"])
     git_parser.add_argument("--repo", default=".")
     git_parser.add_argument("--patch")
+
+    github = subparsers.add_parser("github", help="Prepare draft-only GitHub PRs")
+    github.add_argument("action", choices=["draft-pr"])
+    github.add_argument("--patch")
+    github.add_argument("--repository", default="origin")
 
     return parser
 
@@ -425,6 +435,32 @@ def main(argv: list[str] | None = None) -> int:
             print("Push: none")
             print("Merge: none")
             print(f"Activation: {preparation.activation}")
+            return 0
+
+        if args.command == "github":
+            if not args.patch:
+                print("Missing required --patch PATCH_ID")
+                return 2
+            try:
+                draft_pr = GitHubConnector(store).draft_pr(
+                    args.patch, repository=args.repository
+                )
+            except (
+                SandboxPatchNotFoundError,
+                GitHubBlockedError,
+                GitHubPrerequisiteError,
+            ) as error:
+                print(str(error))
+                return 1
+            print(f"GitHubDraftPR: {draft_pr.github_draft_pr_id}")
+            print(f"Patch: {draft_pr.patch_id}")
+            print(f"Branch: {draft_pr.branch_name}")
+            print(f"Repository: {draft_pr.repository}")
+            print(f"Draft: {str(draft_pr.is_draft).lower()}")
+            print(f"Status: {draft_pr.status}")
+            print("Push: none")
+            print("Merge: none")
+            print(f"Activation: {draft_pr.activation}")
             return 0
 
         return 2

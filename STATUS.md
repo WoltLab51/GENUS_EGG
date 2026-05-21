@@ -2,10 +2,11 @@
 
 ## Current Version
 
-- Package version: `0.6.0`
+- Package version: `0.7.0`
 - Architecture scope: EGG-v0 base plus Shadow/Fitness evaluation and read-only
   Inspection Cockpit, Habitat Contract v1, SandboxPatch Boundary, and
-  EvidenceChain, plus Local GitConnector preparation records
+  EvidenceChain, Local GitConnector preparation records, and draft-only
+  GitHubConnector records
 - Persistence: SQLite is the only source of truth
 - Ledger: append-only
 
@@ -25,6 +26,8 @@
 - EvidenceChain: controlled test evidence for sandbox patch drafts
 - Local GitConnector: read-only Git status plus blocked branch-preparation
   records for approved sandbox patches
+- GitHubConnector: draft-PR-only records gated by Habitat, approval, local Git
+  preparation, and passing evidence
 
 ## Draft-Safe Boundaries
 
@@ -60,6 +63,11 @@ Local GitConnector is preparation-only. It may read status and record a
 deterministic local branch preparation for an existing `SandboxPatch`, but it
 does not push, merge, rebase, force-push, call GitHub, or activate code.
 
+GitHubConnector is draft-only. It is blocked by default through
+`github_allowed=false`; even when allowed, it creates only draft PR records and
+never merges, auto-merges, mutates issues, changes labels/reviewers, touches
+secrets/permissions, or activates code.
+
 ## Explicitly Not Present
 
 - no file modification by GENUS runtime
@@ -68,6 +76,8 @@ does not push, merge, rebase, force-push, call GitHub, or activate code.
 - no vector store
 - no GraphDB
 - no active patch application
+- no non-draft pull request
+- no issue/label/reviewer automation
 - no autonomous activation
 - no runtime self-modification
 - no write-capable dashboard

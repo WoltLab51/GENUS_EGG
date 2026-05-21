@@ -1,17 +1,19 @@
 # GENUS EGG
 
-GENUS EGG `v0.6.0` is a minimal, governed reaction organism backed by SQLite.
+GENUS EGG `v0.7.0` is a minimal, governed reaction organism backed by SQLite.
 It contains the consolidated EGG-v0 base, the v0.1 evaluation layer, the
 read-only Inspection Cockpit, Habitat Contract v1, and the SandboxPatch
-Boundary, EvidenceChain, and Local GitConnector.
+Boundary, EvidenceChain, Local GitConnector, and draft-only GitHubConnector.
 
 SQLite is the source of truth. The ledger is append-only. GENUS may remember,
 observe, draft, simulate, shadow-test, evaluate proposals, render local
 inspection snapshots, assess its habitat readiness, draft sandbox patch objects
 after explicit approval, read local Git status, and store deterministic local
-branch-preparation records. It still may not push, merge, rebase, force-push,
-run GitHub actions, start workers, call an LLM, or activate new runtime
-behavior.
+branch-preparation records. It can prepare a draft-only GitHub PR record when
+the Habitat explicitly allows GitHub and evidence is present. It still may not
+merge, auto-merge, create non-draft PRs, mutate issues, change labels or
+reviewers, touch secrets/permissions, start workers, call an LLM, or activate
+new runtime behavior.
 
 ```text
 RawInput -> MeaningCandidate -> ValidationResult -> ReactionProduct -> MemoryObject
@@ -141,6 +143,18 @@ dirty state, head commit, and remotes for the selected repository path.
 stores a `GitBranchPreparation`, and records Evidence. It does not push, merge,
 rebase, force-push, run GitHub, or activate anything.
 
+## GitHubConnector
+
+`genus-egg github draft-pr --patch <patch_id>` is draft-only and blocked by
+default because `github_allowed=false` in the default Habitat. When an explicit
+Habitat record allows GitHub, the connector still requires a `SandboxPatch`,
+local branch preparation, and passing Evidence before it stores a
+`GitHubDraftPr`.
+
+The v0.7 connector records the draft-PR boundary in SQLite. It does not create
+non-draft PRs, merge, auto-merge, mutate issues, change labels or reviewers,
+touch secrets/permissions, or activate anything.
+
 ## CLI
 
 All commands accept `--db PATH`; the default database is
@@ -171,6 +185,7 @@ genus-egg --db data/genus_egg.sqlite tests run --patch <patch_id>
 genus-egg --db data/genus_egg.sqlite evidence list
 genus-egg --db data/genus_egg.sqlite git status
 genus-egg --db data/genus_egg.sqlite git prepare-branch --patch <patch_id>
+genus-egg --db data/genus_egg.sqlite github draft-pr --patch <patch_id>
 ```
 
 The same commands can also be run as a module during local development:

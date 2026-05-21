@@ -14,6 +14,7 @@ from genus_egg.evidence.test_result import TestResult
 from genus_egg.evidence.test_run import TestRun
 from genus_egg.git_integration.git_branch_preparation import GitBranchPreparation
 from genus_egg.git_integration.git_status_report import GitStatusReport
+from genus_egg.github_integration.github_draft_pr import GitHubDraftPr
 from genus_egg.habitat.habitat_manifest import HabitatManifest
 from genus_egg.habitat.habitat_readiness_report import HabitatReadinessReport
 from genus_egg.habitat.resource_snapshot import ResourceSnapshot
@@ -1234,6 +1235,52 @@ class SQLiteStore:
                 patch_id=row["patch_id"],
                 branch_name=row["branch_name"],
                 status=row["status"],
+                activation=row["activation"],
+                payload_json=row["payload_json"],
+                created_at=row["created_at"],
+            )
+            for row in rows
+        ]
+
+    def save_github_draft_pr(self, draft_pr: GitHubDraftPr) -> None:
+        self.connection.execute(
+            """
+            INSERT INTO github_draft_prs
+            (github_draft_pr_id, patch_id, branch_name, repository, status,
+             is_draft, activation, payload_json, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                draft_pr.github_draft_pr_id,
+                draft_pr.patch_id,
+                draft_pr.branch_name,
+                draft_pr.repository,
+                draft_pr.status,
+                int(draft_pr.is_draft),
+                draft_pr.activation,
+                draft_pr.payload_json,
+                draft_pr.created_at,
+            ),
+        )
+        self.connection.commit()
+
+    def list_github_draft_prs(self) -> list[GitHubDraftPr]:
+        rows = self.connection.execute(
+            """
+            SELECT github_draft_pr_id, patch_id, branch_name, repository, status,
+                   is_draft, activation, payload_json, created_at
+            FROM github_draft_prs
+            ORDER BY created_at, rowid
+            """
+        ).fetchall()
+        return [
+            GitHubDraftPr(
+                github_draft_pr_id=row["github_draft_pr_id"],
+                patch_id=row["patch_id"],
+                branch_name=row["branch_name"],
+                repository=row["repository"],
+                status=row["status"],
+                is_draft=bool(row["is_draft"]),
                 activation=row["activation"],
                 payload_json=row["payload_json"],
                 created_at=row["created_at"],

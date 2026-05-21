@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import subprocess
+import json
 
 from genus_egg.cockpit.data_adapter import CockpitDataAdapter
 from genus_egg.cockpit.html_renderer import CockpitHtmlRenderer
@@ -9,11 +10,15 @@ from genus_egg.evaluation.fitness_evaluator import FitnessEvaluator
 from genus_egg.evaluation.shadow_tester import ShadowTester
 from genus_egg.evidence.test_runner import TestRunner
 from genus_egg.git_integration.local_git_connector import LocalGitConnector
+from genus_egg.github_integration.github_connector import GitHubConnector
 from genus_egg.habitat.environment_probe import EnvironmentProbe
 from genus_egg.habitat.habitat_contract import HabitatContract
+from genus_egg.habitat.habitat_manifest import HabitatManifest
+from genus_egg.ids import new_id
 from genus_egg.kernel.reaction_kernel import ReactionKernel
 from genus_egg.maturation.maturation_seed import MaturationSeed
 from genus_egg.patching.sandbox_patch_boundary import SandboxPatchBoundary
+from genus_egg.time import utc_now
 from genus_egg.truth.ledger import Ledger
 from genus_egg.truth.sqlite_store import SQLiteStore
 
@@ -42,6 +47,25 @@ def _populate_cockpit_fixture(store: SQLiteStore) -> None:
     repo_path.mkdir()
     subprocess.run(["git", "init"], cwd=repo_path, check=True, capture_output=True)
     LocalGitConnector(store, repo_path=repo_path).prepare_branch(patch.patch_id)
+    store.save_habitat_manifest(
+        HabitatManifest(
+            habitat_id=new_id("habitat"),
+            device_id="device",
+            hostname="host",
+            os_name="test-os",
+            python_version="3.12",
+            repo_path=".",
+            data_path="./data",
+            sqlite_path=str(store.db_path),
+            network_allowed=False,
+            git_available=True,
+            github_allowed=True,
+            model_access="local_stub",
+            payload_json=json.dumps({"user_approval_required": True}),
+            created_at=utc_now(),
+        )
+    )
+    GitHubConnector(store).draft_pr(patch.patch_id)
     assert result.ledger_entries == 7
 
 
@@ -53,7 +77,7 @@ def test_cockpit_data_adapter_reads_all_relevant_object_counts(tmp_path):
 
     assert snapshot.memory_count == 1
     assert snapshot.ledger_entry_count == 7
-    assert snapshot.habitat_manifest_count == 1
+    assert snapshot.habitat_manifest_count == 2
     assert snapshot.resource_snapshot_count == 1
     assert snapshot.habitat_readiness_report_count == 1
     assert snapshot.reaction_outcome_count == 1
@@ -70,6 +94,7 @@ def test_cockpit_data_adapter_reads_all_relevant_object_counts(tmp_path):
     assert snapshot.evidence_chain_count == 1
     assert snapshot.git_status_count == 1
     assert snapshot.git_preparation_count == 1
+    assert snapshot.github_draft_pr_count == 1
     assert snapshot.latest_habitat_id is not None
     assert snapshot.latest_fitness_score is not None
     assert snapshot.activation_state == "blocked"
@@ -104,6 +129,7 @@ def test_cockpit_adapter_is_read_only(tmp_path):
             "evidence_chains",
             "git_status_reports",
             "git_branch_preparations",
+            "github_draft_prs",
         ]
     }
 

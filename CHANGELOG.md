@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.7.0 - 2026-05-21
+
+- Added draft-only GitHubConnector boundary.
+- Added `GitHubDraftPr` records and the `github_draft_prs` SQLite table.
+- Added `genus-egg github draft-pr --patch PATCH_ID`.
+- Required `github_allowed=true`, existing sandbox patch approval, local Git
+  preparation, and passing evidence before draft-PR records can be stored.
+- Extended the Inspection Cockpit to include GitHub draft PR counts.
+- Kept GitHub strictly bounded: no non-draft PR, merge, auto-merge, issue
+  mutation, labels, reviewers, secrets, permissions, or activation.
+
 ## 0.6.0 - 2026-05-21
 
 - Added Local GitConnector with read-only `GitStatusReport` storage.

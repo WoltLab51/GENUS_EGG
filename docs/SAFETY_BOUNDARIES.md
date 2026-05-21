@@ -1,6 +1,6 @@
 # Safety Boundaries
 
-These rules are hard boundaries for GENUS EGG package version `0.6.0`.
+These rules are hard boundaries for GENUS EGG package version `0.7.0`.
 
 - No model writes directly.
 - No memory exists without a `MeaningCandidate`.
@@ -26,6 +26,11 @@ These rules are hard boundaries for GENUS EGG package version `0.6.0`.
 - Local GitConnector may read status and store preparation records only.
 - Local GitConnector must not push, merge, rebase, force-push, call GitHub, or
   activate code.
+- GitHubConnector is blocked unless `github_allowed=true`, user approval,
+  passing evidence, and local Git preparation exist.
+- GitHubConnector may store draft PR records only.
+- GitHubConnector must not create non-draft PRs, merge, auto-merge, mutate
+  issues, change labels/reviewers, touch secrets/permissions, or activate code.
 - `ApprovalGate` blocks file modification and activation.
 - Growth Simulation creates no patch and runs no Git.
 - Shadow Testing executes no code and writes no files.
@@ -33,6 +38,6 @@ These rules are hard boundaries for GENUS EGG package version `0.6.0`.
 - Cockpit rendering activates nothing and mutates nothing.
 - There is no Development Core activation in this version.
 - There is no file modification by GENUS runtime.
-- There is no GitHub action, active patch application, auto-merge, agent,
-  worker, write-capable dashboard, LLM call, vector store, GraphDB, or
+- There is no non-draft GitHub action, active patch application, auto-merge,
+  agent, worker, write-capable dashboard, LLM call, vector store, GraphDB, or
   self-modifying runtime.

@@ -2,14 +2,15 @@
 
 ## Current Version
 
-- Package version: `0.6.0`
+- Package version: `0.7.0`
 - Architecture level: EGG-v0 base plus Shadow/Fitness evaluation, read-only
   Inspection Cockpit, Habitat Contract v1, SandboxPatch Boundary, and
-  EvidenceChain, and Local GitConnector.
+  EvidenceChain, Local GitConnector, and draft-only GitHubConnector.
 - Current boundary: draft needs, proposals, shadow plans, fitness scores,
   cockpit projections, readiness reports, patch draft records, and evidence
-  records only; local Git status and preparation records are allowed, but no
-  push, merge, rebase, force-push, GitHub, worker, or activation.
+  records only; local Git status, preparation records, and draft-only GitHub PR
+  records are allowed when gated, but no merge, auto-merge, non-draft PR,
+  issue mutation, worker, or activation.
 
 ## Completed Phases
 
@@ -134,4 +135,14 @@
 - Require `github_allowed=true`, user approval, green tests, and evidence.
 - No merge, auto-merge, issue mutation, labels, reviewers, secrets, or
   permission changes.
+- Status: completed in current v0.7 work.
+
+## Next Phase
+
+## GENUS EGG v0.8 - Activation Boundary
+
+- Add ActivationRequest, ActivationDecision, ReactionSpecCandidate, and
+  RuntimeCompatibilityCheck.
+- Keep activation blocked unless explicit decision prerequisites are modeled.
+- Score, merge, and PR records activate nothing by themselves.
 - Status: next.
