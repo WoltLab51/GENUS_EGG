@@ -1,7 +1,8 @@
 # GENUS EGG
 
-GENUS EGG `2.1.0` is a governed reaction organism backed by SQLite. Version
-2.1 adds a guided interaction layer for the controlled `index_memory` flow.
+GENUS EGG `2.2.0` is a governed reaction organism backed by SQLite. Version
+2.2 hardens the foundation without adding new runtime power. Version 2.1 added
+a guided interaction layer for the controlled `index_memory` flow.
 Version 2.0 added the first controlled capability activation: `index_memory`.
 
 GENUS EGG 1.0 established the complete first EGG: a minimal, governed reaction
@@ -19,10 +20,11 @@ branch-preparation records. It can prepare a draft-only GitHub PR record when
 the Habitat explicitly allows GitHub and evidence is present. It can model
 activation requests and rejection decisions. In 2.0+, GENUS may activate only
 `index_memory`, only through explicit CLI approval, and only after rollback data
-exists. In 2.1, the guide may orchestrate that existing chain and ask for
-approval, but it still may not merge, auto-merge, create non-draft PRs, mutate
-issues, change labels or reviewers, touch secrets/permissions, start workers,
-call an LLM, activate arbitrary capabilities, or rewrite its active core live.
+exists. In 2.2, Guards are real minimal inhibitors with reason codes, validation
+rejects unsafe write-path meanings, and SQLite/Ledger invariants are stronger.
+GENUS still may not merge, auto-merge, create non-draft PRs, mutate issues,
+change labels or reviewers, touch secrets/permissions, start workers, call an
+LLM, activate arbitrary capabilities, or rewrite its active core live.
 
 The core rule remains:
 
@@ -56,6 +58,20 @@ CapabilityNeed -> CapabilityProposal -> CodeChangeProposal
 
 The v0 flow does not use an LLM, network access, or creative reaction choice.
 `remember` remains fixed at seven ledger entries for the successful chain.
+The explicit `remember` command uses `CommandParseAdapter`; free-language
+semantic parsing is not implemented.
+
+## Foundation Guards
+
+Foundation Guards are deterministic inhibitors. They return
+`GuardDecision(allow, reason_code)` and block missing content, low confidence,
+non-allow validation, wrong continuation policy, unknown reactions, and
+forbidden effects such as file writes, Git, GitHub, LLM calls, workers,
+GraphDB, embeddings, or runtime self-modification.
+
+Validation is conservative: only `memory_request` with non-empty content, high
+confidence, and no clarification need is allowed. Clarification is not a
+follow-up reaction in 2.2; it rejects with `needs_clarification`.
 
 ## Habitat Core
 

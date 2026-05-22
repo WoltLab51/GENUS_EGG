@@ -22,14 +22,16 @@ CREATE TABLE IF NOT EXISTS meaning_candidates (
     interpretation_confidence TEXT NOT NULL,
     needs_clarification INTEGER NOT NULL,
     adapter_version TEXT NOT NULL,
-    created_at TEXT NOT NULL
+    created_at TEXT NOT NULL,
+    CHECK (interpretation_confidence IN ('low', 'medium', 'high')),
+    CHECK (needs_clarification IN (0, 1))
 );
 
 CREATE TABLE IF NOT EXISTS validation_results (
     validation_id TEXT PRIMARY KEY,
     chain_id TEXT NOT NULL,
     source_meaning_id TEXT NOT NULL,
-    result TEXT NOT NULL,
+    result TEXT NOT NULL CHECK (result IN ('allow', 'reject')),
     reason_code TEXT NOT NULL,
     created_at TEXT NOT NULL
 );
@@ -50,8 +52,8 @@ CREATE TABLE IF NOT EXISTS reaction_products (
     product_id TEXT PRIMARY KEY,
     chain_id TEXT NOT NULL,
     produced_by_reaction_id TEXT NOT NULL,
-    product_type TEXT NOT NULL,
-    continuation_policy TEXT NOT NULL,
+    product_type TEXT NOT NULL CHECK (product_type IN ('memory_proposal')),
+    continuation_policy TEXT NOT NULL CHECK (continuation_policy IN ('required')),
     payload_json TEXT NOT NULL,
     created_at TEXT NOT NULL
 );
@@ -78,7 +80,7 @@ CREATE TABLE IF NOT EXISTS memory_index_entries (
 CREATE TABLE IF NOT EXISTS ledger_entries (
     ledger_id TEXT PRIMARY KEY,
     chain_id TEXT NOT NULL,
-    step INTEGER NOT NULL,
+    step INTEGER NOT NULL CHECK (step > 0),
     event_type TEXT NOT NULL,
     source_kind TEXT NOT NULL,
     source_id TEXT NOT NULL,
@@ -87,6 +89,9 @@ CREATE TABLE IF NOT EXISTS ledger_entries (
     payload_json TEXT,
     created_at TEXT NOT NULL
 );
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_ledger_entries_chain_step
+ON ledger_entries(chain_id, step);
 
 CREATE TABLE IF NOT EXISTS habitat_manifest (
     habitat_id TEXT PRIMARY KEY,
@@ -123,7 +128,7 @@ CREATE TABLE IF NOT EXISTS habitat_readiness_reports (
     report_id TEXT PRIMARY KEY,
     habitat_id TEXT NOT NULL,
     snapshot_id TEXT NOT NULL,
-    status TEXT NOT NULL,
+    status TEXT NOT NULL CHECK (status IN ('ready', 'limited', 'blocked')),
     reason_code TEXT NOT NULL,
     checks_json TEXT NOT NULL,
     payload_json TEXT,
@@ -154,7 +159,7 @@ CREATE TABLE IF NOT EXISTS capability_needs (
     source_observation_id TEXT,
     need_type TEXT NOT NULL,
     description TEXT NOT NULL,
-    status TEXT NOT NULL,
+    status TEXT NOT NULL CHECK (status IN ('draft')),
     payload_json TEXT,
     created_at TEXT NOT NULL
 );

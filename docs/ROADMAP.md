@@ -2,9 +2,9 @@
 
 ## Current Version
 
-- Package version: `2.1.0`
+- Package version: `2.2.0`
 - Architecture level: Complete first EGG plus first controlled capability
-  activation and guided terminal interaction.
+  activation, guided terminal interaction, and hardened foundation boundaries.
 - Current boundary: draft needs, proposals, shadow plans, fitness scores,
   cockpit projections, readiness reports, patch draft records, and evidence
   records only; local Git status, preparation records, and draft-only GitHub PR
@@ -174,7 +174,18 @@
   worker, LLM call, or live core rewrite.
 - Status: completed in current v2.1 work.
 
-## Post-2.1 Topics
+## GENUS EGG v2.2 - Foundation Hardening
+
+- Add deterministic Guards with reason codes.
+- Make validation reject unsafe write-path meanings.
+- Clarify explicit CommandParse vs future semantic parsing.
+- Formalize ReactionCube coordinates and ReactionGraph edges.
+- Strengthen SQLite and append-only Ledger invariants.
+- Add CI and Foundation Review documentation.
+- Add no new runtime power.
+- Status: completed in current v2.2 work.
+
+## Post-2.2 Topics
 
 - richer physiology and resource economy
 - stronger local inspection Cockpit

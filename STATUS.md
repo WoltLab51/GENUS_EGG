@@ -2,9 +2,9 @@
 
 ## Current Version
 
-- Package version: `2.1.0`
+- Package version: `2.2.0`
 - Architecture scope: Complete first EGG plus controlled `index_memory`
-  capability activation and guided terminal interaction
+  capability activation, guided terminal interaction, and hardened foundation
 - Persistence: SQLite is the only source of truth
 - Ledger: append-only
 
@@ -32,10 +32,12 @@
   activation records, capability monitors, and fossil records
 - Memory Indexing: first controlled active capability, explicit approval only
 - Guided Interaction Layer: terminal guide for the safe memory-indexing chain
+- Foundation Hardening: Guard decisions, conservative validation, explicit
+  reaction coordinates/edges, SQLite and Ledger invariants, CI
 
 ## Capability Matrix
 
-| Capability | 2.1 status | Boundary |
+| Capability | 2.2 status | Boundary |
 | --- | --- | --- |
 | Memory reaction | active | deterministic `remember`, seven ledger entries |
 | Ledger | active | append-only |
@@ -58,6 +60,9 @@
 | Fossilization | record | deletes no truth |
 | Memory indexing | active after approval | only `index_memory`, SQLite-only |
 | Guided memory-indexing flow | interactive | prints IDs, asks before approval |
+| Guards | active | deterministic inhibitors with reason codes |
+| Validation | active | rejects unsafe write-path meanings |
+| CI | active | Python 3.12 pytest workflow |
 
 ## Draft-Safe Boundaries
 
@@ -118,6 +123,10 @@ the same draft/evidence/rollback records as the existing CLI chain, but it
 activates only after an explicit `y` or `yes` answer and only through
 `ActivationBoundary.approve(...)`. If approval is skipped, the prepared
 `ActivationRequest` remains blocked.
+
+Foundation Guards are now active minimal inhibitors. They do not create side
+effects and do not grant new power; they only block unsafe or unsupported
+reaction conditions with explicit reason codes.
 
 ## Explicitly Not Present
 

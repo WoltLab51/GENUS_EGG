@@ -5,15 +5,15 @@ labels for architecture milestones from the concept document.
 
 ## Current State
 
-- Package version: `2.1.0`
+- Package version: `2.2.0`
 - Architecture level: Complete first EGG plus first controlled capability
-  activation and guided terminal interaction
+  activation, guided terminal interaction, and foundation hardening
 - Current boundary: draft needs, proposals, shadow plans, fitness scores,
   cockpit projections, readiness reports, patch draft records, and evidence
   records only; local Git status and preparation records are allowed, but no
   push, merge, rebase, non-draft GitHub action, autonomous activation, or
   runtime self-modification
-- Next architecture target: post-2.1 physiology, resource economy,
+- Next architecture target: post-2.2 physiology, resource economy,
   distributed Habitats, stronger inspection surfaces, and richer memory search
 
 ## History
@@ -42,10 +42,13 @@ labels for architecture milestones from the concept document.
   `index_memory`.
 - `2.1.0`: Guided terminal interaction for the controlled `index_memory`
   lifecycle.
+- `2.2.0`: Foundation Hardening with GuardDecision reason codes,
+  conservative validation, explicit reaction coordinates/edges, Ledger/SQLite
+  invariant checks, CI, and Foundation Review.
 
 ## Boundary
 
-Version `2.1.0` may create memories through the deterministic Reaction Core,
+Version `2.2.0` may create memories through the deterministic Reaction Core,
 may create draft needs, draft proposals, shadow test plans, and fitness
 evaluations, may render read-only cockpit snapshots, and may store resource and
 readiness records. It may create draft patch records after approval, read local
@@ -61,3 +64,5 @@ vector/graph storage, or delete truth during fossilization. It may activate only
 indexing is deterministic and SQLite-only. It may also run
 `guide memory-indexing`, which carries IDs across the same safe chain and asks
 before activation; the guide is an interaction layer, not a new authority.
+Foundation Guards and validation may block unsafe or unsupported write paths,
+but they do not add new actions.

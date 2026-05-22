@@ -1,5 +1,20 @@
 # Changelog
 
+## 2.2.0 - 2026-05-23
+
+- Hardened foundation boundaries without adding runtime capabilities.
+- Replaced placeholder Guards with `GuardDecision(allow, reason_code)` and
+  deterministic inhibitors.
+- Added conservative validation for unknown intents, missing content, low
+  confidence, and clarification needs.
+- Added `CommandParseAdapter` for the explicit CLI `remember` path and kept
+  `SemanticParseAdapter` as a compatibility wrapper.
+- Formalized ReactionCube coordinates and ReactionGraph edge objects.
+- Strengthened SQLite/Ledger invariants with duplicate-step protection, stable
+  CHECK constraints for new databases, and store-level validation.
+- Added Python 3.12 pytest CI workflow.
+- Added `docs/FOUNDATION_REVIEW.md`.
+
 ## 2.1.0 - 2026-05-22
 
 - Added `genus-egg guide memory-indexing` as a terminal Lotsenmodus for the

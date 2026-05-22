@@ -1,6 +1,6 @@
 # Safety Boundaries
 
-These rules are hard boundaries for GENUS EGG package version `2.1.0`.
+These rules are hard boundaries for GENUS EGG package version `2.2.0`.
 
 - No model writes directly.
 - No memory exists without a `MeaningCandidate`.
@@ -8,7 +8,12 @@ These rules are hard boundaries for GENUS EGG package version `2.1.0`.
 - No product exists without a reaction.
 - No follow-up exists without an explicit graph edge.
 - No product becomes an implicit signal.
+- Guards are deterministic inhibitors and expose reason codes.
+- Guards must not create side effects.
+- Clarification is not a follow-up reaction in this version.
+- Free-language semantic parsing is not implemented.
 - The ledger is append-only.
+- The ledger must not contain duplicate `(chain_id, step)` entries.
 - SQLite is the source of truth.
 - The graph is projection, not truth.
 - Habitat Core is read-only and stores manifests only.

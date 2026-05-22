@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from genus_egg.kernel.reaction_kernel import ReactionKernel
+from genus_egg.kernel.reaction_graph import ReactionEdge
 from genus_egg.kernel.reaction_registry import ReactionRegistry
 from genus_egg.kernel.reaction_spec import ReactionSpec
 from genus_egg.kernel.working_set import WorkingSet
@@ -44,10 +45,23 @@ def test_missing_graph_edge_blocks_follow_up(tmp_path):
     store = SQLiteStore(tmp_path / "genus.sqlite")
     ledger = Ledger(store)
     kernel = ReactionKernel(store, ledger)
-    kernel.graph._edges.remove(("raw_input", "parse_user_input"))
+    kernel.graph._edges.remove(ReactionEdge("raw_input", "parse_user_input"))
 
     result = kernel.remember("larumipsum")
 
     assert result.outcome == "stopped"
     assert result.reason_code == "no_enabled_reaction"
+    store.close()
+
+
+def test_invalid_meaning_stops_before_memory_creation(tmp_path):
+    store = SQLiteStore(tmp_path / "genus.sqlite")
+    ledger = Ledger(store)
+
+    result = ReactionKernel(store, ledger).remember("")
+
+    assert result.outcome == "stopped"
+    assert result.reason_code == "missing_content"
+    assert store.count_rows("validation_results") == 1
+    assert store.count_rows("memory_objects") == 0
     store.close()

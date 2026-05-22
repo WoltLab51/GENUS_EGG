@@ -1,14 +1,16 @@
-# GENUS EGG 2.1 Spec
+# GENUS EGG 2.2 Spec
 
 ## Goal
 
-GENUS EGG `2.1.0` builds on the complete first EGG slice and adds a guided
-terminal interaction layer for the first controlled capability activation:
-`index_memory`. It includes the EGG-v0 Reaction Core, v0.1 Shadow/Fitness
+GENUS EGG `2.2.0` builds on the complete first EGG slice and hardens the
+foundation around the first controlled capability activation: `index_memory`.
+It includes the EGG-v0 Reaction Core, v0.1 Shadow/Fitness
 evaluation, read-only Inspection Cockpit, Habitat Contract v1, SandboxPatch
 Boundary, EvidenceChain, Local GitConnector, draft-only GitHubConnector,
 Activation Boundary, Monitoring/Fossilization/Rollback, deterministic SQLite
-memory indexing, and the `guide memory-indexing` Lotsenmodus.
+memory indexing, the `guide memory-indexing` Lotsenmodus, deterministic
+Guards, conservative validation, explicit reaction coordinates/edges, and
+Ledger/SQLite invariants.
 
 The system may remember deterministic user input, persist its local habitat,
 record maturation observations, draft capability needs, draft development
@@ -22,7 +24,8 @@ default and draft-only when explicitly allowed. Activation remains modeled and
 blocked except for the explicitly approved `index_memory` capability. Rollback,
 monitoring, and fossilization add evidence and history without live core
 rewrites. The guide may carry IDs and ask for approval, but it does not create
-new authority beyond existing boundaries.
+new authority beyond existing boundaries. Version 2.2 adds no new runtime
+power; it only makes the foundation harder and more explainable.
 
 ```text
 RawInput -> MeaningCandidate -> ValidationResult -> ReactionProduct -> MemoryObject
@@ -118,6 +121,19 @@ Successful `remember` persists this sequence and records seven ledger entries:
 - `reaction_product_created`
 - `memory_object_created`
 - `chain_completed`
+
+Validation is conservative. Only `memory_request` with non-empty content, high
+confidence, and no clarification need yields `allow/ready`. Unknown intents,
+missing content, low confidence, or `needs_clarification=True` reject with a
+specific reason code. There is no automatic clarify follow-up in 2.2.
+
+`CommandParseAdapter` is the explicit parser for CLI `remember`. The
+compatibility `SemanticParseAdapter` does not implement free-language or LLM
+semantics.
+
+Foundation Guards return `GuardDecision(allow, reason_code)` and block missing
+content, low confidence, non-allow validation, wrong continuation policy,
+unknown reactions, and forbidden effects.
 
 ## Habitat Core v0.3
 
@@ -466,9 +482,26 @@ The guide does not write source files, apply patches, run Git, call GitHub,
 start workers, call an LLM, activate arbitrary capabilities, or rewrite the
 active core.
 
+## Foundation Hardening 2.2
+
+ReactionCube now exposes `ReactionCoordinate(intent, context, reaction_state)`
+and a 3-bit `ReactionCode`. The current enabled code is
+`memory_request + normal + ready`.
+
+ReactionGraph edges are explicit `ReactionEdge` objects with `from_kind`,
+`to_reaction`, optional product type, optional continuation requirement, and
+optional terminal behavior. No dynamic runtime graph or implicit signal path is
+introduced.
+
+SQLite adds a unique ledger-step index for `(chain_id, step)`, stable CHECK
+constraints for new databases, and store-level invariant checks where
+compatibility with existing SQLite files matters. Full foreign-key enforcement
+is intentionally deferred and documented in `docs/FOUNDATION_REVIEW.md`.
+
 ## Persistence
 
-The `2.1.0` schema contains the same SQLite tables as `2.0.0`:
+The `2.2.0` schema contains the same SQLite tables as `2.0.0`, with hardened
+constraints/indexes for new databases:
 
 - `raw_inputs`
 - `meaning_candidates`
@@ -536,3 +569,6 @@ SQLite is the only source of truth. JSON payloads are stored as text.
   memory index and deterministic CLI search.
 - Package `2.1.0`: Guided `memory-indexing` interaction layer with visible IDs
   and explicit approval prompt.
+- Package `2.2.0`: Foundation Hardening with Guards, conservative validation,
+  explicit reaction coordinates/edges, SQLite/Ledger invariants, CI, and
+  Foundation Review.

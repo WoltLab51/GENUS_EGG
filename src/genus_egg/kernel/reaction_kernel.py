@@ -20,7 +20,7 @@ from genus_egg.maturation.maturation_seed import MaturationSeed
 from genus_egg.memory.memory_indexer import MemoryIndexer
 from genus_egg.memory.memory_object import MemoryObject
 from genus_egg.semantics.raw_input import RawInput
-from genus_egg.semantics.semantic_parse_adapter import SemanticParseAdapter
+from genus_egg.semantics.command_parse_adapter import CommandParseAdapter
 from genus_egg.time import utc_now
 from genus_egg.truth.ledger import Ledger
 from genus_egg.truth.sqlite_store import SQLiteStore
@@ -37,7 +37,7 @@ class ReactionKernel:
         self.store = store
         self.ledger = ledger
         self.max_chain_depth = max_chain_depth
-        self.adapter = SemanticParseAdapter()
+        self.adapter = CommandParseAdapter()
         self.cube = ReactionCube()
         self.graph = ReactionGraph()
         self.guards = Guards()
@@ -71,16 +71,25 @@ class ReactionKernel:
         depth = 0
         while depth < self.max_chain_depth:
             enabled = self.registry.find_enabled(working_set)
-            allowed = [
-                reaction
-                for reaction in enabled
-                if self.cube.allows(reaction, working_set)
-                and self.graph.allows_if_continuation(reaction, working_set)
-                and self.guards.allow(reaction, working_set)
-            ]
+            allowed = []
+            guard_block_reason = None
+            for reaction in enabled:
+                if not self.graph.allows_if_continuation(reaction, working_set):
+                    continue
+                guard_decision = self.guards.decide(reaction, working_set)
+                if not guard_decision.allow:
+                    guard_block_reason = guard_decision.reason_code
+                    continue
+                if not self.cube.allows(reaction, working_set):
+                    continue
+                allowed.append(reaction)
 
             if not allowed:
-                return self._result(working_set, "stopped", "no_enabled_reaction")
+                return self._result(
+                    working_set,
+                    "stopped",
+                    guard_block_reason or "no_enabled_reaction",
+                )
 
             if len(allowed) > 1:
                 return self._result(working_set, "stopped", "ambiguous_reaction")
@@ -138,12 +147,26 @@ class ReactionKernel:
 
     def _validate_meaning(self, working_set: WorkingSet) -> object:
         meaning = working_set.latest("meaning_candidate")
+        result = "allow"
+        reason_code = "ready"
+        if meaning.intent != "memory_request":
+            result = "reject"
+            reason_code = "unknown_intent"
+        elif not meaning.content or not meaning.content.strip():
+            result = "reject"
+            reason_code = "missing_content"
+        elif meaning.interpretation_confidence == "low":
+            result = "reject"
+            reason_code = "low_confidence"
+        elif meaning.needs_clarification:
+            result = "reject"
+            reason_code = "needs_clarification"
         return ValidationResult(
             validation_id=new_id("validation"),
             chain_id=meaning.chain_id,
             source_meaning_id=meaning.meaning_id,
-            result="allow",
-            reason_code="ready",
+            result=result,
+            reason_code=reason_code,
             created_at=utc_now(),
         )
 
@@ -158,7 +181,7 @@ class ReactionKernel:
             context="normal",
             reaction_state="ready",
             resolver_mode="deterministic",
-            cube_coord=1,
+            cube_coord=int(self.cube.coordinate(working_set).code),
             created_at=utc_now(),
         )
         self.store.save_reaction(reaction)

@@ -101,6 +101,7 @@ class SQLiteStore:
         self.connection.commit()
 
     def save_validation_result(self, validation: ValidationResult) -> None:
+        _require_one_of(validation.result, {"allow", "reject"}, "validation.result")
         self.connection.execute(
             """
             INSERT INTO validation_results
@@ -142,6 +143,14 @@ class SQLiteStore:
         self.connection.commit()
 
     def save_reaction_product(self, product: ReactionProduct) -> None:
+        _require_one_of(
+            product.product_type, {"memory_proposal"}, "reaction_product.product_type"
+        )
+        _require_one_of(
+            product.continuation_policy,
+            {"required"},
+            "reaction_product.continuation_policy",
+        )
         self.connection.execute(
             """
             INSERT INTO reaction_products
@@ -492,6 +501,7 @@ class SQLiteStore:
         ]
 
     def save_capability_need(self, need: CapabilityNeed) -> None:
+        _require_one_of(need.status, {"draft"}, "capability_need.status")
         self.connection.execute(
             """
             INSERT INTO capability_needs
@@ -1690,3 +1700,9 @@ class SQLiteStore:
             raise ValueError(f"unknown table: {table}")
         row = self.connection.execute(f"SELECT * FROM {table} LIMIT 1").fetchone()
         return dict(row) if row else {}
+
+
+def _require_one_of(value: str, allowed: set[str], field_name: str) -> None:
+    if value not in allowed:
+        allowed_values = ", ".join(sorted(allowed))
+        raise ValueError(f"{field_name} must be one of: {allowed_values}")

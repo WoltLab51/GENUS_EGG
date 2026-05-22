@@ -12,6 +12,7 @@ class ReactionSpec:
     required_kind: str
     produced_kind: str
     execute: Callable[[WorkingSet], object]
+    effects: tuple[str, ...] = ()
 
     def is_enabled(self, working_set: WorkingSet) -> bool:
         if not working_set.has(self.required_kind):
