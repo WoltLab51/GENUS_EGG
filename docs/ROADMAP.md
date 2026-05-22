@@ -2,9 +2,9 @@
 
 ## Current Version
 
-- Package version: `2.0.0`
+- Package version: `2.1.0`
 - Architecture level: Complete first EGG plus first controlled capability
-  activation.
+  activation and guided terminal interaction.
 - Current boundary: draft needs, proposals, shadow plans, fitness scores,
   cockpit projections, readiness reports, patch draft records, and evidence
   records only; local Git status, preparation records, and draft-only GitHub PR
@@ -165,7 +165,16 @@
 - Add deterministic CLI memory search.
 - Status: completed in current v2.0 work.
 
-## Post-2.0 Topics
+## GENUS EGG v2.1 - Guided Interaction Layer
+
+- Add `genus-egg guide memory-indexing`.
+- Carry IDs across the safe memory-indexing lifecycle for the user.
+- Ask explicitly before `index_memory` activation and default to blocked.
+- Create no new runtime capability, Git action, GitHub action, patch apply,
+  worker, LLM call, or live core rewrite.
+- Status: completed in current v2.1 work.
+
+## Post-2.1 Topics
 
 - richer physiology and resource economy
 - stronger local inspection Cockpit

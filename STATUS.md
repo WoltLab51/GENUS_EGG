@@ -2,9 +2,9 @@
 
 ## Current Version
 
-- Package version: `2.0.0`
+- Package version: `2.1.0`
 - Architecture scope: Complete first EGG plus controlled `index_memory`
-  capability activation
+  capability activation and guided terminal interaction
 - Persistence: SQLite is the only source of truth
 - Ledger: append-only
 
@@ -31,10 +31,11 @@
 - Monitoring/Fossilization/Rollback: rollback plans, blocked capability
   activation records, capability monitors, and fossil records
 - Memory Indexing: first controlled active capability, explicit approval only
+- Guided Interaction Layer: terminal guide for the safe memory-indexing chain
 
 ## Capability Matrix
 
-| Capability | 2.0 status | Boundary |
+| Capability | 2.1 status | Boundary |
 | --- | --- | --- |
 | Memory reaction | active | deterministic `remember`, seven ledger entries |
 | Ledger | active | append-only |
@@ -56,6 +57,7 @@
 | Monitoring | record | observes only |
 | Fossilization | record | deletes no truth |
 | Memory indexing | active after approval | only `index_memory`, SQLite-only |
+| Guided memory-indexing flow | interactive | prints IDs, asks before approval |
 
 ## Draft-Safe Boundaries
 
@@ -107,9 +109,15 @@ except the explicitly approved `index_memory` capability. Monitoring records
 outcomes and boundary violations. Fossilization marks history without deleting
 SQLite truth.
 
-Memory indexing is the only active 2.0 capability. It requires
+Memory indexing is the only active 2.x capability. It requires
 `activation approve`, a `review_required` request, a `RollbackPlan`, and the
 `index_memory` candidate. Backfill is synchronous and stored in SQLite.
+
+The Guided Interaction Layer is a user-facing orchestration layer. It may create
+the same draft/evidence/rollback records as the existing CLI chain, but it
+activates only after an explicit `y` or `yes` answer and only through
+`ActivationBoundary.approve(...)`. If approval is skipped, the prepared
+`ActivationRequest` remains blocked.
 
 ## Explicitly Not Present
 

@@ -1,5 +1,18 @@
 # Changelog
 
+## 2.1.0 - 2026-05-22
+
+- Added `genus-egg guide memory-indexing` as a terminal Lotsenmodus for the
+  controlled `index_memory` lifecycle.
+- The guide creates the existing safe chain through normal boundaries, prints
+  all generated IDs, and asks `Approve index_memory activation? [y/N]`.
+- Only `y` or `yes` activates through the existing `ActivationBoundary`; any
+  other answer leaves the request blocked.
+- Already active memory indexing is reported without creating a second
+  activation chain.
+- Kept 2.1 as an interaction layer only: no new runtime capability, no Git,
+  no GitHub, no patch apply, no worker, no LLM, and no live core rewrite.
+
 ## 2.0.0 - 2026-05-21
 
 - Added first controlled capability activation for `index_memory`.

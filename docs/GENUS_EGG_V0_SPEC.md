@@ -1,13 +1,14 @@
-# GENUS EGG 2.0 Spec
+# GENUS EGG 2.1 Spec
 
 ## Goal
 
-GENUS EGG `2.0.0` builds on the complete first EGG slice and adds the first
-controlled capability activation: `index_memory`. It includes the EGG-v0
-Reaction Core, v0.1 Shadow/Fitness evaluation, read-only Inspection Cockpit,
-Habitat Contract v1, SandboxPatch Boundary, EvidenceChain, Local GitConnector,
-draft-only GitHubConnector, Activation Boundary,
-Monitoring/Fossilization/Rollback, and deterministic SQLite memory indexing.
+GENUS EGG `2.1.0` builds on the complete first EGG slice and adds a guided
+terminal interaction layer for the first controlled capability activation:
+`index_memory`. It includes the EGG-v0 Reaction Core, v0.1 Shadow/Fitness
+evaluation, read-only Inspection Cockpit, Habitat Contract v1, SandboxPatch
+Boundary, EvidenceChain, Local GitConnector, draft-only GitHubConnector,
+Activation Boundary, Monitoring/Fossilization/Rollback, deterministic SQLite
+memory indexing, and the `guide memory-indexing` Lotsenmodus.
 
 The system may remember deterministic user input, persist its local habitat,
 record maturation observations, draft capability needs, draft development
@@ -20,7 +21,8 @@ new runtime reactions, or activate new capabilities. GitHub remains blocked by
 default and draft-only when explicitly allowed. Activation remains modeled and
 blocked except for the explicitly approved `index_memory` capability. Rollback,
 monitoring, and fossilization add evidence and history without live core
-rewrites.
+rewrites. The guide may carry IDs and ask for approval, but it does not create
+new authority beyond existing boundaries.
 
 ```text
 RawInput -> MeaningCandidate -> ValidationResult -> ReactionProduct -> MemoryObject
@@ -81,6 +83,8 @@ CapabilityNeed -> CapabilityProposal -> CodeChangeProposal
 - `genus-egg memory index-status` shows index activation and indexed counts.
 - `genus-egg memory search QUERY` searches deterministic SQLite memory index
   entries.
+- `genus-egg guide memory-indexing` runs the safe memory-indexing lifecycle,
+  prints all generated IDs, and asks before activation.
 - `genus-egg rollback plan --code-proposal CODE_PROPOSAL_ID` stores a rollback
   plan.
 - `genus-egg monitor capability --code-proposal CODE_PROPOSAL_ID` stores a
@@ -429,9 +433,42 @@ Memory search is deterministic and SQLite-only. There are no embeddings, vector
 stores, GraphDBs, LLM calls, background workers, GitHub actions, or arbitrary
 capability activation.
 
+## Guided Interaction Layer 2.1
+
+`genus-egg guide memory-indexing` is a terminal Lotsenmodus for the existing
+`index_memory` lifecycle. It creates the same governed records as the manual
+CLI chain:
+
+- `CapabilityNeed`
+- `CapabilityProposal`
+- `CodeChangeProposal`
+- `ShadowTestPlan`
+- `FitnessEvaluation`
+- `PatchApproval`
+- `SandboxPatch`
+- `TestRun`
+- `EvidenceChain`
+- `RollbackPlan`
+- `ActivationRequest`
+
+The guide prints each generated ID. It then asks:
+
+```text
+Approve index_memory activation? [y/N]
+```
+
+Only `y` or `yes` calls `ActivationBoundary.approve(...)`. Any other answer
+leaves the request blocked and prints the manual next command. If
+`index_memory` is already active, the guide creates no new chain and prints the
+current index status plus a safe `memory search` example.
+
+The guide does not write source files, apply patches, run Git, call GitHub,
+start workers, call an LLM, activate arbitrary capabilities, or rewrite the
+active core.
+
 ## Persistence
 
-The `2.0.0` schema contains:
+The `2.1.0` schema contains the same SQLite tables as `2.0.0`:
 
 - `raw_inputs`
 - `meaning_candidates`
@@ -497,3 +534,5 @@ SQLite is the only source of truth. JSON payloads are stored as text.
   capability matrix, and post-1.0 roadmap.
 - Package `2.0.0`: First controlled `index_memory` activation with SQLite
   memory index and deterministic CLI search.
+- Package `2.1.0`: Guided `memory-indexing` interaction layer with visible IDs
+  and explicit approval prompt.

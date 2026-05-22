@@ -30,6 +30,7 @@ from genus_egg.github_integration.github_connector import (
     GitHubConnector,
     GitHubPrerequisiteError,
 )
+from genus_egg.guide.memory_indexing_guide import MemoryIndexingGuide
 from genus_egg.habitat.environment_probe import EnvironmentProbe
 from genus_egg.habitat.habitat_contract import HabitatContract
 from genus_egg.kernel.reaction_kernel import ReactionKernel
@@ -165,6 +166,9 @@ def build_parser() -> argparse.ArgumentParser:
     fossilize.add_argument("--source-kind")
     fossilize.add_argument("--source-id")
     fossilize.add_argument("--reason", default="No longer eligible for activation.")
+
+    guide = subparsers.add_parser("guide", help="Run guided safe GENUS flows")
+    guide.add_argument("action", choices=["memory-indexing"])
 
     return parser
 
@@ -668,6 +672,70 @@ def main(argv: list[str] | None = None) -> int:
                     f"match={result.match}"
                 )
             return 0
+
+        if args.command == "guide":
+            if args.action == "memory-indexing":
+                guide = MemoryIndexingGuide(store)
+                print("Guide: memory-indexing")
+                if guide.is_active():
+                    print("Active: true")
+                    print(f"Memories: {len(store.list_memory_objects())}")
+                    print(f"Indexed: {len(store.list_memory_index_entries())}")
+                    print(f'Next: genus-egg --db {args.db} memory search "term"')
+                    return 0
+
+                try:
+                    preparation = guide.prepare()
+                except (RuntimeError, ValueError) as error:
+                    print(str(error))
+                    return 1
+
+                print(f"CapabilityNeed: {preparation.need.need_id}")
+                print(f"CapabilityProposal: {preparation.proposal.proposal_id}")
+                print(f"CodeProposal: {preparation.code_proposal.code_proposal_id}")
+                print(f"ShadowTestPlan: {preparation.shadow_plan.shadow_plan_id}")
+                print(f"FitnessEvaluation: {preparation.fitness_evaluation.evaluation_id}")
+                print(f"PatchApproval: {preparation.patch_approval.approval_id}")
+                print(f"SandboxPatch: {preparation.sandbox_patch.patch_id}")
+                print(f"TestRun: {preparation.test_run.test_run_id}")
+                print(f"EvidenceChain: {preparation.evidence_chain.evidence_chain_id}")
+                print(f"RollbackPlan: {preparation.rollback_plan.rollback_plan_id}")
+                print(
+                    f"ActivationRequest: "
+                    f"{preparation.activation_request.activation_request_id}"
+                )
+                print("Activation: blocked")
+                try:
+                    answer = input("Approve index_memory activation? [y/N] ")
+                except EOFError:
+                    answer = ""
+                if answer.strip().lower() not in {"y", "yes"}:
+                    print("Decision: skipped")
+                    print("Activation: blocked")
+                    print(
+                        f"Next: genus-egg --db {args.db} activation approve "
+                        f"--request {preparation.activation_request.activation_request_id}"
+                    )
+                    return 0
+
+                try:
+                    approval = guide.approve(
+                        preparation.activation_request.activation_request_id
+                    )
+                except (RuntimeError, ValueError) as error:
+                    print(str(error))
+                    return 1
+
+                print(f"ActivationDecision: {approval.decision.activation_decision_id}")
+                print(
+                    f"CapabilityActivation: "
+                    f"{approval.activation.capability_activation_id}"
+                )
+                print("Capability: index_memory")
+                print(f"Status: {approval.activation.status}")
+                print(f"Activation: {approval.activation.activation}")
+                print(f"Backfilled: {approval.indexed_count}")
+                return 0
 
         return 2
     finally:

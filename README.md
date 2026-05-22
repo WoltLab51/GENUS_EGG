@@ -1,7 +1,8 @@
 # GENUS EGG
 
-GENUS EGG `2.0.0` is a governed reaction organism backed by SQLite. Version
-2.0 adds the first controlled capability activation: `index_memory`.
+GENUS EGG `2.1.0` is a governed reaction organism backed by SQLite. Version
+2.1 adds a guided interaction layer for the controlled `index_memory` flow.
+Version 2.0 added the first controlled capability activation: `index_memory`.
 
 GENUS EGG 1.0 established the complete first EGG: a minimal, governed reaction
 organism backed by SQLite. It can react, remember, observe, inspect its Habitat,
@@ -16,11 +17,12 @@ inspection snapshots, assess its habitat readiness, draft sandbox patch objects
 after explicit approval, read local Git status, and store deterministic local
 branch-preparation records. It can prepare a draft-only GitHub PR record when
 the Habitat explicitly allows GitHub and evidence is present. It can model
-activation requests and rejection decisions. In 2.0, GENUS may activate only
+activation requests and rejection decisions. In 2.0+, GENUS may activate only
 `index_memory`, only through explicit CLI approval, and only after rollback data
-exists. It still may not merge, auto-merge, create non-draft PRs, mutate issues,
-change labels or reviewers, touch secrets/permissions, start workers, call an
-LLM, activate arbitrary capabilities, or rewrite its active core live.
+exists. In 2.1, the guide may orchestrate that existing chain and ask for
+approval, but it still may not merge, auto-merge, create non-draft PRs, mutate
+issues, change labels or reviewers, touch secrets/permissions, start workers,
+call an LLM, activate arbitrary capabilities, or rewrite its active core live.
 
 The core rule remains:
 
@@ -198,6 +200,22 @@ network, and no LLM.
 index-status` shows whether indexing is active and how many memories are
 indexed.
 
+## Guided Interaction Layer
+
+`genus-egg guide memory-indexing` runs a terminal Lotsenmodus for the full
+safe `index_memory` chain. It creates the existing draft/evidence/rollback
+records through their normal boundaries, prints every generated ID, and then
+asks:
+
+```text
+Approve index_memory activation? [y/N]
+```
+
+Only `y` or `yes` calls the existing activation approval boundary. Any other
+answer leaves the prepared `ActivationRequest` blocked and prints the manual
+next command. If `index_memory` is already active, the guide creates no new
+chain and prints the current index status plus a safe search command.
+
 ## Monitoring, Fossilization, And Rollback
 
 `genus-egg rollback plan --code-proposal <code_proposal_id>` stores a
@@ -249,6 +267,7 @@ genus-egg --db data/genus_egg.sqlite activation approve --request <request_id>
 genus-egg --db data/genus_egg.sqlite activation list
 genus-egg --db data/genus_egg.sqlite memory index-status
 genus-egg --db data/genus_egg.sqlite memory search "larum"
+genus-egg --db data/genus_egg.sqlite guide memory-indexing
 genus-egg --db data/genus_egg.sqlite rollback plan --code-proposal <code_proposal_id>
 genus-egg --db data/genus_egg.sqlite rollback list
 genus-egg --db data/genus_egg.sqlite monitor capability --code-proposal <code_proposal_id>

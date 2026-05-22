@@ -1,6 +1,6 @@
 # Safety Boundaries
 
-These rules are hard boundaries for GENUS EGG package version `2.0.0`.
+These rules are hard boundaries for GENUS EGG package version `2.1.0`.
 
 - No model writes directly.
 - No memory exists without a `MeaningCandidate`.
@@ -31,8 +31,8 @@ These rules are hard boundaries for GENUS EGG package version `2.0.0`.
 - GitHubConnector may store draft PR records only.
 - GitHubConnector must not create non-draft PRs, merge, auto-merge, mutate
   issues, change labels/reviewers, touch secrets/permissions, or activate code.
-- Activation Boundary may model requests, candidates, compatibility checks, and
-  rejection decisions only.
+- Activation Boundary may model requests, candidates, compatibility checks,
+  rejection decisions, and the explicit `index_memory` approval path only.
 - Activation requests stay blocked without rollback data.
 - Scores, PR records, merges, approvals, and evidence never activate code by
   themselves.
@@ -44,6 +44,12 @@ These rules are hard boundaries for GENUS EGG package version `2.0.0`.
 - `index_memory` is the only activatable capability in this version.
 - `index_memory` requires explicit CLI approval and rollback data.
 - Memory indexing is SQLite-only: no LLM, no vector store, no GraphDB.
+- Guided interaction is orchestration only; it may carry IDs and explain the
+  safe chain, but it must use existing boundaries.
+- `guide memory-indexing` must ask before activation and treat any answer other
+  than `y` or `yes` as blocked.
+- `guide memory-indexing` must not create a second activation chain when
+  `index_memory` is already active.
 - `ApprovalGate` blocks file modification and activation.
 - Growth Simulation creates no patch and runs no Git.
 - Shadow Testing executes no code and writes no files.
