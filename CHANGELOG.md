@@ -1,5 +1,16 @@
 # Changelog
 
+## 2.2.1 - 2026-05-23
+
+- Verified the GitHub Actions `tests` workflow on `main` for commit
+  `f675a395a0c07005fdf537a1026ca3c17c0ad19b`:
+  completed with `success`.
+- Clarified that `ReactionCode` is intentionally minimal, not a complete
+  8x8x8 reaction cube.
+- Added a direct regression test for the minimal `ReactionCode` enum.
+- Added no new runtime capability, no new external action, and no feature
+  expansion.
+
 ## 2.2.0 - 2026-05-23
 
 - Hardened foundation boundaries without adding runtime capabilities.

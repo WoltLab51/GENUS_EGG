@@ -1,6 +1,6 @@
 # Safety Boundaries
 
-These rules are hard boundaries for GENUS EGG package version `2.2.0`.
+These rules are hard boundaries for GENUS EGG package version `2.2.1`.
 
 - No model writes directly.
 - No memory exists without a `MeaningCandidate`.
@@ -10,6 +10,8 @@ These rules are hard boundaries for GENUS EGG package version `2.2.0`.
 - No product becomes an implicit signal.
 - Guards are deterministic inhibitors and expose reason codes.
 - Guards must not create side effects.
+- ReactionCode is a minimal foundation code, not a complete reaction-space
+  expansion.
 - Clarification is not a follow-up reaction in this version.
 - Free-language semantic parsing is not implemented.
 - The ledger is append-only.

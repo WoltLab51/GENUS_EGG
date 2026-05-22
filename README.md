@@ -1,8 +1,9 @@
 # GENUS EGG
 
-GENUS EGG `2.2.0` is a governed reaction organism backed by SQLite. Version
-2.2 hardens the foundation without adding new runtime power. Version 2.1 added
-a guided interaction layer for the controlled `index_memory` flow.
+GENUS EGG `2.2.1` is a governed reaction organism backed by SQLite. Version
+2.2.1 is a polish release: it verifies CI and clarifies that ReactionCode is a
+minimal foundation model, not a full reaction-space implementation. Version 2.2
+hardened the foundation without adding new runtime power.
 Version 2.0 added the first controlled capability activation: `index_memory`.
 
 GENUS EGG 1.0 established the complete first EGG: a minimal, governed reaction

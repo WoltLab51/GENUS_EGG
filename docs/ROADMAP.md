@@ -2,7 +2,7 @@
 
 ## Current Version
 
-- Package version: `2.2.0`
+- Package version: `2.2.1`
 - Architecture level: Complete first EGG plus first controlled capability
   activation, guided terminal interaction, and hardened foundation boundaries.
 - Current boundary: draft needs, proposals, shadow plans, fitness scores,
@@ -184,6 +184,13 @@
 - Add CI and Foundation Review documentation.
 - Add no new runtime power.
 - Status: completed in current v2.2 work.
+
+## GENUS EGG v2.2.1 - Foundation Polish
+
+- Verify GitHub Actions CI run.
+- Clarify that ReactionCode is minimal, not a full 8x8x8 reaction cube.
+- Add no features and no new runtime power.
+- Status: completed in current v2.2.1 work.
 
 ## Post-2.2 Topics
 

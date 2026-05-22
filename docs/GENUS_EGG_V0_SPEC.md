@@ -1,8 +1,8 @@
-# GENUS EGG 2.2 Spec
+# GENUS EGG 2.2.1 Spec
 
 ## Goal
 
-GENUS EGG `2.2.0` builds on the complete first EGG slice and hardens the
+GENUS EGG `2.2.1` builds on the complete first EGG slice and hardens the
 foundation around the first controlled capability activation: `index_memory`.
 It includes the EGG-v0 Reaction Core, v0.1 Shadow/Fitness
 evaluation, read-only Inspection Cockpit, Habitat Contract v1, SandboxPatch
@@ -485,7 +485,8 @@ active core.
 ## Foundation Hardening 2.2
 
 ReactionCube now exposes `ReactionCoordinate(intent, context, reaction_state)`
-and a 3-bit `ReactionCode`. The current enabled code is
+and a minimal `ReactionCode`. This is not a full 8x8x8 cube implementation.
+The current modeled codes are only `BLOCKED` and
 `memory_request + normal + ready`.
 
 ReactionGraph edges are explicit `ReactionEdge` objects with `from_kind`,

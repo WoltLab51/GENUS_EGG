@@ -65,6 +65,13 @@ def test_reaction_coordinate_blocks_unknown_axis():
     assert coordinate.code == ReactionCode.BLOCKED
 
 
+def test_reaction_code_is_minimal_not_full_cube():
+    assert set(ReactionCode) == {
+        ReactionCode.BLOCKED,
+        ReactionCode.MEMORY_REQUEST_NORMAL_READY,
+    }
+
+
 def test_reaction_cube_calculates_coordinate_from_working_set():
     raw_input = RawInput(
         input_id="input_1",

@@ -1,6 +1,7 @@
 # GENUS EGG Foundation Review
 
-GENUS EGG `2.2.0` hardens the foundation without adding runtime power.
+GENUS EGG `2.2.1` hardens and polishes the foundation without adding runtime
+power.
 
 ## Stable Now
 
@@ -15,6 +16,8 @@ GENUS EGG `2.2.0` hardens the foundation without adding runtime power.
 - Validation rejects unsafe or incomplete meaning candidates instead of blindly
   allowing every write path.
 - ReactionCube coordinates and ReactionGraph edges are explicit objects.
+- ReactionCode is intentionally minimal: it models only `BLOCKED` and the
+  current `memory_request + normal + ready` path, not a full 8x8x8 space.
 
 ## Not Implemented
 
@@ -74,3 +77,12 @@ capabilities, but it should not absorb unstable foundation experiments directly.
 - The guide asks before activation.
 - Safety documentation reflects current boundaries.
 - CI runs Python 3.12 tests.
+
+## CI Verification
+
+The GitHub Actions `tests` workflow was verified on `main` for commit
+`f675a395a0c07005fdf537a1026ca3c17c0ad19b`.
+
+- Run: `https://github.com/WoltLab51/GENUS_EGG/actions/runs/26315204243`
+- Status: `completed`
+- Conclusion: `success`

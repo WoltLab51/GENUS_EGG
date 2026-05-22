@@ -2,7 +2,7 @@
 
 ## Current Version
 
-- Package version: `2.2.0`
+- Package version: `2.2.1`
 - Architecture scope: Complete first EGG plus controlled `index_memory`
   capability activation, guided terminal interaction, and hardened foundation
 - Persistence: SQLite is the only source of truth
@@ -34,6 +34,7 @@
 - Guided Interaction Layer: terminal guide for the safe memory-indexing chain
 - Foundation Hardening: Guard decisions, conservative validation, explicit
   reaction coordinates/edges, SQLite and Ledger invariants, CI
+- Foundation Polish: CI verified and ReactionCode minimality documented
 
 ## Capability Matrix
 
@@ -63,6 +64,7 @@
 | Guards | active | deterministic inhibitors with reason codes |
 | Validation | active | rejects unsafe write-path meanings |
 | CI | active | Python 3.12 pytest workflow |
+| ReactionCode | minimal | `BLOCKED` plus current `memory_request+normal+ready` |
 
 ## Draft-Safe Boundaries
 

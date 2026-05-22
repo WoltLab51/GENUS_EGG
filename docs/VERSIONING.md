@@ -5,7 +5,7 @@ labels for architecture milestones from the concept document.
 
 ## Current State
 
-- Package version: `2.2.0`
+- Package version: `2.2.1`
 - Architecture level: Complete first EGG plus first controlled capability
   activation, guided terminal interaction, and foundation hardening
 - Current boundary: draft needs, proposals, shadow plans, fitness scores,
@@ -45,10 +45,12 @@ labels for architecture milestones from the concept document.
 - `2.2.0`: Foundation Hardening with GuardDecision reason codes,
   conservative validation, explicit reaction coordinates/edges, Ledger/SQLite
   invariant checks, CI, and Foundation Review.
+- `2.2.1`: Foundation polish with CI verification and explicit documentation
+  that ReactionCode is minimal, not a full reaction-space implementation.
 
 ## Boundary
 
-Version `2.2.0` may create memories through the deterministic Reaction Core,
+Version `2.2.1` may create memories through the deterministic Reaction Core,
 may create draft needs, draft proposals, shadow test plans, and fitness
 evaluations, may render read-only cockpit snapshots, and may store resource and
 readiness records. It may create draft patch records after approval, read local
